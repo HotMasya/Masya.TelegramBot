@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Masya.TelegramBot.Commands\Masya.TelegramBot.Commands.csproj" />
+  </ItemGroup>
+
+</Project>
