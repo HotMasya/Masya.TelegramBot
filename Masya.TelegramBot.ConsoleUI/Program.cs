@@ -10,6 +10,8 @@ using Masya.TelegramBot.Commands;
 using Masya.TelegramBot.Commands.Options;
 using System.Threading;
 using Masya.TelegramBot.Modules;
+using Masya.RPNCalculator.Core;
+using Masya.RPNCalculator.Core.Abstractions;
 
 namespace Masya.TelegramBot.ConsoleUI
 {
@@ -52,6 +54,7 @@ namespace Masya.TelegramBot.ConsoleUI
                     services
                     .Configure<BotServiceOptions>(_configuration.GetSection("Bot"))
                     .Configure<CommandServiceOptions>(_configuration.GetSection("Commands"))
+                    .AddSingleton<ICalculatorFactory, DefaultCalculatorFactory>()
                     .AddSingleton<TelegramBotClient>()
                     .AddSingleton<IBotService, DefaultBotService>()
                     .AddSingleton<ICommandService, DefaultCommandService>();

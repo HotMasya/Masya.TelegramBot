@@ -19,4 +19,10 @@
     <ProjectReference Include="..\Masya.TelegramBot.Modules\Masya.TelegramBot.Modules.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Masya.RPNCalculator.Core">
+      <HintPath>..\Masya.TelegramBot.Modules\Masya.RPNCalculator.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

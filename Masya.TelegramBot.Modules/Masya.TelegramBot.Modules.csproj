@@ -8,4 +8,10 @@
     <ProjectReference Include="..\Masya.TelegramBot.Commands\Masya.TelegramBot.Commands.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Masya.RPNCalculator.Core">
+      <HintPath>Masya.RPNCalculator.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
