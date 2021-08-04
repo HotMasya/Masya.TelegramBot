@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masya.TelegramBot.Commands"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masya.TelegramBot.Modules", "Masya.TelegramBot.Modules\Masya.TelegramBot.Modules.csproj", "{A18A1846-F57B-45E3-943C-82FD470B1700}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masya.TelegramBot.ConsoleUI", "Masya.TelegramBot.ConsoleUI\Masya.TelegramBot.ConsoleUI.csproj", "{CD04875D-8DF3-411C-9551-587458E99774}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masya.TelegramBot.DataAccess", "Masya.TelegramBot.DataAccess\Masya.TelegramBot.DataAccess.csproj", "{D1CC822E-10ED-4B65-A29A-FDC4656D0112}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masya.TelegramBot.DataAccess", "Masya.TelegramBot.DataAccess\Masya.TelegramBot.DataAccess.csproj", "{D1CC822E-10ED-4B65-A29A-FDC4656D0112}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masya.TelegramBot.Api", "Masya.TelegramBot.Api\Masya.TelegramBot.Api.csproj", "{C5A42398-0CD8-4739-8C85-A31251345F16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,18 +45,6 @@ Global
 		{A18A1846-F57B-45E3-943C-82FD470B1700}.Release|x64.Build.0 = Release|Any CPU
 		{A18A1846-F57B-45E3-943C-82FD470B1700}.Release|x86.ActiveCfg = Release|Any CPU
 		{A18A1846-F57B-45E3-943C-82FD470B1700}.Release|x86.Build.0 = Release|Any CPU
-		{CD04875D-8DF3-411C-9551-587458E99774}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CD04875D-8DF3-411C-9551-587458E99774}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CD04875D-8DF3-411C-9551-587458E99774}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{CD04875D-8DF3-411C-9551-587458E99774}.Debug|x64.Build.0 = Debug|Any CPU
-		{CD04875D-8DF3-411C-9551-587458E99774}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{CD04875D-8DF3-411C-9551-587458E99774}.Debug|x86.Build.0 = Debug|Any CPU
-		{CD04875D-8DF3-411C-9551-587458E99774}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CD04875D-8DF3-411C-9551-587458E99774}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CD04875D-8DF3-411C-9551-587458E99774}.Release|x64.ActiveCfg = Release|Any CPU
-		{CD04875D-8DF3-411C-9551-587458E99774}.Release|x64.Build.0 = Release|Any CPU
-		{CD04875D-8DF3-411C-9551-587458E99774}.Release|x86.ActiveCfg = Release|Any CPU
-		{CD04875D-8DF3-411C-9551-587458E99774}.Release|x86.Build.0 = Release|Any CPU
 		{D1CC822E-10ED-4B65-A29A-FDC4656D0112}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D1CC822E-10ED-4B65-A29A-FDC4656D0112}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1CC822E-10ED-4B65-A29A-FDC4656D0112}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -69,6 +57,18 @@ Global
 		{D1CC822E-10ED-4B65-A29A-FDC4656D0112}.Release|x64.Build.0 = Release|Any CPU
 		{D1CC822E-10ED-4B65-A29A-FDC4656D0112}.Release|x86.ActiveCfg = Release|Any CPU
 		{D1CC822E-10ED-4B65-A29A-FDC4656D0112}.Release|x86.Build.0 = Release|Any CPU
+		{C5A42398-0CD8-4739-8C85-A31251345F16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5A42398-0CD8-4739-8C85-A31251345F16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5A42398-0CD8-4739-8C85-A31251345F16}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C5A42398-0CD8-4739-8C85-A31251345F16}.Debug|x64.Build.0 = Debug|Any CPU
+		{C5A42398-0CD8-4739-8C85-A31251345F16}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C5A42398-0CD8-4739-8C85-A31251345F16}.Debug|x86.Build.0 = Debug|Any CPU
+		{C5A42398-0CD8-4739-8C85-A31251345F16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5A42398-0CD8-4739-8C85-A31251345F16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5A42398-0CD8-4739-8C85-A31251345F16}.Release|x64.ActiveCfg = Release|Any CPU
+		{C5A42398-0CD8-4739-8C85-A31251345F16}.Release|x64.Build.0 = Release|Any CPU
+		{C5A42398-0CD8-4739-8C85-A31251345F16}.Release|x86.ActiveCfg = Release|Any CPU
+		{C5A42398-0CD8-4739-8C85-A31251345F16}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

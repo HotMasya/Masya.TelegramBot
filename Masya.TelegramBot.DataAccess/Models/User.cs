@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Masya.TelegramBot.Commands.Data;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -10,6 +11,8 @@ namespace Masya.TelegramBot.DataAccess.Models
         public long Id { get; set; }
 
         public int? AgencyId { get; set; }
+
+        public Permission? Permission { get; set; }
 
         public long TelegramAccountId { get; set; }
 
@@ -43,5 +46,10 @@ namespace Masya.TelegramBot.DataAccess.Models
         public string Note { get; set; }
 
         public List<PropertyObject> PropertyObjects { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0} - {1} {2} @{3}", Id, TelegramFirstName, TelegramLastName, TelegramLogin);
+        }
     }
 }

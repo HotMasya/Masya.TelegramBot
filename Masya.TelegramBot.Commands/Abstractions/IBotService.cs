@@ -11,7 +11,8 @@ namespace Masya.TelegramBot.Commands.Abstractions
     {
         ITelegramBotClient Client { get; }
         BotServiceOptions Options { get; }
-        Task Run(CancellationToken cancellationToken = default);
+        ICollector CreateMessageCollector(Chat chat, TimeSpan messageTimeout);
+        Task RunAsync(CancellationToken cancellationToken = default);
         Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken = default);
         Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken = default);
     }

@@ -1,4 +1,4 @@
-﻿using Masya.TelegramBot.DataAccess.Enums;
+﻿using Masya.TelegramBot.DataAccess.Types;
 using System.ComponentModel.DataAnnotations;
 
 namespace Masya.TelegramBot.DataAccess.Models

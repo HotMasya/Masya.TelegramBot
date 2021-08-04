@@ -13,10 +13,9 @@ namespace Masya.TelegramBot.Commands
         private string _name;
         private readonly CommandServiceOptions _options;
 
-        private static Type[] floatingTypes = new[] { typeof(double), typeof(float), typeof(decimal) };
+        private static readonly Type[] floatingTypes = new[] { typeof(double), typeof(float), typeof(decimal) };
 
         public string Name => _name;
-        public string FullName => _options.Prefix + _name;
         public string[] ArgsStr { get; private set; }
 
         public CommandParts(string content, CommandServiceOptions options)
@@ -33,13 +32,13 @@ namespace Masya.TelegramBot.Commands
             }
 
             string[] cmdParts = content.Split(_options.ArgsSeparator);
-            _name = cmdParts[0].Substring(1).ToLower();
+            _name = cmdParts[0].ToLower();
             ArgsStr = cmdParts.Length > 1 ? cmdParts.Skip(1).ToArray() : Array.Empty<string>();
         }
 
-        public object MatchTypeParam(ParameterInfo param, string value, int resultCount)
+        public object MatchTypeParam(ParameterInfo param, string value)
         {
-            if (param.GetCustomAttribute<RemainderAttribute>() != null && param.GetCustomAttribute<ParamArrayAttribute>() != null)
+            if (param.GetCustomAttribute<ParamArrayAttribute>() != null)
             {
                 string[] splittedValue = value.Split(_options.ArgsSeparator);
                 Array arrayTypeParam = Array.CreateInstance(param.ParameterType.GetElementType(), splittedValue.Length);
@@ -62,7 +61,7 @@ namespace Masya.TelegramBot.Commands
 
         public object MatchTypeParam(ParameterInfo param, int resultCount)
         {
-            if (param.GetCustomAttribute<RemainderAttribute>() != null && param.GetCustomAttribute<ParamArrayAttribute>() != null)
+            if (param.GetCustomAttribute<ParamArrayAttribute>() != null)
             {
                 Array arrayTypeParam = Array.CreateInstance(param.ParameterType.GetElementType(), ArgsStr.Length - resultCount);
                 for (int i = resultCount, j = 0; i < ArgsStr.Length; i++, j++)
@@ -90,14 +89,14 @@ namespace Masya.TelegramBot.Commands
         {
             ParameterInfo[] mParams = info.GetParameters();
 
-            int reqParamsCount = mParams.Where(p => !p.IsOptional && p.GetCustomAttribute<RemainderAttribute>() == null).Count();
+            int reqParamsCount = mParams.Where(p => !p.IsOptional && p.GetCustomAttribute<ParamArrayAttribute>() == null).Count();
 
             if (ArgsStr.Length < reqParamsCount)
             {
                 throw new TargetParameterCountException("Parameter count mismatch.");
             }
 
-            List<object> result = new List<object>();
+            var result = new List<object>();
 
             foreach (var p in mParams)
             {
@@ -107,9 +106,9 @@ namespace Masya.TelegramBot.Commands
             return result.ToArray();
         }
 
-        private TimeSpan ParseAsTimespan(ParameterInfo param, string input)
+        public static TimeSpan ParseAsTimespan(ParameterInfo param, string input)
         {
-            if(param.ParameterType == typeof(TimeSpan) && !string.IsNullOrEmpty(input))
+            if (param.ParameterType == typeof(TimeSpan) && !string.IsNullOrEmpty(input))
             {
                 var formatAttr = param.GetCustomAttribute<ParseFormatAttribute>();
                 if (formatAttr?.Format != null)

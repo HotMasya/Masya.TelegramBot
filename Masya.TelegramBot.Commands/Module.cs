@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Masya.TelegramBot.Commands.Abstractions;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
