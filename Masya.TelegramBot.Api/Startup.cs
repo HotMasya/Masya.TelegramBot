@@ -35,12 +35,12 @@ namespace Masya.TelegramBot.Api
 
             services.Configure<BotServiceOptions>(Configuration.GetSection("Bot"));
             services.Configure<CommandServiceOptions>(Configuration.GetSection("Commands"));
-            services.AddDbContext<CommandDbContext, ApplicationDbContext>(options => {
-                options.UseSqlServer(Configuration.GetConnectionString("DevelopmentDb"));
+            services.AddDbContext<ApplicationDbContext>(options => {
+                options.UseSqlServer(Configuration.GetConnectionString("RemoteDb"));
             });
-            services.AddScoped<IBotService, DefaultBotService>();
-            services.AddScoped<ICommandService, DatabaseCommandService>();
-            services.AddScoped<BotSetup>();
+            services.AddSingleton<IBotService, DefaultBotService>();
+            services.AddSingleton<ICommandService, DefaultCommandService>();
+            services.AddSingleton<BotSetup>();
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;

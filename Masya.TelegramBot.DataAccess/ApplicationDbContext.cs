@@ -3,6 +3,7 @@ using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Masya.TelegramBot.DataAccess
 {
@@ -33,6 +34,16 @@ namespace Masya.TelegramBot.DataAccess
                 .Entity<Category>()
                 .Property(c => c.SuperType)
                 .HasConversion<int>();
+        }
+
+        public static async Task SeedDatabase(DbContext context)
+        {
+            await context.Database.EnsureCreatedAsync();
+
+            if(context.Database.GetPendingMigrations().Any())
+            {
+                await context.Database.MigrateAsync();
+            }
         }
     }
 }

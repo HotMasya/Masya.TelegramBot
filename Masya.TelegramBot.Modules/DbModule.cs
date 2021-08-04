@@ -24,6 +24,13 @@ namespace Masya.TelegramBot.Modules
         {
             List<User> users = _dbContext.Users.ToList();
             var builder = new StringBuilder();
+
+            if (users.Count == 0)
+            {
+                await ReplyAsync("There are no users in the database.");
+                return;
+            }
+
             foreach(var user in users)
             {
                 builder.AppendLine(user.ToString());

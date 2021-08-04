@@ -5,6 +5,8 @@ using Serilog;
 using System;
 using System.Threading.Tasks;
 using Masya.TelegramBot.Api.Bot;
+using Masya.TelegramBot.DataAccess;
+using Masya.TelegramBot.Commands.Data;
 
 namespace Masya.TelegramBot.Api
 {
@@ -19,8 +21,10 @@ namespace Masya.TelegramBot.Api
 
         public static async Task StartRequiredServices(IServiceProvider services)
         {
-            using var scope = services.CreateScope();
-            var botSetup = scope.ServiceProvider.GetRequiredService<BotSetup>();
+            //using var scope = services.CreateScope();
+            var botSetup = services.GetRequiredService<BotSetup>();
+            //var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            //await ApplicationDbContext.SeedDatabase(dbContext);
             await botSetup.SetupAsync();
         }
 
