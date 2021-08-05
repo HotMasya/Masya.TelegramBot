@@ -57,8 +57,8 @@ namespace Masya.TelegramBot.Api
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
                 endpoints.MapTelegramUpdatesRoute(Configuration.GetValue<string>("Bot:Token"));
+                endpoints.MapControllers();
                 endpoints.Map("*", async context =>
                 {
                     context.Response.StatusCode = StatusCodes.Status404NotFound;

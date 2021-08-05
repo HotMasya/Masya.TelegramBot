@@ -9,7 +9,7 @@ namespace Masya.TelegramBot.Api.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return Ok(new { Message = "Hello from main controller." });
+            return Ok(new { Message = "Hello from main controller.", Count = 1 });
         }
     }
 }
