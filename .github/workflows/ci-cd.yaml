@@ -28,7 +28,7 @@ jobs:
         run: dotnet build -c Release --no-restore
 
       - name: Publish app 📰
-        run: dotnet public -c Release -o ./out
+        run: dotnet publish -c Release -o ./out
 
       - name: Deploy web app to Azure 🛫
         uses: azure/webapps-deploy@v2
