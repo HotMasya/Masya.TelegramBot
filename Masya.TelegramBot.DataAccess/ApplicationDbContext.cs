@@ -25,7 +25,7 @@ namespace Masya.TelegramBot.DataAccess
             .ToList();
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            :base (options) { }
+            : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -38,9 +38,7 @@ namespace Masya.TelegramBot.DataAccess
 
         public static async Task SeedDatabase(DbContext context)
         {
-            await context.Database.EnsureCreatedAsync();
-
-            if(context.Database.GetPendingMigrations().Any())
+            if (await context.Database.EnsureCreatedAsync() && context.Database.GetPendingMigrations().Any())
             {
                 await context.Database.MigrateAsync();
             }
