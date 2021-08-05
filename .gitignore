@@ -19,6 +19,7 @@
 bin/
 *.Development.json
 frontend/
+out/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
