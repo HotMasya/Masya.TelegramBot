@@ -20,10 +20,6 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      
-      - name: Start SQL Server ⚙
-        run: |
-          docker run -d -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Masya1..' -e 'MSSQL_PID=Express' -p 1433:1433 -d mcr.microsoft.com/mssql/server:2017-latest-ubuntu 
 
       - name: Sleep for 5s 😴
         uses: jakejarvis/wait-action@master
@@ -40,8 +36,6 @@ jobs:
         run: dotnet publish -c Release -o ./out
 
       - name: Deploy web app to Azure 🛫
-        env:
-          ConnectionStrings__RemoteDb: Server=localhost;Database=DevTgDb;User=sa;Password=Masya1..
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.APP_NAME }}
