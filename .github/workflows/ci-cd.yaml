@@ -5,6 +5,10 @@ on:
     branches:
       - master
 
+env:
+  DOTNET_VERSION: '5.0.x'
+  APP_NAME: masya
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,10 +19,20 @@ jobs:
       - name: Setup .NET 5 👌
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '5.0.x'
+          dotnet-version: ${{ env.DOTNET_VERSION }}
       
       - name: Restore dependencies ⚙
         run: dotnet restore
       
       - name: Build application 🔨
         run: dotnet build -c Release --no-restore
+
+      - name: Publish app 📰
+        run: dotnet public -c Release -o ./out
+
+      - name: Deploy web app to Azure 🛫
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.APP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./out
