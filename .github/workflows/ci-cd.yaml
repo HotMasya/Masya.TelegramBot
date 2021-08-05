@@ -40,10 +40,10 @@ jobs:
         run: dotnet publish -c Release -o ./out
 
       - name: Deploy web app to Azure 🛫
-          env:
-            ConnectionStrings__RemoteDb: Server=localhost;Database=DevTgDb;User=sa;Password=Masya1..
-            Bot__Token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-            Bot__WebhookHost: https://masya.azurewebsites.net/telegram/update{BOT_TOKEN}
+        env:
+          ConnectionStrings__RemoteDb: Server=localhost;Database=DevTgDb;User=sa;Password=Masya1..
+          Bot__Token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          Bot__WebhookHost: https://masya.azurewebsites.net/telegram/update{BOT_TOKEN}
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.APP_NAME }}
