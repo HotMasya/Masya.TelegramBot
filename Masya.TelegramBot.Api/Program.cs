@@ -14,6 +14,7 @@ namespace Masya.TelegramBot.Api
         public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
+            await StartRequiredServices(host.Services);
             await host.RunAsync();
         }
 

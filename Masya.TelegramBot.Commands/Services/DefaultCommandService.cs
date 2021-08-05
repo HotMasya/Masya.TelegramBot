@@ -84,11 +84,11 @@ namespace Masya.TelegramBot.Commands.Services
             _logger.LogInformation("Loading commands from modules from assembly: " + assembly.GetName().Name);
             await Task.Run(() =>
             {
-                foreach (var type in assembly.GetTypes())
+                foreach (var type in assembly.DefinedTypes)
                 {
                     if (IsModuleType(type))
                     {
-                        foreach (var method in type.GetMethods())
+                        foreach (var method in type.DeclaredMethods)
                         {
                             if (IsValidCommand(method))
                             {
@@ -123,7 +123,7 @@ namespace Masya.TelegramBot.Commands.Services
                 (method.ReturnType == typeof(Task) || method.ReturnType == typeof(Task<>));
         }
 
-        public static bool IsModuleType(Type type)
+        public static bool IsModuleType(TypeInfo type)
         {
             return type.IsPublic &&
                 !type.IsAbstract &&
