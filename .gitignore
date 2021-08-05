@@ -15,6 +15,11 @@
 *.userosscache
 *.sln.docstates
 
+# Custom files
+bin/
+*.Development.json
+frontend/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -371,7 +376,8 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # VS Code files for those working on multiple tools
-.vscode/*
+.vs
+.vscode
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json

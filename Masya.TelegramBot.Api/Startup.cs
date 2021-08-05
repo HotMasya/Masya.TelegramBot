@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-using System.Text.Json;
 using Masya.TelegramBot.Commands.Services;
 using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Commands.Options;
@@ -12,8 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Microsoft.EntityFrameworkCore;
-using Masya.TelegramBot.Api.Bot;
-using Masya.TelegramBot.Commands.Data;
+using Newtonsoft.Json;
 
 namespace Masya.TelegramBot.Api
 {
@@ -35,18 +32,18 @@ namespace Masya.TelegramBot.Api
 
             services.Configure<BotServiceOptions>(Configuration.GetSection("Bot"));
             services.Configure<CommandServiceOptions>(Configuration.GetSection("Commands"));
-            services.AddDbContext<ApplicationDbContext>(options => {
+            services.AddDbContext<ApplicationDbContext>(options =>
+            {
                 options.UseSqlServer(Configuration.GetConnectionString("RemoteDb"));
             });
             services.AddSingleton<IBotService, DefaultBotService>();
             services.AddSingleton<ICommandService, DefaultCommandService>();
-            services.AddSingleton<BotSetup>();
-            services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                options.JsonSerializerOptions.AllowTrailingCommas = false;
-            });
+            services.AddControllers()
+                .AddNewtonsoftJson(options =>
+                {
+                    options.UseCamelCasing(true);
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -61,6 +58,7 @@ namespace Masya.TelegramBot.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapTelegramUpdatesRoute(Configuration.GetValue<string>("Bot:Token"));
                 endpoints.Map("*", async context =>
                 {
                     context.Response.StatusCode = StatusCodes.Status404NotFound;

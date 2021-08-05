@@ -9,7 +9,6 @@ using Masya.TelegramBot.DataAccess.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Telegram.Bot.Types;
-using System.Resources;
 using Masya.TelegramBot.Commands.Data;
 
 namespace Masya.TelegramBot.Modules
@@ -26,15 +25,15 @@ namespace Masya.TelegramBot.Modules
             _services = services;
         }
 
-        [Command("СТАРТ")]
+        [Command("/start")]
         public async Task StartCommandAsync()
         {
-            if(_dbContext.Users.Any(u => u.TelegramAccountId == Context.User.Id) == false)
+            if (_dbContext.Users.Any(u => u.TelegramAccountId == Context.User.Id) == false)
             {
-                await ReplyAsync("Сначала зарегистрируйтесь.", replyMarkup: Markups.RegisterButton());
+                await ReplyAsync("Registration goes first.", replyMarkup: Markups.RegisterButton());
                 return;
             }
-            await ReplyAsync("Меню", replyMarkup: Markups.MainMenuButtons());
+            await ReplyAsync("Menu", replyMarkup: Markups.MainMenuButtons());
         }
 
         [RegisterUser]
@@ -72,12 +71,12 @@ namespace Masya.TelegramBot.Modules
                 {
                     case UserRoles.Customer:
                         dbUser.Permission = Permission.User;
-                        resultText = "Вы зарегистрированы, как покупатель.";
+                        resultText = "You're now registered as a customer.";
                         break;
 
                     case UserRoles.Agent:
                         dbUser.Permission = Permission.Agent;
-                        resultText = "Вы зарегистрированы, как агент [агентства недвижимости].";
+                        resultText = "You're now registered as an agent.";
                         break;
 
                     default:
@@ -104,7 +103,7 @@ namespace Masya.TelegramBot.Modules
             {
                 Context.BotService.Client.SendTextMessageAsync(
                         chatId: Context.Message.Chat.Id,
-                        text: "Время истекло, пройдите регистрацию снова."
+                        text: "The time is out, please, try again."
                     ).Wait();
             };
 
@@ -116,7 +115,7 @@ namespace Masya.TelegramBot.Modules
         {
             await Context.BotService.Client.SendTextMessageAsync(
                         chatId: chatId,
-                        text: "Кем вы являетесь?",
+                        text: "Who are you?",
                         replyMarkup: Markups.ClientAgentButtons()
                     );
         }

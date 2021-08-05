@@ -4,9 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System;
 using System.Threading.Tasks;
-using Masya.TelegramBot.Api.Bot;
-using Masya.TelegramBot.DataAccess;
-using Masya.TelegramBot.Commands.Data;
+using Masya.TelegramBot.Commands.Abstractions;
+using Masya.TelegramBot.Modules;
 
 namespace Masya.TelegramBot.Api
 {
@@ -15,17 +14,15 @@ namespace Masya.TelegramBot.Api
         public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
-            await StartRequiredServices(host.Services);
             await host.RunAsync();
         }
 
         public static async Task StartRequiredServices(IServiceProvider services)
         {
-            //using var scope = services.CreateScope();
-            var botSetup = services.GetRequiredService<BotSetup>();
-            //var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            //await ApplicationDbContext.SeedDatabase(dbContext);
-            await botSetup.SetupAsync();
+            var commandService = services.GetRequiredService<ICommandService>();
+            var botService = services.GetRequiredService<IBotService>();
+            await commandService.LoadCommandsAsync(typeof(BasicModule).Assembly);
+            await botService.SetWebhookAsync();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

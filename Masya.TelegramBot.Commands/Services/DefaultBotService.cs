@@ -4,11 +4,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 
@@ -46,58 +44,30 @@ namespace Masya.TelegramBot.Commands.Services
             }
         }
 
-        public async Task RunAsync(CancellationToken cancellationToken = default)
-        {
-            _logger.LogInformation("Starting bot...");
-            await Task.Run(
-                () => Client.StartReceiving( new DefaultUpdateHandler(HandleUpdateAsync, HandleErrorAsync),cancellationToken),
-                cancellationToken
-                );
-        }
-
-        public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken = default)
-        {
-            switch (update.Message)
-            {
-                case Message message:
-                    try
-                    {
-                        await HandleMessageAsync(message);
-                    }
-                    catch (Exception ex)
-                    {
-                        await HandleErrorAsync(botClient, ex, cancellationToken);
-                    }
-                    break;
-
-                default:
-                    return;
-            }
-        }
-
         private async Task HandleMessageAsync(Message message)
         {
             _logger.LogInformation(string.Format("Received message from: {0}", message.From.ToString()));
             var collector = _collectors.FirstOrDefault(c => c.Chat.Id == message.Chat.Id && c.IsStarted);
 
-            if(collector != null)
+            if (collector != null)
             {
                 await collector.CollectAsync(message);
                 return;
             }
 
             var commandService = _services.GetRequiredService<ICommandService>();
-            await commandService.ExecuteCommandAsync(message);
-        }
-
-        public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken = default)
-        {
-            _logger.LogError(exception.Message);
-            return Task.CompletedTask;
+            try
+            {
+                await commandService.ExecuteCommandAsync(message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed to execute command: " + ex.Message);
+            }
         }
 
         public ICollector CreateMessageCollector(Chat chat, TimeSpan messageTimeout)
-        {  
+        {
             var mcol = new MessageCollector(chat, this, messageTimeout);
             mcol.OnFinish += (sender, args) => RemoveCollector(mcol);
             mcol.OnMessageTimeout += (sender, args) => RemoveCollector(mcol);
@@ -113,6 +83,25 @@ namespace Masya.TelegramBot.Commands.Services
                 _collectors.Remove(col);
             }
             return Task.CompletedTask;
+        }
+
+        public async Task SetWebhookAsync()
+        {
+            _logger.LogInformation("Setting up a webhook...");
+            await Client.SetWebhookAsync(Options.WebhookHost.Replace("{BOT_TOKEN}", Options.Token));
+            _logger.LogInformation("Webhook was set.");
+        }
+
+        public async Task HandleUpdateAsync(Update update)
+        {
+            switch (update.Message)
+            {
+                case Message message:
+                    await HandleMessageAsync(message);
+                    break;
+
+                default: return;
+            }
         }
     }
 }

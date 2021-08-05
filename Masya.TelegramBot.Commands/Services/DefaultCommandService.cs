@@ -48,7 +48,8 @@ namespace Masya.TelegramBot.Commands.Services
                 return;
             }
 
-            await Task.Run(() => {
+            await Task.Run(() =>
+            {
                 var parts = new CommandParts(message.Text, Options);
                 MethodInfo method = commands
                     .FirstOrDefault(cm => CommandFilter(cm.MethodInfo, parts.Name))
@@ -58,6 +59,8 @@ namespace Masya.TelegramBot.Commands.Services
                 {
                     return;
                 }
+
+                _logger.LogInformation($"Executing command: {parts.Name}");
 
                 if (parts.ArgsStr.Length == 0 && method.GetParameters().Length != 0)
                 {
@@ -174,7 +177,7 @@ namespace Masya.TelegramBot.Commands.Services
                 {
                     result.Add(parts.MatchTypeParam(parameters[i], e.Message.Text));
                     i++;
-                    if(i < parameters.Length)
+                    if (i < parameters.Length)
                     {
                         SendParamMessage(parameters, i, e.Message.Chat.Id, cancellationToken).Wait();
                         return;
@@ -206,9 +209,16 @@ namespace Masya.TelegramBot.Commands.Services
                 cancellationToken: cancellationToken
                 );
         }
-    
+
         protected virtual Task HandleContact(Message message)
         {
+            _logger.LogInformation(
+                "Received a contact: {0} {1} {2}",
+                message.Contact.FirstName,
+                message.Contact.LastName,
+                message.Contact.PhoneNumber
+            );
+
             var handleMethod = commands
                 .FirstOrDefault(c => IsRegisterUserMethod(c.MethodInfo))
                 ?.MethodInfo;
