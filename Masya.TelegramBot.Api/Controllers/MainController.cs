@@ -1,4 +1,5 @@
-﻿using Masya.TelegramBot.Commands.Abstractions;
+﻿using System.Threading.Tasks;
+using Masya.TelegramBot.Commands.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -20,16 +21,10 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> BotStatus()
         {
-            return Ok(
-                new
-                {
-                    Host = _botService.Options.WebhookHost,
-                    Token = _botService.Options.Token,
-                    TotalCommands = _commandService.Commands.Count
-                }
-            );
+            var status = await _botService.GetStatusAsync();
+            return Ok(status);
         }
     }
 }

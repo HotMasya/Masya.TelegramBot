@@ -1,6 +1,7 @@
 ﻿using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Commands.Data;
 using Masya.TelegramBot.Commands.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -11,8 +12,6 @@ namespace Masya.TelegramBot.Commands.Services
 {
     public class DatabaseCommandService : DefaultCommandService
     {
-        private readonly CommandDbContext _dbContext;
-
         public DatabaseCommandService(
             CommandDbContext context,
             IOptionsMonitor<CommandServiceOptions> options,
@@ -20,15 +19,14 @@ namespace Masya.TelegramBot.Commands.Services
             IServiceProvider services,
             ILogger<DefaultCommandService> logger
             )
-            : base(options, botService, services, logger)
-        {
-            _dbContext = context;
-        }
+            : base(options, botService, services, logger) { }
 
         public override async Task LoadCommandsAsync(Assembly assembly)
         {
+            using var scope = services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<CommandDbContext>();
             await base.LoadCommandsAsync(assembly);
-            await _dbContext.AttachCommandsAsync(commands);
+            await dbContext.AttachCommandsAsync(commands);
         }
     }
 }

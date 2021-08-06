@@ -38,7 +38,7 @@ namespace Masya.TelegramBot.DataAccess
 
         public static async Task SeedDatabase(DbContext context)
         {
-            if (await context.Database.EnsureCreatedAsync() && context.Database.GetPendingMigrations().Any())
+            if (context.Database.GetPendingMigrations().Any())
             {
                 await context.Database.MigrateAsync();
             }

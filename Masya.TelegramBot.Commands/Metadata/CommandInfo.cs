@@ -5,12 +5,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Masya.TelegramBot.Commands.Metadata
 {
     public class CommandInfo : IFormattable
     {
         public string Name { get; }
+        [JsonIgnore]
         public MethodInfo MethodInfo { get; }
         public string Description { get; }
         public IList<Alias> Aliases { get; }

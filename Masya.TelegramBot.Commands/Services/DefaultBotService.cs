@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using Masya.TelegramBot.Commands.Metadata;
 
 namespace Masya.TelegramBot.Commands.Services
 {
@@ -16,6 +17,7 @@ namespace Masya.TelegramBot.Commands.Services
     {
         public ITelegramBotClient Client { get; }
         public BotServiceOptions Options { get; }
+        public bool IsWorking { get; set; }
 
         private readonly IServiceProvider _services;
         private readonly ILogger<DefaultBotService> _logger;
@@ -29,6 +31,7 @@ namespace Masya.TelegramBot.Commands.Services
             _services = services;
             _logger = logger;
             _collectors = new List<ICollector>();
+            IsWorking = true;
         }
 
         public DefaultBotService()
@@ -46,6 +49,11 @@ namespace Masya.TelegramBot.Commands.Services
 
         private async Task HandleMessageAsync(Message message)
         {
+            if (!IsWorking)
+            {
+                return;
+            }
+
             _logger.LogInformation(string.Format("Received message from: {0}", message.From.ToString()));
             var collector = _collectors.FirstOrDefault(c => c.Chat.Id == message.Chat.Id && c.IsStarted);
 
@@ -102,6 +110,21 @@ namespace Masya.TelegramBot.Commands.Services
 
                 default: return;
             }
+        }
+
+        public async Task<BotStatus> GetStatusAsync()
+        {
+            var me = await Client.GetMeAsync();
+            using var scope = _services.CreateScope();
+            var commandService = scope.ServiceProvider.GetRequiredService<ICommandService>();
+            return new BotStatus
+            {
+                IsWorking = this.IsWorking,
+                Bot = me,
+                Host = Options.WebhookHost,
+                CommandsLoaded = commandService.Commands.Count,
+                Commands = commandService.Commands
+            };
         }
     }
 }
