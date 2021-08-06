@@ -1,11 +1,11 @@
 ﻿using Masya.TelegramBot.Commands.Attributes;
 using Masya.TelegramBot.Commands.Data;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
-using System.Text.Json.Serialization;
 
 namespace Masya.TelegramBot.Commands.Metadata
 {

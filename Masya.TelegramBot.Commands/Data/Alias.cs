@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Masya.TelegramBot.Commands.Data
 {
@@ -12,8 +12,8 @@ namespace Masya.TelegramBot.Commands.Data
 
         public string Name { get; set; }
 
-        [ForeignKey("Command")]
         [JsonIgnore]
+        [ForeignKey("Command")]
         public int CommandId { get; set; }
 
         [JsonIgnore]
