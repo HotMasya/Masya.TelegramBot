@@ -25,9 +25,9 @@ namespace Masya.TelegramBot.Api
             var botService = services.GetRequiredService<IBotService>();
             await commandService.LoadCommandsAsync(typeof(BasicModule).Assembly);
             await botService.SetWebhookAsync();
-            using var scope = services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            await ApplicationDbContext.SeedDatabase(dbContext);
+            // using var scope = services.CreateScope();
+            // var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            // await ApplicationDbContext.SeedDatabase(dbContext);
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
