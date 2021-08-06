@@ -24,7 +24,7 @@ namespace Masya.TelegramBot.DataAccess.Models
 
         [MaxLength(64)]
         public string TelegramFirstName { get; set; }
-        
+
         [MaxLength(64)]
         public string TelegramLastName { get; set; }
 
@@ -49,7 +49,13 @@ namespace Masya.TelegramBot.DataAccess.Models
 
         public override string ToString()
         {
-            return string.Format("{0} - {1} {2} @{3}", Id, TelegramFirstName, TelegramLastName, TelegramLogin);
+            return string.Format(
+                "{0} - {1} {2} @{3}, Permission: {4}",
+                 Id,
+                TelegramFirstName,
+                TelegramLastName,
+                TelegramLogin,
+                Permission.HasValue ? Permission.Value.ToString() : "None");
         }
     }
 }
