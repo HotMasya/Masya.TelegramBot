@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Masya.TelegramBot.Commands.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -21,6 +22,7 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> BotStatus()
         {
             var status = await _botService.GetStatusAsync();

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Masya.TelegramBot.Api.Dtos;
+using Masya.TelegramBot.Api.Services;
 using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.DataAccess;
 using Microsoft.AspNetCore.Mvc;
@@ -17,13 +18,19 @@ namespace Masya.TelegramBot.Api.Controllers
         private readonly ApplicationDbContext _dbContext;
         private readonly IBotService _botService;
         private readonly IDistributedCache _cache;
+        private readonly IJwtService _jwtService;
         private const string AuthCodePrefix = "AuthCode_";
 
-        public AuthController(ApplicationDbContext dbContext, IBotService botService, IDistributedCache cache)
+        public AuthController(
+            ApplicationDbContext dbContext,
+            IBotService botService,
+            IDistributedCache cache,
+            IJwtService jwtService)
         {
             _dbContext = dbContext;
             _botService = botService;
             _cache = cache;
+            _jwtService = jwtService;
         }
 
         [HttpPost("phone")]
@@ -34,7 +41,7 @@ namespace Masya.TelegramBot.Api.Controllers
 
             if (user == null)
             {
-                return BadRequest(new { Message = "Invalid phone number." });
+                return BadRequest(new ResponseDto<object>("User not found."));
             }
 
             var rng = new Random();
@@ -55,10 +62,17 @@ namespace Masya.TelegramBot.Api.Controllers
             var userTelegramId = await _cache.GetRecordAsync<int>(recordId);
             if (userTelegramId == default(int))
             {
-                return BadRequest(new { Message = "Code not found." });
+                return BadRequest(new ResponseDto<object>("Code is invalid."));
             }
 
-            return Ok(userTelegramId);
+            var user = _dbContext.Users.FirstOrDefault(u => u.TelegramAccountId == userTelegramId);
+            if (user == null)
+            {
+                return BadRequest(new ResponseDto<object>("User not found."));
+            }
+
+            string token = _jwtService.GenerateToken(user);
+            return Ok(new TokenDto(token));
         }
     }
 }

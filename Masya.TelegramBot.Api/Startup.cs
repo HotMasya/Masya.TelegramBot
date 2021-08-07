@@ -8,9 +8,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Serilog;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using Newtonsoft.Json;
+
+using System.Text;
+using Masya.TelegramBot.Api.Options;
+using Masya.TelegramBot.Api.Services;
 
 namespace Masya.TelegramBot.Api
 {
@@ -32,6 +39,7 @@ namespace Masya.TelegramBot.Api
 
             services.Configure<BotServiceOptions>(Configuration.GetSection("Bot"));
             services.Configure<CommandServiceOptions>(Configuration.GetSection("Commands"));
+            services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
 
             services.AddStackExchangeRedisCache(options =>
             {
@@ -51,6 +59,22 @@ namespace Masya.TelegramBot.Api
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
+            services.AddSingleton<IJwtService, JwtService>();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["JwtOptions:Issuer"],
+                        ValidAudience = Configuration["JwtOptions:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JwtOptions:Secret"]))
+                    };
+                });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -61,14 +85,15 @@ namespace Masya.TelegramBot.Api
             }
 
             app.UseRouting();
-
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapTelegramUpdatesRoute(Configuration.GetValue<string>("Bot:Token"));
+                endpoints.MapTelegramUpdatesRoute(Configuration["Bot:Token"]);
                 endpoints.MapControllers();
-                endpoints.Map("*", async context =>
+                endpoints.Map("/", async context =>
                 {
-                    context.Response.StatusCode = StatusCodes.Status404NotFound;
+                    await context.Response.WriteAsync("<h1>Kinda homepage</h1>");
                     await context.Response.CompleteAsync();
                 });
             });
