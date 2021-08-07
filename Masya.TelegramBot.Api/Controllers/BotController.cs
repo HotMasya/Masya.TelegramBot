@@ -5,11 +5,11 @@ using Telegram.Bot.Types;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
-    public class UpdateController : ControllerBase
+    public class BotController : ControllerBase
     {
         private readonly IBotService _botService;
 
-        public UpdateController(IBotService botService)
+        public BotController(IBotService botService)
         {
             _botService = botService;
         }

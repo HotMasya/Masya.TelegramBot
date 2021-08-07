@@ -10,7 +10,7 @@ namespace Microsoft.AspNetCore.Builder
         {
             return endpoint.MapControllerRoute("telegram_bot_update_route",
                 $"/telegram/update{botToken}",
-                new { Controller = "Update", Action = "Index" });
+                new { Controller = "Bot", Action = "Index" });
         }
     }
 }
