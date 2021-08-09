@@ -88,6 +88,7 @@ namespace Masya.TelegramBot.Api
             app.UseCors(policy =>
             {
                 policy.AllowAnyOrigin();
+                policy.AllowAnyHeader();
                 policy.WithMethods("GET", "POST");
             });
 
