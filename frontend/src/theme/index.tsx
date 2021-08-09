@@ -3,11 +3,7 @@ import React, { PropsWithChildren, useMemo } from 'react';
 import GlobalStyles from './GlobalStyles';
 import palette from './palette';
 
-export interface ThemeConfigProps {}
-
-export default function ThemeConfig(
-  props: PropsWithChildren<ThemeConfigProps>,
-) {
+const ThemeConfig: React.FC = (props) => {
   const { children } = props;
   const theme = useMemo(() => {
     return createTheme({
@@ -25,3 +21,5 @@ export default function ThemeConfig(
     </ThemeProvider>
   );
 }
+
+export default ThemeConfig;

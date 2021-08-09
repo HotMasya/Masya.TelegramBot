@@ -7,16 +7,11 @@ import {
 } from '@material-ui/core';
 import React, { PropsWithChildren } from 'react';
 import GradientButton from './GradientButton';
-import GlassPaper from './GlassPaper';
+import GlassPaper from './containers/GlassPaper';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { PhoneModel, phoneScheme } from '../models/AuthModel';
-
-export interface AuthFormProps {
-  caption?: string;
-  apiEndpoint: string;
-  className?: string;
-}
+import { SubmitHandler } from 'react-hook-form';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,8 +26,15 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function AuthForm(props: PropsWithChildren<AuthFormProps>) {
-  const { caption, className } = props;
+export type AuthFormProps = {
+  caption?: string;
+  apiEndpoint: string;
+  className?: string;
+  onSubmit: SubmitHandler<PhoneModel>;
+}
+
+const AuthForm: React.FC<AuthFormProps> = (props) => {
+  const { caption, className, onSubmit } = props;
   const classes = useStyles();
   const {
     register,
@@ -41,10 +43,6 @@ export default function AuthForm(props: PropsWithChildren<AuthFormProps>) {
   } = useForm<PhoneModel>({
     resolver: yupResolver(phoneScheme),
   });
-
-  function onSubmit(model: PhoneModel) {
-    console.log(model.phone);
-  }
 
   return (
     <GlassPaper className={classes.root + ' ' + className}>
@@ -72,3 +70,5 @@ export default function AuthForm(props: PropsWithChildren<AuthFormProps>) {
     </GlassPaper>
   );
 }
+
+export default AuthForm;

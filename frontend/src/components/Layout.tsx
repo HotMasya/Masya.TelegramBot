@@ -1,13 +1,23 @@
 import React, { PropsWithChildren, useState } from 'react';
-import Sidebar from './Sidebar';;
-import ContentBox from './ContentBox';
+import Sidebar, { SidebarProps } from './Sidebar';;
+import ContentBox from './containers/ContentBox';
 import Header from './Header';
+import MiniProfile, { MiniProfileProps } from './MiniProfile';
 
-export interface LayoutProps { }
+import fakeAvatar from '../static/images/fake_avatar.jpg';
+import { Button, Popover, Typography } from '@material-ui/core';
 
-export default function Layout(props: PropsWithChildren<LayoutProps>) {
+const Layout: React.FC = (props) => {
     const { children } = props;
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [anchorEl, setAnchorEl] = useState<Element>();
+    const onPopoverClose = () => {
+        setAnchorEl(undefined);
+    }
+    const onProfileClick = (event: React.MouseEvent) => {
+        setAnchorEl(event.currentTarget);
+    }
+    const isPopoverOpen = Boolean(anchorEl);
 
     return (
         <>
@@ -18,9 +28,26 @@ export default function Layout(props: PropsWithChildren<LayoutProps>) {
                 open={sidebarOpen}
             />
             <ContentBox>
-                <Header onMenuClick={() => setSidebarOpen(state => !state)} />
+                <Header onMenuClick={() => setSidebarOpen(state => !state)}>
+                    <MiniProfile firstName="Masya" lastName="Poltorashka" avatar={fakeAvatar} onClick={onProfileClick} />
+                    <Popover
+                        onClose={onPopoverClose}
+                        anchorEl={anchorEl}
+                        open={isPopoverOpen}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                        }}
+                    >
+                        <Button>
+                            <Typography variant="h5" color="error">Log Out</Typography>
+                        </Button>
+                    </Popover>
+                </Header>
                 {children}
             </ContentBox>
         </>
     )
 }
+
+export default Layout;

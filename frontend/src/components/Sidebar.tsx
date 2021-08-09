@@ -5,7 +5,6 @@ import {
     Theme,
     Typography,
     useMediaQuery,
-    Drawer,
     List,
     ListItem,
     ListItemText,
@@ -19,7 +18,7 @@ import {
     IconButton,
 } from '@material-ui/core';
 import React, { useState } from 'react';
-import CenteredBox from './CenteredBox';
+import CenteredBox from './containers/CenteredBox';
 import {
     Category,
     Keyboard,
@@ -65,14 +64,14 @@ export const SidebarAccordion = withStyles((theme: Theme) =>
     }),
 )(Accordion);
 
-export interface SidebarProps {
+export type SidebarProps = {
     onOpen: () => void;
     onClose: () => void;
     onCloseClick: (event: React.MouseEvent) => void;
-    open?: boolean;
+    open: boolean;
 }
 
-export default function Sidebar(props: SidebarProps) {
+const Sidebar: React.FC<SidebarProps> = (props) => {
     const theme = useTheme();
     const breakpoint = theme.breakpoints.down('sm');
     const isDowmSm = useMediaQuery(breakpoint);
@@ -171,3 +170,5 @@ export default function Sidebar(props: SidebarProps) {
         </SwipeableDrawer>
     );
 }
+
+export default Sidebar;

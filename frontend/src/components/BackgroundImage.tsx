@@ -1,11 +1,6 @@
 import { makeStyles } from '@material-ui/core';
 import React from 'react';
 
-export interface BackgroundImageProps {
-  src?: string;
-  alt?: string;
-}
-
 const useStyles = makeStyles({
   root: {
     display: 'block',
@@ -16,8 +11,15 @@ const useStyles = makeStyles({
   },
 });
 
-export default function BackgroundImage(props: BackgroundImageProps) {
+export type BackgroundImageProps = {
+  src?: string;
+  alt?: string;
+}
+
+const BackgroundImage: React.FC<BackgroundImageProps> = (props) => {
   const classes = useStyles();
 
   return <img {...props} className={classes.root} />;
 }
+
+export default BackgroundImage;

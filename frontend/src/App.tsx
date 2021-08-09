@@ -2,11 +2,15 @@ import React from 'react';
 import '@fontsource/roboto';
 import ThemeConfig from './theme';
 import Navigation from './routing/Navigation';
+import { Provider } from 'react-redux';
+import { store } from './store';
 
-export default function App() {
-  return (
-    <ThemeConfig>
+const App: React.FC<{}> = () => (
+  <ThemeConfig>
+    <Provider store={store}>
       <Navigation />
-    </ThemeConfig>
-  );
-}
+    </Provider>
+  </ThemeConfig>
+)
+
+export default App;

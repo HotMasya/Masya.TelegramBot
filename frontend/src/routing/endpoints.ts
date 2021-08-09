@@ -1,7 +1,12 @@
 export const host = 'localhost:50001';
+export const apiHost = 'https://masya.azurewebsites.net/';
 
-const endpoints = {
+export const endpoints = {
   auth: host + '/auth',
 };
 
-export default endpoints;
+export const apiEndpoints = {
+  checkPhone: apiHost + 'auth/phone',
+  checkCode: apiHost + 'auth/code',
+  getUserInfo: apiHost + 'account/profile',
+}

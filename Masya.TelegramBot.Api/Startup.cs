@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
@@ -86,6 +85,12 @@ namespace Masya.TelegramBot.Api
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseCors(policy =>
+            {
+                policy.AllowAnyOrigin();
+                policy.WithMethods("GET", "POST");
+            });
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapTelegramUpdatesRoute(Configuration["Bot:Token"]);
