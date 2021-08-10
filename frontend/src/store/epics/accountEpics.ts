@@ -22,7 +22,6 @@ export const phoneEpic: Epic<RootAction, RootAction, RootState> = (action$) =>
             }).pipe(
                 mapTo(actions.checkPhoneSuccess()),
                 catchError(err => {
-                    console.log(err.xhr.response);
                     return of(actions.checkPhoneFailure(err.xhr.response));
                 })
             )
@@ -43,13 +42,11 @@ export const codeEpic: Epic<RootAction, RootAction, RootState> = (action$) =>
             }).pipe(
                 map(data => {
                     var token = data.response;
-                    console.log(token);
-                    localStorage.setItem('x-access-token', token.accessToken);
+                    localStorage.setItem('x-access-token', token.token);
                     return actions.checkCodeSuccess(token);
                 }),
                 catchError(err => {
-                    console.log(err.xhr.response);
-                    return of(actions.checkPhoneFailure(err.xhr.response));
+                    return of(actions.checkCodeFailure(err.xhr.response));
                 })
             )
         ),

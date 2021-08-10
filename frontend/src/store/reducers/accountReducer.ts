@@ -24,6 +24,7 @@ const accountReducer = createReducer<AccountState, RootAction>(initialState)
     .handleAction(actions.checkPhoneSuccess, (state) => ({
         ...state,
         isPhoneSuccess: true,
+        checkPhoneError: undefined,
     }))
     .handleAction(actions.checkPhoneFailure, (state, action) => ({
         ...state,
@@ -32,6 +33,7 @@ const accountReducer = createReducer<AccountState, RootAction>(initialState)
     .handleAction(actions.checkCodeSuccess, (state) => ({
         ...state,
         isCodeSuccess: true,
+        checkCodeError: undefined,
     }))
     .handleAction(actions.checkCodeFailure, (state, action) => ({
         ...state,
