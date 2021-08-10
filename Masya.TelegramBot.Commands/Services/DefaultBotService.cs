@@ -23,7 +23,11 @@ namespace Masya.TelegramBot.Commands.Services
         private readonly ILogger<DefaultBotService> _logger;
         private readonly List<ICollector> _collectors;
 
-        public DefaultBotService(IOptions<BotServiceOptions> options, IServiceProvider services, ILogger<DefaultBotService> logger)
+        public DefaultBotService(
+            IOptions<BotServiceOptions> options,
+            IServiceProvider services,
+            ILogger<DefaultBotService> logger
+        )
         {
             Options = options.Value;
             EnsureTokenExists();
@@ -42,7 +46,10 @@ namespace Masya.TelegramBot.Commands.Services
         {
             if (string.IsNullOrEmpty(Options.Token))
             {
-                var validationErrors = new List<string>() { "Bot token value was null or empty. Please, check your appsettings.json file." };
+                var validationErrors = new List<string>()
+                {
+                    "Bot token value was null or empty. Please, check your appsettings.json file."
+                };
                 throw new OptionsValidationException(nameof(Options.Token), typeof(string), validationErrors);
             }
         }

@@ -19,7 +19,12 @@ namespace Masya.TelegramBot.Commands.Metadata
 
         private static readonly string DefaultDescription = "описание отсутствует.";
 
-        public CommandInfo(string name, string description, IList<Alias> aliases, MethodInfo methodInfo)
+        public CommandInfo(
+            string name,
+            string description,
+            IList<Alias> aliases,
+            MethodInfo methodInfo
+        )
         {
             Name = name;
             Description = description ?? DefaultDescription;

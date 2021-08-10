@@ -26,7 +26,12 @@ namespace Masya.TelegramBot.Commands.Services
         public CommandServiceOptions Options { get; }
         public List<CommandInfo> Commands => commands;
 
-        public DefaultCommandService(IOptionsMonitor<CommandServiceOptions> options, IBotService botService, IServiceProvider services, ILogger<DefaultCommandService> logger)
+        public DefaultCommandService(
+            IOptionsMonitor<CommandServiceOptions> options,
+            IBotService botService,
+            IServiceProvider services,
+            ILogger<DefaultCommandService> logger
+        )
         {
             BotService = botService;
             Options = options.CurrentValue;
@@ -70,7 +75,11 @@ namespace Masya.TelegramBot.Commands.Services
                 else
                 {
                     using var scope = services.CreateScope();
-                    var moduleInstance = ActivatorUtilities.CreateInstance(scope.ServiceProvider, method.DeclaringType, Array.Empty<object>());
+                    var moduleInstance = ActivatorUtilities.CreateInstance(
+                        scope.ServiceProvider,
+                        method.DeclaringType,
+                        Array.Empty<object>()
+                    );
                     var propInfo = method.DeclaringType.GetProperty("Context");
                     var context = new DefaultCommandContext(BotService, message.Chat, message.From, message);
                     propInfo.SetValue(moduleInstance, context);
@@ -116,7 +125,8 @@ namespace Masya.TelegramBot.Commands.Services
 
         public static bool IsValidCommand(MethodInfo method)
         {
-            return (method.GetCustomAttribute<CommandAttribute>() != null || method.GetCustomAttribute<RegisterUserAttribute>() != null) &&
+            return (method.GetCustomAttribute<CommandAttribute>() != null ||
+                    method.GetCustomAttribute<RegisterUserAttribute>() != null) &&
                 method.IsPublic &&
                 !method.IsAbstract &&
                 !method.IsGenericMethod &&
@@ -139,10 +149,19 @@ namespace Masya.TelegramBot.Commands.Services
                 (aliasAttr != null && aliasAttr.Aliases.Any(a => a.ToLower().Equals(commandName.ToLower())));
         }
 
-        protected virtual Task ExecuteCommandByStepsAsync(Message message, MethodInfo method, CommandParts parts, CancellationToken cancellationToken = default)
+        protected virtual Task ExecuteCommandByStepsAsync(
+            Message message,
+            MethodInfo method,
+            CommandParts parts,
+            CancellationToken cancellationToken = default
+        )
         {
             using var scope = services.CreateScope();
-            var moduleInstance = ActivatorUtilities.CreateInstance(scope.ServiceProvider, method.DeclaringType, Array.Empty<object>());
+            var moduleInstance = ActivatorUtilities.CreateInstance(
+                scope.ServiceProvider,
+                method.DeclaringType,
+                Array.Empty<object>()
+            );
             var propInfo = method.DeclaringType.GetProperty("Context");
             var context = new DefaultCommandContext(BotService, message.Chat, message.From, message);
             propInfo.SetValue(moduleInstance, context);
@@ -153,7 +172,10 @@ namespace Masya.TelegramBot.Commands.Services
             int i = 0;
             ParameterInfo[] parameters = method.GetParameters();
 
-            var messageCollector = BotService.CreateMessageCollector(message.Chat, TimeSpan.FromSeconds(Options.StepCommandTimeout));
+            var messageCollector = BotService.CreateMessageCollector(
+                message.Chat,
+                TimeSpan.FromSeconds(Options.StepCommandTimeout)
+            );
             messageCollector.Collect(m => m.Text);
             messageCollector.OnStart += (sender, args) =>
             {
@@ -199,7 +221,12 @@ namespace Masya.TelegramBot.Commands.Services
             return Task.CompletedTask;
         }
 
-        protected virtual async Task SendParamMessage(ParameterInfo[] parameters, int index, long chatId, CancellationToken cancellationToken)
+        protected virtual async Task SendParamMessage(
+            ParameterInfo[] parameters,
+            int index,
+            long chatId,
+            CancellationToken cancellationToken
+        )
         {
             var nameAttr = parameters[index].GetCustomAttribute<ParamNameAttribute>();
             string paramName = nameAttr?.Name ?? parameters[index].Name;
@@ -225,7 +252,11 @@ namespace Masya.TelegramBot.Commands.Services
             if (handleMethod == null) return Task.CompletedTask;
 
             using var scope = services.CreateScope();
-            var moduleInstance = ActivatorUtilities.CreateInstance(scope.ServiceProvider, handleMethod.DeclaringType, Array.Empty<object>());
+            var moduleInstance = ActivatorUtilities.CreateInstance(
+                scope.ServiceProvider,
+                handleMethod.DeclaringType,
+                Array.Empty<object>()
+            );
             var propInfo = handleMethod.DeclaringType.GetProperty("Context");
             var context = new DefaultCommandContext(BotService, message.Chat, message.From, message);
             propInfo.SetValue(moduleInstance, context);
