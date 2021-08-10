@@ -7,7 +7,8 @@ namespace Masya.TelegramBot.Api.Options
     {
         public string Issuer { get; set; }
         public string Audience { get; set; }
-        public int Expires { get; set; }
+        public int ExpiresInMinutes { get; set; }
+        public int RefreshExpiresInDays { get; set; }
         public string Secret { get; set; }
         public SymmetricSecurityKey SecurityKey =>
             new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));

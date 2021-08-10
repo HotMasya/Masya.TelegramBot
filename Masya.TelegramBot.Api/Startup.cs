@@ -17,6 +17,8 @@ using Newtonsoft.Json;
 using System.Text;
 using Masya.TelegramBot.Api.Options;
 using Masya.TelegramBot.Api.Services;
+using System.Threading.Tasks;
+using System;
 
 namespace Masya.TelegramBot.Api
 {
@@ -68,9 +70,11 @@ namespace Masya.TelegramBot.Api
                         ValidateIssuer = true,
                         ValidateAudience = true,
                         ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
                         ValidIssuer = Configuration["JwtOptions:Issuer"],
                         ValidAudience = Configuration["JwtOptions:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JwtOptions:Secret"]))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JwtOptions:Secret"])),
+                        ClockSkew = TimeSpan.FromSeconds(30),
                     };
                 });
         }

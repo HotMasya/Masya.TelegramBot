@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "redux-observable": "^2.0.0",
     "typesafe-actions": "4.4.2"
   }
 }

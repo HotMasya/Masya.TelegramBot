@@ -4,4 +4,5 @@ export interface User {
     avatar?: string;
     phoneNumber: string;
     telegramId: string;
+    role: number;
 }

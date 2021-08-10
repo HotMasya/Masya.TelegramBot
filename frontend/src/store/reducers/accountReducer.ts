@@ -1,6 +1,6 @@
 import { User } from "../../models/User";
 import { createReducer } from "typesafe-actions";
-import RootAction from "../actions";
+import { RootAction } from "..";
 import * as actions from '../actions';
 
 export type AccountState = {
@@ -11,7 +11,10 @@ export type AccountState = {
     checkCodeError?: Error,
 };
 
-const initialState: AccountState = {};
+const initialState: AccountState = {
+    isPhoneSuccess: false,
+    isCodeSuccess: false,
+};
 
 const accountReducer = createReducer<AccountState, RootAction>(initialState)
     .handleAction(actions.setUser, (state, action) => ({

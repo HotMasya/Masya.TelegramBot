@@ -2,11 +2,11 @@ namespace Masya.TelegramBot.Api.Dtos
 {
     public sealed class TokenDto
     {
-        public string Token { get; set; }
+        public string AccessToken { get; set; }
 
-        public TokenDto(string token)
+        public TokenDto(string accessToken)
         {
-            Token = token;
+            AccessToken = accessToken;
         }
     }
 }

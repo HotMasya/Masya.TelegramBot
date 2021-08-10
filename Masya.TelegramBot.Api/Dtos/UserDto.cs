@@ -1,0 +1,29 @@
+using System;
+using Masya.TelegramBot.Commands.Data;
+using Masya.TelegramBot.DataAccess.Models;
+
+namespace Masya.TelegramBot.Api.Dtos
+{
+    public sealed class UserDto
+    {
+        public long TelegramAccountId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Avatar { get; set; }
+        public string PhoneNumber { get; set; }
+        public Permission? Permission { get; set; }
+
+        public UserDto(User user)
+        {
+            FirstName = user.TelegramFirstName;
+            LastName = user.TelegramLastName;
+            TelegramAccountId = user.TelegramAccountId;
+            Permission = user.Permission;
+            PhoneNumber = user.TelegramPhoneNumber;
+            if (user.TelegramAvatar != null && user.TelegramAvatar.Length > 0)
+            {
+                Avatar = Convert.ToBase64String(user.TelegramAvatar);
+            }
+        }
+    }
+}

@@ -18,17 +18,13 @@ namespace Masya.TelegramBot.Api.Services
             Options = options.Value;
         }
 
-        public string GenerateToken(User user)
+        private string GenerateToken(Claim[] claims, DateTime expires)
         {
-            Claim[] claims = new Claim[] {
-                new Claim(ClaimTypes.NameIdentifier, user.TelegramAccountId.ToString())
-            };
-
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(Options.Expires),
+                Expires = expires,
                 Issuer = Options.Issuer,
                 Audience = Options.Audience,
                 SigningCredentials = new SigningCredentials(Options.SecurityKey, SecurityAlgorithms.HmacSha256Signature),
@@ -36,6 +32,24 @@ namespace Masya.TelegramBot.Api.Services
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        public string GenerateAccessToken(User user)
+        {
+            Claim[] claims = new Claim[] {
+                new Claim(ClaimTypes.NameIdentifier, user.TelegramAccountId.ToString())
+            };
+
+            return GenerateToken(claims, DateTime.UtcNow.AddMinutes(Options.ExpiresInMinutes));
+        }
+
+        public string GenerateRefreshToken(User user)
+        {
+            Claim[] claims = new Claim[] {
+                new Claim(ClaimTypes.Name, user.TelegramLogin)
+            };
+
+            return GenerateToken(claims, DateTime.UtcNow.AddDays(Options.RefreshExpiresInDays));
         }
 
         public IEnumerable<Claim> GetClaims(string token)

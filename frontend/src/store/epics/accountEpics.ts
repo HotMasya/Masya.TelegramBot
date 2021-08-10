@@ -1,13 +1,13 @@
 import { Epic } from 'redux-observable';
 import { isActionOf } from 'typesafe-actions';
-import RootAction from '../actions';
 import RootState from '../reducers';
 import * as actions from '../actions';
 import { of } from 'rxjs';
 import { filter, catchError, switchMap, mapTo, map } from 'rxjs/operators';
 import { ajax } from 'rxjs/ajax';
 import * as endpoints from '../../routing/endpoints';
-import { Token } from 'src/models/Token';
+import { TokenModel } from 'src/models/TokenModel';
+import { RootAction } from '..';
 
 export const phoneEpic: Epic<RootAction, RootAction, RootState> = (action$) =>
     action$.pipe(
@@ -21,7 +21,10 @@ export const phoneEpic: Epic<RootAction, RootAction, RootState> = (action$) =>
                 }
             }).pipe(
                 mapTo(actions.checkPhoneSuccess()),
-                catchError(err => of(actions.checkPhoneFailure(err)))
+                catchError(err => {
+                    console.log(err.xhr.response);
+                    return of(actions.checkPhoneFailure(err.xhr.response));
+                })
             )
         ),
     );
@@ -30,19 +33,24 @@ export const codeEpic: Epic<RootAction, RootAction, RootState> = (action$) =>
     action$.pipe(
         filter(isActionOf(actions.checkCode)),
         switchMap(action =>
-            ajax<Token>({
+            ajax<TokenModel>({
                 url: endpoints.apiEndpoints.checkCode,
                 method: 'POST',
                 body: {
-                    code: action.payload
+                    code: action.payload.code,
+                    phoneNumber: action.payload.phone,
                 }
             }).pipe(
                 map(data => {
                     var token = data.response;
+                    console.log(token);
                     localStorage.setItem('x-access-token', token.accessToken);
                     return actions.checkCodeSuccess(token);
                 }),
-                catchError(err => of(actions.checkPhoneFailure(err)))
+                catchError(err => {
+                    console.log(err.xhr.response);
+                    return of(actions.checkPhoneFailure(err.xhr.response));
+                })
             )
         ),
     );

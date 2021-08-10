@@ -1,17 +1,22 @@
 import RootState, { rootReducer } from "./reducers";
-import { applyMiddleware, createStore } from "redux";
+import { applyMiddleware, compose, createStore } from "redux";
 import { createEpicMiddleware } from "redux-observable";
-import RootAction from "./actions";
+import * as actions from "./actions";
 import rootEpic from "./epics";
+import { ActionType } from "typesafe-actions";
 
-const epicMiddleware = createEpicMiddleware<RootAction, RootAction, RootState>({});
+export type RootAction = ActionType<typeof actions>;
+
+const epicMiddleware = createEpicMiddleware<RootAction, RootAction, RootState>();
 
 const configureStore = (initialState?: RootState) => {
     const middlewares = [epicMiddleware];
-    return createStore(rootReducer, initialState, applyMiddleware(...middlewares));
+    const enhancer = compose(applyMiddleware(...middlewares));
+    return createStore(rootReducer, initialState, enhancer);
 }
 
-export const store = configureStore();
-export * as actions from './actions';
+const store = configureStore();
 
 epicMiddleware.run(rootEpic);
+
+export { store, actions };
