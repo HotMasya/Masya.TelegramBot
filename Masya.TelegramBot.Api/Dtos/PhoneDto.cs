@@ -6,6 +6,8 @@ namespace Masya.TelegramBot.Api.Dtos
     {
         [Phone]
         [Required]
+        [MaxLength(20)]
+        [MinLength(8)]
         public string PhoneNumber { get; set; }
     }
 }

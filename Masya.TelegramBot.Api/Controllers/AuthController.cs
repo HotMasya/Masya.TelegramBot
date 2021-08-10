@@ -7,6 +7,7 @@ using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
+using Telegram.Bot.Types.Enums;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
@@ -48,10 +49,10 @@ namespace Masya.TelegramBot.Api.Controllers
             int code1 = rng.Next(1, 1000);
             int code2 = rng.Next(1, 1000);
             int fullCode = code1 * 1000 + code2;
-            string message = string.Format("Your code: {0} {1}.", code1, code2);
+            string messageWithCode = string.Format("Your code: <b>{0} {1}</b>.", code1, code2);
             string recordId = AuthCodePrefix + fullCode;
-            await _cache.SetRecordAsync(recordId, user.TelegramAccountId, TimeSpan.FromSeconds(60));
-            await _botService.Client.SendTextMessageAsync(user.TelegramAccountId, message);
+            await _cache.SetRecordAsync(recordId, user.TelegramPhoneNumber, TimeSpan.FromSeconds(60));
+            await _botService.Client.SendTextMessageAsync(user.TelegramAccountId, messageWithCode, ParseMode.Html);
             return Ok();
         }
 
@@ -59,16 +60,16 @@ namespace Masya.TelegramBot.Api.Controllers
         public async Task<IActionResult> AuthCodeAsync(CodeDto dto)
         {
             string recordId = AuthCodePrefix + dto.Code;
-            var userTelegramId = await _cache.GetRecordAsync<int>(recordId);
-            if (userTelegramId == default(int))
+            var userPhoneNumber = await _cache.GetRecordAsync<string>(recordId);
+            if (string.IsNullOrEmpty(userPhoneNumber))
             {
                 return BadRequest(new ResponseDto<object>("Code is invalid."));
             }
 
-            var user = _dbContext.Users.FirstOrDefault(u => u.TelegramAccountId == userTelegramId);
+            var user = _dbContext.Users.FirstOrDefault(u => u.TelegramPhoneNumber == userPhoneNumber);
             if (user == null)
             {
-                return BadRequest(new ResponseDto<object>("User not found."));
+                return BadRequest(new ResponseDto<object>("Code is invalid."));
             }
 
             string token = _jwtService.GenerateToken(user);
