@@ -27,12 +27,9 @@ namespace Masya.TelegramBot.Api
 
         public IConfiguration Configuration { get; }
 
-        private readonly ILogger<Startup> _logger;
-
-        public Startup(IConfiguration configuration, ILogger<Startup> logger)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            _logger = logger;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -114,9 +111,11 @@ namespace Masya.TelegramBot.Api
                 endpoints.MapControllers();
                 endpoints.Map("/", async context =>
                 {
-                    _logger.LogInformation(
-                        "Received request from: " + context.Connection.RemoteIpAddress.ToString()
-                    );
+                    context.RequestServices
+                        .GetRequiredService<ILogger<Startup>>()
+                        .LogInformation(
+                            "Received requrest from IP: " + context.Connection.RemoteIpAddress.ToString()
+                        );
                     await context.Response.WriteAsync("<h1>Kinda homepage</h1>");
                     await context.Response.CompleteAsync();
                 });
