@@ -42,7 +42,11 @@ namespace Masya.TelegramBot.Api
             services.Configure<BotServiceOptions>(Configuration.GetSection("Bot"));
             services.Configure<CommandServiceOptions>(Configuration.GetSection("Commands"));
             services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
-
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
             services.AddCors(options =>
             {
                 options.AddPolicy(

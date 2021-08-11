@@ -50,8 +50,8 @@ namespace Masya.TelegramBot.Api.Controllers
             var claims = _jwtService.GetClaims(refreshToken);
             var expires = claims.FirstOrDefault(c => c.Type == ClaimTypes.Expiration);
             var userName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
-            var expiresDateTime = DateTimeOffset.Parse(expires.Value);
-            if (DateTimeOffset.UtcNow > expiresDateTime.UtcDateTime)
+            var expiresDateTime = DateTime.Parse(expires.Value);
+            if (DateTime.Now > expiresDateTime)
             {
                 return BadRequest(new ResponseDto<object>("Refresh token is expired."));
             }
@@ -117,6 +117,7 @@ namespace Masya.TelegramBot.Api.Controllers
                 HttpOnly = true,
                 Expires = DateTime.Now.AddDays(_jwtService.Options.RefreshExpiresInDays),
                 Secure = true,
+                IsEssential = true,
             });
             return Ok(new TokenDto(accessToken));
         }
