@@ -8,5 +8,5 @@ export const endpoints = {
 export const apiEndpoints = {
   checkPhone: apiHost + 'auth/phone',
   checkCode: apiHost + 'auth/code',
-  getUserInfo: apiHost + 'account/profile',
+  getUserInfo: apiHost + 'api/user/me',
 }

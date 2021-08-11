@@ -5,6 +5,7 @@ import * as actions from '../actions';
 
 export type AccountState = {
     user?: User,
+    userError?: Error,
     isPhoneSuccess?: boolean,
     isCodeSuccess?: boolean,
     checkPhoneError?: Error,
@@ -19,7 +20,12 @@ const initialState: AccountState = {
 const accountReducer = createReducer<AccountState, RootAction>(initialState)
     .handleAction(actions.setUser, (state, action) => ({
         ...state,
-        user: action.payload
+        user: action.payload,
+        userError: undefined,
+    }))
+    .handleAction(actions.userError, (state, action) => ({
+        ...state,
+        userError: action.payload,
     }))
     .handleAction(actions.checkPhoneSuccess, (state) => ({
         ...state,

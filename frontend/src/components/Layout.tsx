@@ -1,11 +1,15 @@
-import React, { PropsWithChildren, useState } from 'react';
-import Sidebar, { SidebarProps } from './Sidebar';;
+import React, { useState } from 'react';
+import Sidebar from './Sidebar';;
 import ContentBox from './containers/ContentBox';
 import Header from './Header';
-import MiniProfile, { MiniProfileProps } from './MiniProfile';
+import MiniProfile from './MiniProfile';
 
 import fakeAvatar from '../static/images/fake_avatar.jpg';
 import { Button, Popover, Typography } from '@material-ui/core';
+import RootState from '../store/reducers';
+import { useSelector } from 'react-redux';
+import { Redirect } from 'react-router';
+import { endpoints } from '../routing/endpoints';
 
 const Layout: React.FC = (props) => {
     const { children } = props;
@@ -18,6 +22,11 @@ const Layout: React.FC = (props) => {
         setAnchorEl(event.currentTarget);
     }
     const isPopoverOpen = Boolean(anchorEl);
+    const { user } = useSelector((state: RootState) => state.account);
+    if(!user)
+    {
+        return <Redirect to={endpoints.auth} />;
+    }
 
     return (
         <>
@@ -29,7 +38,7 @@ const Layout: React.FC = (props) => {
             />
             <ContentBox>
                 <Header onMenuClick={() => setSidebarOpen(state => !state)}>
-                    <MiniProfile firstName="Masya" lastName="Poltorashka" avatar={fakeAvatar} onClick={onProfileClick} />
+                    <MiniProfile firstName={user.firstName} lastName={user.lastName} avatar={fakeAvatar} onClick={onProfileClick} />
                     <Popover
                         onClose={onPopoverClose}
                         anchorEl={anchorEl}

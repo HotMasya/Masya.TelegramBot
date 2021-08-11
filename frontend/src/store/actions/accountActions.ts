@@ -10,5 +10,7 @@ export const checkPhoneFailure = createStandardAction(AccountActionTypes.CHECK_P
 export const checkCode = createStandardAction(AccountActionTypes.CHECK_CODE)<AuthModel>();
 export const checkCodeSuccess = createStandardAction(AccountActionTypes.CHECK_CODE_SUCCESS)<TokenModel>();
 export const checkCodeFailure = createStandardAction(AccountActionTypes.CHECK_CODE_FAILURE)<Error>();
+export const getUser = createStandardAction(AccountActionTypes.GET_USER)<TokenModel>();
 export const setUser = createStandardAction(AccountActionTypes.SET_USER)<User>();
 export const userError = createStandardAction(AccountActionTypes.ERROR)<Error>();
+

@@ -8,6 +8,26 @@ import { ajax } from 'rxjs/ajax';
 import * as endpoints from '../../routing/endpoints';
 import { TokenModel } from 'src/models/TokenModel';
 import { RootAction } from '..';
+import { User } from '../../models/User';
+
+export const getUserEpic: Epic<RootAction, RootAction, RootState> = (action$) => 
+    action$.pipe(
+        filter(isActionOf([actions.checkCodeSuccess, actions.getUser])),
+        switchMap((action) =>
+            ajax<User>({
+                url: endpoints.apiEndpoints.getUserInfo,
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${action.payload}`,
+                },
+                crossDomain: true,
+                withCredentials: true,
+            }).pipe(
+                map(ctx => actions.setUser(ctx.response)),
+                catchError(err => of(actions.userError(err.xhr.response))),
+            )
+        )
+    );
 
 export const phoneEpic: Epic<RootAction, RootAction, RootState> = (action$) =>
     action$.pipe(
@@ -18,12 +38,11 @@ export const phoneEpic: Epic<RootAction, RootAction, RootState> = (action$) =>
                 method: 'POST',
                 body: {
                     phoneNumber: action.payload
-                }
+                },
+                crossDomain: true,
             }).pipe(
                 mapTo(actions.checkPhoneSuccess()),
-                catchError(err => {
-                    return of(actions.checkPhoneFailure(err.xhr.response));
-                })
+                catchError(err => of(actions.checkPhoneFailure(err.xhr.response))),
             )
         ),
     );
@@ -38,7 +57,8 @@ export const codeEpic: Epic<RootAction, RootAction, RootState> = (action$) =>
                 body: {
                     code: action.payload.code,
                     phoneNumber: action.payload.phone,
-                }
+                },
+                crossDomain: true,
             }).pipe(
                 map(data => {
                     var token = data.response;
