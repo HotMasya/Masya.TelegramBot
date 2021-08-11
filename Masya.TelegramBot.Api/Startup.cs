@@ -43,6 +43,18 @@ namespace Masya.TelegramBot.Api
             services.Configure<CommandServiceOptions>(Configuration.GetSection("Commands"));
             services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    name: CorsPolicyName,
+                    builder =>
+                    {
+                        builder.AllowAnyHeader();
+                        builder.AllowAnyOrigin();
+                        builder.WithMethods("post", "get");
+                    }
+                );
+            });
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = Configuration.GetConnectionString("Redis");
@@ -78,19 +90,6 @@ namespace Masya.TelegramBot.Api
                         ClockSkew = TimeSpan.FromSeconds(30),
                     };
                 });
-            services.AddCors(options =>
-            {
-                options.AddPolicy(
-                    name: CorsPolicyName,
-                    builder =>
-                    {
-                        builder.AllowAnyHeader();
-                        //builder.AllowCredentials();
-                        builder.AllowAnyOrigin();
-                        builder.WithMethods("post", "get");
-                    }
-                );
-            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -111,11 +110,6 @@ namespace Masya.TelegramBot.Api
                 endpoints.MapControllers();
                 endpoints.Map("/", async context =>
                 {
-                    context.RequestServices
-                        .GetRequiredService<ILogger<Startup>>()
-                        .LogInformation(
-                            "Received requrest from IP: " + context.Connection.RemoteIpAddress.ToString()
-                        );
                     await context.Response.WriteAsync("<h1>Kinda homepage</h1>");
                     await context.Response.CompleteAsync();
                 });
