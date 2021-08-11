@@ -87,14 +87,14 @@ namespace Masya.TelegramBot.Api
             }
 
             app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
             app.UseCors(policy =>
             {
                 policy.AllowAnyOrigin();
                 policy.AllowAnyHeader();
                 policy.WithMethods("GET", "POST");
             });
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
