@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Telegram.Bot.Types.Enums;
+using System.Net.Http.Headers;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
@@ -114,9 +115,7 @@ namespace Masya.TelegramBot.Api.Controllers
             string refreshToken = _jwtService.GenerateRefreshToken(user);
             HttpContext.Response.Cookies.Append(RefreshTokenCookieName, refreshToken, new CookieOptions()
             {
-                HttpOnly = true,
                 Expires = DateTime.Now.AddDays(_jwtService.Options.RefreshExpiresInDays),
-                Secure = true,
                 IsEssential = true,
             });
             return Ok(new TokenDto(accessToken));
