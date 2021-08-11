@@ -42,21 +42,16 @@ namespace Masya.TelegramBot.Api
             services.Configure<BotServiceOptions>(Configuration.GetSection("Bot"));
             services.Configure<CommandServiceOptions>(Configuration.GetSection("Commands"));
             services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
             services.AddCors(options =>
             {
                 options.AddPolicy(
                     name: CorsPolicyName,
                     builder =>
                     {
-                        builder.AllowAnyHeader();
-                        builder.WithOrigins("http://192.168.0.106");
-                        builder.WithMethods("post", "get");
-                        builder.AllowCredentials();
+                        builder.AllowAnyHeader()
+                            .WithOrigins("http://192.168.0.106")
+                            .WithMethods("post", "get")
+                            .AllowCredentials();
                     }
                 );
             });

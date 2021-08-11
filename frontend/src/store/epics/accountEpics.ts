@@ -61,6 +61,7 @@ export const codeEpic: Epic<RootAction, RootAction, RootState> = (action$) =>
                 crossDomain: true,
             }).pipe(
                 map(data => {
+                    console.log(document.cookie);
                     var token = data.response;
                     localStorage.setItem('x-access-token', token.accessToken);
                     return actions.checkCodeSuccess(token);

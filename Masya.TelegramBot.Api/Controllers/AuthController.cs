@@ -117,6 +117,9 @@ namespace Masya.TelegramBot.Api.Controllers
             {
                 Expires = DateTime.Now.AddDays(_jwtService.Options.RefreshExpiresInDays),
                 IsEssential = true,
+                Secure = true,
+                HttpOnly = true,
+                SameSite = SameSiteMode.None,
             });
             return Ok(new TokenDto(accessToken));
         }
