@@ -108,7 +108,6 @@ namespace Masya.TelegramBot.Api
             app.UseCors(CorsPolicyName);
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapTelegramUpdatesRoute(Configuration["Bot:Token"]);
