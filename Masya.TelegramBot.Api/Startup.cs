@@ -13,12 +13,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Newtonsoft.Json;
-
 using System.Text;
 using Masya.TelegramBot.Api.Options;
 using Masya.TelegramBot.Api.Services;
-using System.Threading.Tasks;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace Masya.TelegramBot.Api
 {
@@ -28,9 +27,12 @@ namespace Masya.TelegramBot.Api
 
         public IConfiguration Configuration { get; }
 
-        public Startup(IConfiguration configuration)
+        private readonly ILogger<Startup> _logger;
+
+        public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
+            _logger = logger;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -86,7 +88,7 @@ namespace Masya.TelegramBot.Api
                     builder =>
                     {
                         builder.AllowAnyHeader();
-                        builder.AllowCredentials();
+                        //builder.AllowCredentials();
                         builder.AllowAnyOrigin();
                         builder.WithMethods("post", "get");
                     }
@@ -112,6 +114,9 @@ namespace Masya.TelegramBot.Api
                 endpoints.MapControllers();
                 endpoints.Map("/", async context =>
                 {
+                    _logger.LogInformation(
+                        "Received request from: " + context.Connection.RemoteIpAddress.ToString()
+                    );
                     await context.Response.WriteAsync("<h1>Kinda homepage</h1>");
                     await context.Response.CompleteAsync();
                 });
