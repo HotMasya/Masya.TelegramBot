@@ -50,7 +50,7 @@ namespace Masya.TelegramBot.Api
                     {
                         builder.AllowAnyHeader()
                             .WithOrigins("http://192.168.0.106")
-                            .WithMethods("post", "get")
+                            .AllowAnyMethod()
                             .AllowCredentials();
                     }
                 );
