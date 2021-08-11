@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Modules;
+using Masya.TelegramBot.DataAccess;
 
 namespace Masya.TelegramBot.Api
 {
