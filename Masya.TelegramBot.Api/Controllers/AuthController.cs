@@ -115,7 +115,7 @@ namespace Masya.TelegramBot.Api.Controllers
             Response.Cookies.Append(RefreshTokenCookieName, refreshToken, new CookieOptions()
             {
                 HttpOnly = true,
-                Expires = DateTimeOffset.Now + TimeSpan.FromDays(_jwtService.Options.RefreshExpiresInDays),
+                Expires = DateTime.Now.AddDays(_jwtService.Options.RefreshExpiresInDays),
                 Secure = true,
             });
             return Ok(new TokenDto(accessToken));

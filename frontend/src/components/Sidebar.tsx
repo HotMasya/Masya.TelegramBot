@@ -80,8 +80,6 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     const { onOpen, onClose, onCloseClick, open } = props;
 
-    console.log(drawerVar);
-
     return (
         <SwipeableDrawer
             anchor="left"

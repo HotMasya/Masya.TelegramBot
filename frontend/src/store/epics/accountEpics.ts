@@ -18,7 +18,7 @@ export const getUserEpic: Epic<RootAction, RootAction, RootState> = (action$) =>
                 url: endpoints.apiEndpoints.getUserInfo,
                 method: 'GET',
                 headers: {
-                    Authorization: `Bearer ${action.payload}`,
+                    Authorization: `Bearer ${action.payload.accessToken}`,
                 },
                 crossDomain: true,
                 withCredentials: true,
