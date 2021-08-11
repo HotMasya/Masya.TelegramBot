@@ -10,7 +10,7 @@ export type TokenState = {
 
 const initialState: TokenState = {
     tokens: {
-        token: localStorage.getItem('x-access-token') as string,
+        accessToken: localStorage.getItem('x-access-token') as string,
     }
 };
 

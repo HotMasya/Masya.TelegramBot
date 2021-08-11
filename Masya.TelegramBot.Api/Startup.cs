@@ -24,6 +24,8 @@ namespace Masya.TelegramBot.Api
 {
     public class Startup
     {
+        private const string CorsPolicyName = "DefaultCORSPolicy";
+
         public IConfiguration Configuration { get; }
 
         public Startup(IConfiguration configuration)
@@ -77,6 +79,19 @@ namespace Masya.TelegramBot.Api
                         ClockSkew = TimeSpan.FromSeconds(30),
                     };
                 });
+            services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    name: CorsPolicyName,
+                    builder =>
+                    {
+                        builder.AllowAnyHeader();
+                        builder.AllowCredentials();
+                        builder.AllowAnyOrigin();
+                        builder.WithMethods("post", "get");
+                    }
+                );
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -87,12 +102,7 @@ namespace Masya.TelegramBot.Api
             }
 
             app.UseRouting();
-            app.UseCors(policy =>
-            {
-                policy.AllowAnyOrigin();
-                policy.AllowAnyHeader();
-                policy.WithMethods("GET", "POST");
-            });
+            app.UseCors(CorsPolicyName);
             app.UseAuthentication();
             app.UseAuthorization();
 

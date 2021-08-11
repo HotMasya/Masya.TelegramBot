@@ -42,7 +42,7 @@ export const codeEpic: Epic<RootAction, RootAction, RootState> = (action$) =>
             }).pipe(
                 map(data => {
                     var token = data.response;
-                    localStorage.setItem('x-access-token', token.token);
+                    localStorage.setItem('x-access-token', token.accessToken);
                     return actions.checkCodeSuccess(token);
                 }),
                 catchError(err => {

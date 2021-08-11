@@ -6,7 +6,6 @@ const CenteredContainer = withStyles((theme: Theme) =>
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      textAlign: 'center',
       height: '100%',
       [theme.breakpoints.down('sm')]: {
         padding: 0,

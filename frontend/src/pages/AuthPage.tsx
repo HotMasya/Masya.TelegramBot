@@ -8,8 +8,7 @@ import { SubmitHandler } from 'react-hook-form';
 import { AuthModel } from '../models/AuthModel';
 import { apiEndpoints } from '../routing/endpoints';
 import { useDispatch, useSelector } from 'react-redux';
-import RootAction from '../store/actions';
-import { actions } from '../store';
+import { actions, RootAction } from '../store';
 import RootState from '../store/reducers';
 
 const AuthPage: React.FC = () => {
