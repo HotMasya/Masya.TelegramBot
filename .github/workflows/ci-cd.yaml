@@ -6,7 +6,7 @@ on:
       - master
 
 env:
-  DOTNET_VERSION: '5.0.x'
+  DOTNET_VERSION: "5.0.x"
   APP_NAME: masya
 
 jobs:
@@ -21,17 +21,9 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Run Redis
-        run: docker run --name my-redis -p 5002:6379 -d redis
-
-      - name: Sleep for 5s 😴
-        uses: jakejarvis/wait-action@master
-        with:
-          time: '5s'
-
       - name: Restore dependencies ⚙
         run: dotnet restore
-      
+
       - name: Build application 🔨
         run: dotnet build -c Release --no-restore
 
