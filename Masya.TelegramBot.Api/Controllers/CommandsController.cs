@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Masya.TelegramBot.Api.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public sealed class CommandsController : ControllerBase
     {
