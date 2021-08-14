@@ -57,7 +57,7 @@ namespace Masya.TelegramBot.Commands.Services
             {
                 var parts = new CommandParts(message.Text, Options);
                 MethodInfo method = commands
-                    .FirstOrDefault(cm => CommandFilter(cm.MethodInfo, parts.Name))
+                    .FirstOrDefault(cm => CommandFilter(cm, parts.Name))
                     ?.MethodInfo;
 
                 if (method == null)
@@ -141,12 +141,10 @@ namespace Masya.TelegramBot.Commands.Services
                 type.BaseType.Equals(typeof(Module));
         }
 
-        private static bool CommandFilter(MethodInfo info, string commandName)
+        private static bool CommandFilter(CommandInfo info, string commandName)
         {
-            CommandAttribute cmdAttr = info.GetCustomAttribute<CommandAttribute>();
-            AliasAttribute aliasAttr = info.GetCustomAttribute<AliasAttribute>();
-            return (cmdAttr != null && cmdAttr.Name.ToLower().Equals(commandName.ToLower())) ||
-                (aliasAttr != null && aliasAttr.Aliases.Any(a => a.ToLower().Equals(commandName.ToLower())));
+            return info.Name != null &&
+                (info.Name.Equals(commandName) || info.Aliases.Any(a => a.Name.Equals(commandName)));
         }
 
         protected virtual Task ExecuteCommandByStepsAsync(
