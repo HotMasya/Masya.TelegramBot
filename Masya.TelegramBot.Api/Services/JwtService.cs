@@ -40,7 +40,7 @@ namespace Masya.TelegramBot.Api.Services
                 new Claim(ClaimTypes.NameIdentifier, user.TelegramAccountId.ToString())
             };
 
-            return GenerateToken(claims, DateTime.UtcNow.AddMinutes(Options.ExpiresInMinutes));
+            return GenerateToken(claims, DateTime.Now.AddMinutes(Options.ExpiresInMinutes));
         }
 
         public string GenerateRefreshToken(User user)
@@ -49,7 +49,7 @@ namespace Masya.TelegramBot.Api.Services
                 new Claim(ClaimTypes.Name, user.TelegramLogin)
             };
 
-            return GenerateToken(claims, DateTime.UtcNow.AddDays(Options.RefreshExpiresInDays));
+            return GenerateToken(claims, DateTime.Now.AddDays(Options.RefreshExpiresInDays));
         }
 
         public IEnumerable<Claim> GetClaims(string token)

@@ -56,13 +56,14 @@ namespace Masya.TelegramBot.Api.Controllers
 
             var username = _jwtService
                 .GetClaims(dto.RefreshToken)
-                .First(c => c.Type == ClaimTypes.Name).Value;
+                .FirstOrDefault(c => c.Type == ClaimTypes.Name)
+                ?.Value;
 
-            // if (username is null)
-            // {
-            //     _logger.LogInformation("Invalid refresh token after trying to get telegram username.");
-            //     return BadRequest(new MessageResponseDto("Invalid refresh token."));
-            // }
+            if (username is null)
+            {
+                _logger.LogInformation("Invalid refresh token after trying to get telegram.");
+                return BadRequest(new MessageResponseDto("Invalid refresh token."));
+            }
 
             var user = _dbContext.Users.FirstOrDefault(u => u.TelegramLogin.Equals(username));
 
