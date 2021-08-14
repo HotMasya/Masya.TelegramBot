@@ -120,7 +120,7 @@ namespace Masya.TelegramBot.Commands.Services
                 .GetCustomAttribute<DescriptionAttribute>()
                 ?.Description;
 
-            return new CommandInfo(name, description, null, methodInfo);
+            return new CommandInfo(name, description, methodInfo);
         }
 
         public static bool IsValidCommand(MethodInfo method)

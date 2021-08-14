@@ -1,3 +1,4 @@
 export interface TokenModel {
-    accessToken: string;
+  accessToken?: string | null;
+  refreshToken?: string | null;
 }

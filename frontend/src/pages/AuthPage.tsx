@@ -18,23 +18,25 @@ const AuthPage: React.FC = () => {
   const dispatch = useDispatch<Dispatch<RootAction>>();
   const accountState = useSelector((state: RootState) => state.account);
   const onSubmit: SubmitHandler<AuthModel> = (model) => {
-    if(!accountState.isPhoneSuccess){
+    if (!accountState.isPhoneSuccess) {
       dispatch(actions.checkPhone(model.phone));
-    }
-    else if(!accountState.isCodeSuccess)
-    {
+    } else if (!accountState.isCodeSuccess) {
       dispatch(actions.checkCode(model));
     }
-  }
+  };
 
   return (
     <>
       {isUpMd && <BackgroundImage src={background} alt="background_image" />}
       <CenteredContainer>
-        <AuthForm onSubmit={onSubmit} apiEndpoint={apiEndpoints.checkPhone} caption="Authorization" />
+        <AuthForm
+          onSubmit={onSubmit}
+          apiEndpoint={apiEndpoints.checkPhone}
+          caption="Authorization"
+        />
       </CenteredContainer>
     </>
   );
-}
+};
 
 export default AuthPage;

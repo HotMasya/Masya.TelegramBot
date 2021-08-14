@@ -35,6 +35,5 @@ namespace Microsoft.Extensions.Caching.Distributed
 
             return JsonSerializer.Deserialize<T>(jsondata);
         }
-
     }
 }

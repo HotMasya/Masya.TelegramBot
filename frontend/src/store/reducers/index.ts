@@ -4,8 +4,8 @@ import accountReducer from './accountReducer';
 import { tokenReducer } from './tokenReducer';
 
 export const rootReducer = combineReducers({
-    account: accountReducer,
-    token: tokenReducer,
+  account: accountReducer,
+  token: tokenReducer,
 });
 
 type RootState = StateType<typeof rootReducer>;

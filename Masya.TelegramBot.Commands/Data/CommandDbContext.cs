@@ -9,7 +9,6 @@ namespace Masya.TelegramBot.Commands.Data
     public class CommandDbContext : DbContext
     {
         public virtual DbSet<Command> Commands { get; set; }
-        public virtual DbSet<Alias> Aliases { get; set; }
 
         public CommandDbContext(DbContextOptions<CommandDbContext> options)
             : base(options) { }
@@ -25,18 +24,26 @@ namespace Masya.TelegramBot.Commands.Data
                 .HasConversion<int>();
         }
 
-        internal virtual async Task AttachCommandsAsync(IList<CommandInfo> commandInfos)
+        internal virtual async Task MapCommandsAsync(IList<CommandInfo> commandInfos)
         {
             var commands = await Commands.ToListAsync();
-            foreach(var ci in commandInfos)
+            foreach (var ci in commandInfos)
             {
-                var command = commands.FirstOrDefault(c => c.Name == ci.Name);
-                if(command != null)
+                var command = commands.FirstOrDefault(
+                    c => c.Name.ToLower().Equals(ci.Name.ToLower())
+                );
+                if (command != null)
                 {
-                    foreach(var al in command.Aliases)
+                    foreach (var al in command.Aliases)
                     {
-                        ci.Aliases.Add(al);
-                    }    
+                        ci.Aliases.Add(
+                            new AliasInfo
+                            {
+                                Name = al.Name,
+                                CommandInfo = ci,
+                            }
+                        );
+                    }
                 }
             }
         }

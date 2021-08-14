@@ -1,5 +1,5 @@
 import { createTheme, CssBaseline, ThemeProvider } from '@material-ui/core';
-import React, { PropsWithChildren, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import GlobalStyles from './GlobalStyles';
 import palette from './palette';
 
@@ -20,6 +20,6 @@ const ThemeConfig: React.FC = (props) => {
       {children}
     </ThemeProvider>
   );
-}
+};
 
 export default ThemeConfig;

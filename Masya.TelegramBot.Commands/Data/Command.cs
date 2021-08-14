@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Masya.TelegramBot.Commands.Data
 {
@@ -6,7 +7,11 @@ namespace Masya.TelegramBot.Commands.Data
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public bool IsEnabled { get; set; }
+        public bool DisplayInMenu { get; set; }
         public Permission Permission { get; set; }
-        public List<Alias> Aliases { get; set; }
+
+        [JsonIgnore]
+        public List<Command> Aliases { get; set; }
     }
 }

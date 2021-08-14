@@ -1,14 +1,14 @@
-import { Box, createStyles, Theme, withStyles } from '@material-ui/core';
+import { Box, styled, } from '@material-ui/core';
 
-const CenteredBox = withStyles((theme: Theme) =>
-  createStyles({
+const CenteredBox = styled(Box)(
+  {
     root: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
       textAlign: 'center',
     },
-  }),
-)(Box);
+  }
+);
 
 export default CenteredBox;

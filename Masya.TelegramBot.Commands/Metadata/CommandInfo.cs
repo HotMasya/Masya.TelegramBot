@@ -15,20 +15,20 @@ namespace Masya.TelegramBot.Commands.Metadata
         [JsonIgnore]
         public MethodInfo MethodInfo { get; }
         public string Description { get; }
-        public IList<Alias> Aliases { get; }
+        public IList<AliasInfo> Aliases { get; }
 
         private static readonly string DefaultDescription = "описание отсутствует.";
 
         public CommandInfo(
             string name,
             string description,
-            IList<Alias> aliases,
-            MethodInfo methodInfo
+            MethodInfo methodInfo,
+            IList<AliasInfo> aliases = null
         )
         {
             Name = name;
             Description = description ?? DefaultDescription;
-            Aliases = aliases ?? new List<Alias>();
+            Aliases = aliases ?? new List<AliasInfo>();
             MethodInfo = methodInfo;
         }
 

@@ -23,10 +23,14 @@ namespace Masya.TelegramBot.Commands.Services
 
         public override async Task LoadCommandsAsync(Assembly assembly)
         {
-            using var scope = services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<CommandDbContext>();
             await base.LoadCommandsAsync(assembly);
-            await dbContext.AttachCommandsAsync(commands);
+            await GetDbContext().MapCommandsAsync(commands);
+        }
+
+        private CommandDbContext GetDbContext()
+        {
+            using var scope = services.CreateScope();
+            return scope.ServiceProvider.GetRequiredService<CommandDbContext>();
         }
     }
 }

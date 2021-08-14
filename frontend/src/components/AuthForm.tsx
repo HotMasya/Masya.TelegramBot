@@ -33,7 +33,7 @@ export type AuthFormProps = {
   apiEndpoint: string;
   className?: string;
   onSubmit: SubmitHandler<AuthModel>;
-}
+};
 
 const AuthForm: React.FC<AuthFormProps> = (props) => {
   const { caption, className, onSubmit } = props;
@@ -60,7 +60,10 @@ const AuthForm: React.FC<AuthFormProps> = (props) => {
           label="Phone"
           placeholder="+XXXXXXXXXXXX"
           margin="dense"
-          error={errors.phone?.message != null || accountState.checkPhoneError?.message != null}
+          error={
+            errors.phone?.message != null ||
+            accountState.checkPhoneError?.message != null
+          }
           {...register('phone')}
           disabled={accountState.isPhoneSuccess}
         />
@@ -68,7 +71,7 @@ const AuthForm: React.FC<AuthFormProps> = (props) => {
           {errors.phone?.message || accountState.checkPhoneError?.message}
         </Typography>
 
-        {accountState.isPhoneSuccess &&
+        {accountState.isPhoneSuccess && (
           <>
             <TextField
               fullWidth
@@ -77,20 +80,26 @@ const AuthForm: React.FC<AuthFormProps> = (props) => {
               label="Code"
               placeholder="XXXXXX"
               margin="dense"
-              error={errors.code?.message != null || accountState.checkCodeError?.message != null}
-              {...register('code')} />
+              error={
+                errors.code?.message != null ||
+                accountState.checkCodeError?.message != null
+              }
+              {...register('code')}
+            />
             <Typography variant="caption" color="error">
               {errors.code?.message || accountState.checkCodeError?.message}
             </Typography>
           </>
-        }
+        )}
 
         <GradientButton type="submit" fullWidth variant="contained">
-          {accountState.isPhoneSuccess ? 'Send phone number' : 'Send confirmation code'}
+          {accountState.isPhoneSuccess
+            ? 'Send phone number'
+            : 'Send confirmation code'}
         </GradientButton>
       </form>
     </GlassPaper>
   );
-}
+};
 
 export default AuthForm;

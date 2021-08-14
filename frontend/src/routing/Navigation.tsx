@@ -11,25 +11,23 @@ import { TokenModel } from '../models/TokenModel';
 
 const Navigation: React.FC = () => {
   const accountState = useSelector((state: RootState) => state.account);
-  // const dispatch = useDispatch<Dispatch<RootAction>>();
+  const dispatch = useDispatch<Dispatch<RootAction>>();
 
-  // const accessToken = localStorage.getItem('x-access-token');
-  // if(!accountState.userError && accessToken && !accountState.user)
-  // {
-  //   const tokenModel: TokenModel = {
-  //     accessToken
-  //   };
+  const refreshToken = localStorage.getItem('x-refresh-token');
+  if(refreshToken != null)
+  {
+    dispatch(actions.tokenRefresh());
+  }
 
-  //   dispatch(actions.getUser(tokenModel));
-  // }
-  
   return (
     <BrowserRouter>
       <Switch>
-        <Route path="/">{accountState.user ? <HomePage /> : <AuthPage />}</Route>
+        <Route path="/">
+          {accountState.user ? <HomePage /> : <AuthPage />}
+        </Route>
       </Switch>
     </BrowserRouter>
   );
-}
+};
 
 export default Navigation;
