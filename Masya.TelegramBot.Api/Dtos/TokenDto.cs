@@ -5,6 +5,8 @@ namespace Masya.TelegramBot.Api.Dtos
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
 
+        public TokenDto() { }
+
         public TokenDto(string accessToken)
         {
             AccessToken = accessToken;
