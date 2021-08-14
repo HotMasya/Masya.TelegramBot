@@ -86,9 +86,10 @@ namespace Masya.TelegramBot.Api.Controllers
             int code2 = rng.Next(100, 1000);
             int fullCode = code1 * 1000 + code2;
             string messageWithCode = string.Format(
-                "Your code: <b>{0} {1}</b>.\nIt will be valid only for {_cacheOptions.CodeDurationInSecs} seconds.",
+                "Your code: <b>{0} {1}</b>.\nIt will be valid only for {2} seconds.",
                 code1,
-                code2
+                code2,
+                _cacheOptions.CodeDurationInSecs
             );
             string recordId = AuthCodePrefix + fullCode;
             await _cache.SetRecordAsync(
