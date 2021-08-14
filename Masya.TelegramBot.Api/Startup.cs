@@ -17,7 +17,7 @@ using System.Text;
 using Masya.TelegramBot.Api.Options;
 using Masya.TelegramBot.Api.Services;
 using System;
-using Microsoft.Extensions.Logging;
+using Masya.TelegramBot.Commands.Data;
 
 namespace Masya.TelegramBot.Api
 {
@@ -61,12 +61,16 @@ namespace Masya.TelegramBot.Api
                 options.Configuration = Configuration.GetConnectionString("Redis");
                 options.InstanceName = "TelegramBot_";
             });
+            services.AddDbContext<CommandDbContext, ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("RemoteDb"));
+            });
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("RemoteDb"));
             });
             services.AddSingleton<IBotService, DefaultBotService>();
-            services.AddSingleton<ICommandService, DefaultCommandService>();
+            services.AddSingleton<ICommandService, DatabaseCommandService>();
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {

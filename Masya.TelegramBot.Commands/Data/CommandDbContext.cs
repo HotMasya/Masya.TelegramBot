@@ -34,6 +34,8 @@ namespace Masya.TelegramBot.Commands.Data
                 );
                 if (command != null)
                 {
+                    ci.IsEnabled = command.IsEnabled;
+                    ci.Permission = command.Permission;
                     foreach (var al in command.Aliases)
                     {
                         ci.Aliases.Add(

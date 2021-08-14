@@ -16,6 +16,8 @@ namespace Masya.TelegramBot.Commands.Metadata
         public MethodInfo MethodInfo { get; }
         public string Description { get; }
         public IList<AliasInfo> Aliases { get; }
+        public bool? IsEnabled { get; set; }
+        public Permission? Permission { get; set; }
 
         private static readonly string DefaultDescription = "описание отсутствует.";
 
