@@ -13,7 +13,6 @@ namespace Masya.TelegramBot.Commands.Services
     public class DatabaseCommandService : DefaultCommandService
     {
         public DatabaseCommandService(
-            CommandDbContext context,
             IOptionsMonitor<CommandServiceOptions> options,
             IBotService botService,
             IServiceProvider services,

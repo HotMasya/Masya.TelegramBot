@@ -22,6 +22,14 @@ namespace Masya.TelegramBot.Commands.Data
                 .Entity<Command>()
                 .Property(c => c.Permission)
                 .HasConversion<int>();
+
+            modelBuilder.Entity<Command>(entity =>
+            {
+                entity
+                    .HasMany(e => e.Aliases)
+                    .WithOne(e => e.ParentCommand)
+                    .HasForeignKey(e => e.ParentId);
+            });
         }
 
         internal virtual async Task MapCommandsAsync(IList<CommandInfo> commandInfos)

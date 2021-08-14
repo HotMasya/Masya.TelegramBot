@@ -18,16 +18,13 @@ namespace Masya.TelegramBot.Commands.Data
 
         public bool? DisplayInMenu { get; set; }
 
-        public Permission? Permission { get; set; } = Data.Permission.All;
+        public Permission? Permission { get; set; } = Data.Permission.User;
 
         [JsonIgnore]
         public int? ParentId { get; set; }
-
-        [ForeignKey("ParentId")]
         public Command ParentCommand { get; set; }
 
         [JsonIgnore]
-        [ForeignKey("ParentId")]
         public List<Command> Aliases { get; set; }
 
         public Command()
