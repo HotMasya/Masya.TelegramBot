@@ -48,16 +48,15 @@ namespace Masya.TelegramBot.Api.Controllers
         [HttpPost("refresh")]
         public IActionResult RefreshToken(TokenDto dto)
         {
-            if (!_jwtService.Validate(dto.RefreshToken))
+            var principal = _jwtService.Validate(dto.RefreshToken);
+            if (principal == null)
             {
                 _logger.LogInformation("Invalid refresh token after jwt service validating.");
                 return BadRequest(new MessageResponseDto("Invalid refresh token."));
             }
 
-            var username = _jwtService
-                .GetClaims(dto.RefreshToken)
-                .FirstOrDefault(c => c.Type == ClaimTypes.Name)
-                ?.Value;
+            var username = principal.Claims
+                .FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
             if (username is null)
             {

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Masya.TelegramBot.Api.Options;
@@ -52,15 +51,7 @@ namespace Masya.TelegramBot.Api.Services
             return GenerateToken(claims, DateTime.Now.AddDays(Options.RefreshExpiresInDays));
         }
 
-        public IEnumerable<Claim> GetClaims(string token)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var securityToken = tokenHandler.ReadJwtToken(token);
-
-            return securityToken.Claims;
-        }
-
-        public bool Validate(string token)
+        public ClaimsPrincipal Validate(string token)
         {
             var parameters = new TokenValidationParameters()
             {
@@ -77,12 +68,13 @@ namespace Masya.TelegramBot.Api.Services
 
             try
             {
-                tokenHandler.ValidateToken(token, parameters, out SecurityToken resultToken);
-                return true;
+                var principal = tokenHandler
+                    .ValidateToken(token, parameters, out SecurityToken resultToken);
+                return principal;
             }
             catch
             {
-                return false;
+                return null;
             }
         }
     }

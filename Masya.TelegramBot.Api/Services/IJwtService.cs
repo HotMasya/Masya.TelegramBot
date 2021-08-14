@@ -10,7 +10,6 @@ namespace Masya.TelegramBot.Api.Services
         JwtOptions Options { get; }
         string GenerateAccessToken(User user);
         string GenerateRefreshToken(User user);
-        IEnumerable<Claim> GetClaims(string token);
-        bool Validate(string token);
+        ClaimsPrincipal Validate(string token);
     }
 }
