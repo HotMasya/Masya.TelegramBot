@@ -29,5 +29,10 @@ namespace Masya.TelegramBot.Commands.Data
         [JsonIgnore]
         [ForeignKey("ParentId")]
         public List<Command> Aliases { get; set; }
+
+        public Command()
+        {
+            Aliases = new List<Command>();
+        }
     }
 }
