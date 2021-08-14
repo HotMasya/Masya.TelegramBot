@@ -14,7 +14,6 @@ namespace Masya.TelegramBot.Api.Dtos
         public ResponseDto(string message, T details)
         {
             Message = message;
-
         }
     }
 
