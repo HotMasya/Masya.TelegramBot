@@ -19,7 +19,6 @@ namespace Masya.TelegramBot.Modules
         }
 
         [Command("/users")]
-        [Alias("пользователи", "users")]
         public async Task GetUsersCommandAsync()
         {
             List<User> users = _dbContext.Users.ToList();
@@ -31,7 +30,7 @@ namespace Masya.TelegramBot.Modules
                 return;
             }
 
-            foreach(var user in users)
+            foreach (var user in users)
             {
                 builder.AppendLine(user.ToString());
             }

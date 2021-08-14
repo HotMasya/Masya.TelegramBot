@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Masya.TelegramBot.Api.Dtos;
-using Masya.TelegramBot.Commands.Data;
 using Masya.TelegramBot.DataAccess;
+using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

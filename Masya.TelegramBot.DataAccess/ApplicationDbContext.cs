@@ -1,5 +1,4 @@
-﻿using Masya.TelegramBot.Commands.Data;
-using Masya.TelegramBot.DataAccess.Models;
+﻿using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Masya.TelegramBot.DataAccess
 {
-    public class ApplicationDbContext : CommandDbContext
+    public class ApplicationDbContext : DbContext
     {
         public DbSet<Agency> Agencies { get; set; }
         public DbSet<Category> Categories { get; set; }
@@ -18,6 +17,7 @@ namespace Masya.TelegramBot.DataAccess
         public DbSet<Reference> References { get; set; }
         public DbSet<Report> Reports { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Command> Commands { get; set; }
 
         public List<User> Agents => Users
             .AsQueryable()
@@ -29,7 +29,19 @@ namespace Masya.TelegramBot.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            modelBuilder
+                .Entity<Command>()
+                .Property(c => c.Permission)
+                .HasConversion<int>();
+
+            modelBuilder.Entity<Command>(entity =>
+            {
+                entity
+                    .HasMany(e => e.Aliases)
+                    .WithOne(e => e.ParentCommand)
+                    .HasForeignKey(e => e.ParentId);
+            });
+
             modelBuilder
                 .Entity<Category>()
                 .Property(c => c.SuperType)

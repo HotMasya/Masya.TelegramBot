@@ -1,10 +1,13 @@
 ﻿using Masya.TelegramBot.Commands.Abstractions;
-using Masya.TelegramBot.Commands.Data;
+using Masya.TelegramBot.Commands.Metadata;
 using Masya.TelegramBot.Commands.Options;
+using Masya.TelegramBot.DataAccess;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -23,13 +26,35 @@ namespace Masya.TelegramBot.Commands.Services
         public override async Task LoadCommandsAsync(Assembly assembly)
         {
             await base.LoadCommandsAsync(assembly);
-            await GetDbContext().MapCommandsAsync(commands);
+            await MapCommandsAsync();
         }
 
-        private CommandDbContext GetDbContext()
+        private async Task MapCommandsAsync()
         {
             using var scope = services.CreateScope();
-            return scope.ServiceProvider.GetRequiredService<CommandDbContext>();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var dbCommands = await dbContext.Commands.ToListAsync();
+            foreach (var ci in commands)
+            {
+                var command = dbCommands.FirstOrDefault(
+                    c => c.Name.ToLower().Equals(ci.Name.ToLower())
+                );
+                if (command != null)
+                {
+                    ci.IsEnabled = command.IsEnabled;
+                    ci.Permission = command.Permission;
+                    foreach (var al in command.Aliases)
+                    {
+                        ci.Aliases.Add(
+                            new AliasInfo
+                            {
+                                Name = al.Name,
+                                CommandInfo = ci,
+                            }
+                        );
+                    }
+                }
+            }
         }
     }
 }

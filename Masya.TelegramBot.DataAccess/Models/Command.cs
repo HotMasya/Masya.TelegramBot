@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace Masya.TelegramBot.Commands.Data
+namespace Masya.TelegramBot.DataAccess.Models
 {
     public sealed class Command
     {
@@ -18,7 +17,7 @@ namespace Masya.TelegramBot.Commands.Data
 
         public bool? DisplayInMenu { get; set; }
 
-        public Permission? Permission { get; set; } = Data.Permission.User;
+        public Permission? Permission { get; set; } = Models.Permission.User;
 
         [JsonIgnore]
         public int? ParentId { get; set; }

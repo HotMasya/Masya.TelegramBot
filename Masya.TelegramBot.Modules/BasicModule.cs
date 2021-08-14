@@ -9,7 +9,7 @@ using Masya.TelegramBot.DataAccess.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Telegram.Bot.Types;
-using Masya.TelegramBot.Commands.Data;
+using Masya.TelegramBot.DataAccess.Models;
 
 namespace Masya.TelegramBot.Modules
 {

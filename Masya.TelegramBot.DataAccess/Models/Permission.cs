@@ -1,4 +1,4 @@
-﻿namespace Masya.TelegramBot.Commands.Data
+﻿namespace Masya.TelegramBot.DataAccess.Models
 {
     public enum Permission
     {

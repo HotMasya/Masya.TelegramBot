@@ -1,5 +1,4 @@
 using System;
-using Masya.TelegramBot.Commands.Data;
 using Masya.TelegramBot.DataAccess.Models;
 
 namespace Masya.TelegramBot.Api.Dtos

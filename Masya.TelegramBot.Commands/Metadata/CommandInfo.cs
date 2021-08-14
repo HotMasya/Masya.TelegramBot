@@ -1,5 +1,5 @@
 ﻿using Masya.TelegramBot.Commands.Attributes;
-using Masya.TelegramBot.Commands.Data;
+using Masya.TelegramBot.DataAccess.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

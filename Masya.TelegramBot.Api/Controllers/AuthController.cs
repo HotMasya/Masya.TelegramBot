@@ -9,9 +9,9 @@ using Masya.TelegramBot.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Telegram.Bot.Types.Enums;
-using Masya.TelegramBot.Commands.Data;
 using Masya.TelegramBot.Api.Options;
 using Microsoft.Extensions.Options;
+using Masya.TelegramBot.DataAccess.Models;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
