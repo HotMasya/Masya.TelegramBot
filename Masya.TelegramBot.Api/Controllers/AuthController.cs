@@ -45,21 +45,22 @@ namespace Masya.TelegramBot.Api.Controllers
         [HttpPost("refresh")]
         public IActionResult RefreshToken([FromBody] string refreshToken)
         {
-            var claims = _jwtService.GetClaims(refreshToken);
-            var expires = claims.FirstOrDefault(c => c.Type == ClaimTypes.Expiration);
-            var userName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
-            var expiresDateTime = DateTime.Parse(expires.Value);
-            if (DateTime.Now > expiresDateTime)
-            {
-                return BadRequest(new MessageResponseDto("Refresh token is expired."));
-            }
-
-            if (userName is null)
+            if (!_jwtService.Validate(refreshToken))
             {
                 return BadRequest(new MessageResponseDto("Invalid refresh token."));
             }
 
-            var user = _dbContext.Users.FirstOrDefault(u => u.TelegramLogin.Equals(userName));
+            var username = _jwtService
+                .GetClaims(refreshToken)
+                .FirstOrDefault(c => c.Type == ClaimTypes.Name)
+                ?.Value;
+
+            if (username is null)
+            {
+                return BadRequest(new MessageResponseDto("Invalid refresh token."));
+            }
+
+            var user = _dbContext.Users.FirstOrDefault(u => u.TelegramLogin.Equals(username));
 
             if (user is null)
             {

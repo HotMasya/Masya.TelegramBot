@@ -59,5 +59,31 @@ namespace Masya.TelegramBot.Api.Services
 
             return securityToken.Claims;
         }
+
+        public bool Validate(string token)
+        {
+            var parameters = new TokenValidationParameters()
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = true,
+                ValidIssuer = Options.Issuer,
+                ValidAudience = Options.Audience,
+                IssuerSigningKey = Options.SecurityKey
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            try
+            {
+                tokenHandler.ValidateToken(token, parameters, out SecurityToken resultToken);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }
