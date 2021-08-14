@@ -8,15 +8,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public sealed class CommandController : ControllerBase
+    public sealed class CommandsController : ControllerBase
     {
 
         private readonly ApplicationDbContext _dbContext;
 
-        public CommandController(ApplicationDbContext dbContext)
+        public CommandsController(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }

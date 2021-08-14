@@ -37,7 +37,7 @@ namespace Masya.TelegramBot.Commands.Services
             foreach (var ci in commands)
             {
                 var command = dbCommands.FirstOrDefault(
-                    c => c.Name.ToLower().Equals(ci.Name.ToLower())
+                    c => c.Name.ToLower().Equals(ci.Name?.ToLower())
                 );
                 if (command != null)
                 {
