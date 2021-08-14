@@ -12,6 +12,7 @@ using Telegram.Bot.Types.Enums;
 using Masya.TelegramBot.Api.Options;
 using Microsoft.Extensions.Options;
 using Masya.TelegramBot.DataAccess.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
@@ -25,7 +26,7 @@ namespace Masya.TelegramBot.Api.Controllers
         private readonly IDistributedCache _cache;
         private readonly IJwtService _jwtService;
         private readonly CacheOptions _cacheOptions;
-
+        private readonly ILogger<AuthController> _logger;
         private const string AuthCodePrefix = "AuthCode_";
 
         public AuthController(
@@ -33,13 +34,15 @@ namespace Masya.TelegramBot.Api.Controllers
             IBotService botService,
             IDistributedCache cache,
             IJwtService jwtService,
-            IOptionsMonitor<CacheOptions> cacheOptions)
+            IOptionsMonitor<CacheOptions> cacheOptions,
+            ILogger<AuthController> logger)
         {
             _dbContext = dbContext;
             _botService = botService;
             _cache = cache;
             _jwtService = jwtService;
             _cacheOptions = cacheOptions.CurrentValue;
+            _logger = logger;
         }
 
         [HttpPost("refresh")]
@@ -47,6 +50,7 @@ namespace Masya.TelegramBot.Api.Controllers
         {
             if (!_jwtService.Validate(dto.RefreshToken))
             {
+                _logger.LogInformation("Invalid refresh token after jwt service validating.");
                 return BadRequest(new MessageResponseDto("Invalid refresh token."));
             }
 
@@ -57,6 +61,7 @@ namespace Masya.TelegramBot.Api.Controllers
 
             if (username is null)
             {
+                _logger.LogInformation("Invalid refresh token after trying to get telegram username.");
                 return BadRequest(new MessageResponseDto("Invalid refresh token."));
             }
 
