@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Security.Claims;
 using Masya.TelegramBot.Api.Options;
 using Masya.TelegramBot.DataAccess.Models;

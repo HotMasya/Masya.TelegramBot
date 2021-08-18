@@ -70,7 +70,6 @@ namespace Masya.TelegramBot.Api
                 {
                     options.UseCamelCasing(true);
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
             services.AddSingleton<IJwtService, JwtService>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

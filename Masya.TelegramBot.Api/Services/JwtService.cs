@@ -36,7 +36,8 @@ namespace Masya.TelegramBot.Api.Services
         public string GenerateAccessToken(User user)
         {
             Claim[] claims = new Claim[] {
-                new Claim(ClaimTypes.NameIdentifier, user.TelegramAccountId.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.TelegramAccountId.ToString()),
+                new Claim(ClaimTypes.Role, user.Permission.ToString(), ClaimValueTypes.UInteger32)
             };
 
             return GenerateToken(claims, DateTime.Now.AddMinutes(Options.ExpiresInMinutes));
