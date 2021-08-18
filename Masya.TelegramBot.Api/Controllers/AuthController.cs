@@ -81,7 +81,7 @@ namespace Masya.TelegramBot.Api.Controllers
             var user = _dbContext.Users
                 .FirstOrDefault(u => u.TelegramPhoneNumber.Equals(dto.PhoneNumber));
 
-            if (user == null || user.Permission < Permission.Admin)
+            if (user == null || user.Permission.Value < Permission.Admin)
             {
                 return BadRequest(new MessageResponseDto("Invalid phone number."));
             }
