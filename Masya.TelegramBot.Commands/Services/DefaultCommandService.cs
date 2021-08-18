@@ -90,6 +90,7 @@ namespace Masya.TelegramBot.Commands.Services
 
         public virtual async Task LoadCommandsAsync(Assembly assembly)
         {
+            commands.Clear();
             _logger.LogInformation("Loading commands from modules from assembly: " + assembly.GetName().Name);
             await Task.Run(() =>
             {
