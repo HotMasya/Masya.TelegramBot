@@ -4,12 +4,10 @@ using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Collections.Generic;
 using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Modules;
 using Microsoft.Extensions.Logging;
-using Masya.TelegramBot.Api.Dtos;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
@@ -36,32 +34,8 @@ namespace Masya.TelegramBot.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var commands = await _dbContext.Commands
-                .Include(c => c.Aliases)
-                .ToListAsync();
-            return Ok(commands.Where(c => c.ParentId == null));
-        }
-
-        [HttpPost("add")]
-        public async Task<IActionResult> AddCommandAsync(AliasDto dto)
-        {
-            if (_dbContext.Commands.Any(c => c.Name.Equals(dto.Name)))
-            {
-                return BadRequest(new MessageResponseDto($"Command with name \"{dto.Name}\" already exists"));
-            }
-
-            Command cmd = new Command()
-            {
-                Name = dto.Name,
-                Permission = dto.Permission,
-                IsEnabled = dto.IsEnabled,
-                DisplayInMenu = dto.DisplayInMenu,
-                ParentId = dto.ParentId
-            };
-
-            _dbContext.Commands.Add(cmd);
-            await _dbContext.SaveChangesAsync();
-            return Created("/api/commands/add", cmd);
+            var commands = await _dbContext.Commands.ToListAsync();
+            return Ok(commands);
         }
 
         [HttpPost("reload")]
@@ -83,65 +57,5 @@ namespace Masya.TelegramBot.Api.Controllers
             _logger.LogInformation("Updated commands and reloaded the command service.");
             return Ok();
         }
-
-        [HttpDelete("remove/{id:int}")]
-        public async Task<IActionResult> RemoveCommandAsync(int id)
-        {
-            _logger.LogInformation("Received a request to remove alias with id: " + id);
-            var command = _dbContext.Commands.FirstOrDefault(c => c.Id == id);
-            if (command is null)
-            {
-                return BadRequest(new MessageResponseDto("Command not found."));
-            }
-
-            _dbContext.Commands.Remove(command);
-            await _dbContext.SaveChangesAsync();
-            _logger.LogInformation("Removed command with id: " + id);
-            return Ok();
-        }
-
-        // [HttpPost("add")]
-        // public async Task<IActionResult> AddCommandAsync(CommandDto dto)
-        // {
-        //     Command newCommand = new Command
-        //     {
-        //         Name = dto.Name,
-        //         Permission = dto.Permission,
-        //         IsEnabled = dto.IsEnabled,
-        //         DisplayInMenu = dto.DisplayInMenu
-        //     };
-
-        //     foreach (var alias in dto.Aliases)
-        //     {
-        //         newCommand.Aliases.Add(
-        //             new Command()
-        //             {
-        //                 Name = dto.Name,
-        //                 Permission = dto.Permission,
-        //                 IsEnabled = dto.IsEnabled,
-        //                 DisplayInMenu = dto.DisplayInMenu
-        //             }
-        //         );
-        //     }
-
-        //     _dbContext.Commands.Add(newCommand);
-        //     await _dbContext.SaveChangesAsync();
-
-        //     return Created("api/controller/add", dto);
-        // }
-
-        // [HttpDelete("delete")]
-        // public async Task<IActionResult> DeleteCommandAsync(int id)
-        // {
-        //     var command = await _dbContext.Commands.FirstOrDefaultAsync(c => c.Id == id);
-        //     if (command == null)
-        //     {
-        //         return BadRequest(new MessageResponseDto("Command not found."));
-        //     }
-
-        //     _dbContext.Commands.Remove(command);
-        //     await _dbContext.SaveChangesAsync();
-        //     return Ok();
-        // }
     }
 }
