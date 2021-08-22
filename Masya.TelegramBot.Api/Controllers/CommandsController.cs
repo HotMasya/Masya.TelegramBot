@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Modules;
 using Microsoft.Extensions.Logging;
+using Masya.TelegramBot.Api.Dtos;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
@@ -58,6 +59,22 @@ namespace Masya.TelegramBot.Api.Controllers
             await _dbContext.SaveChangesAsync();
             await _commands.LoadCommandsAsync(typeof(BasicModule).Assembly);
             _logger.LogInformation("Updated commands and reloaded the command service.");
+            return Ok();
+        }
+
+        [HttpDelete("remove/{id:int}")]
+        public async Task<IActionResult> RemoveCommandAsync(int id)
+        {
+            _logger.LogInformation("Received a request to remove alias with id: " + id);
+            var command = _dbContext.Commands.FirstOrDefault(c => c.Id == id);
+            if (command is null)
+            {
+                return BadRequest(new MessageResponseDto("Command not found."));
+            }
+
+            _dbContext.Commands.Remove(command);
+            await _dbContext.SaveChangesAsync();
+            _logger.LogInformation("Removed command with id: " + id);
             return Ok();
         }
 
