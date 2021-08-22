@@ -42,6 +42,28 @@ namespace Masya.TelegramBot.Api.Controllers
             return Ok(commands.Where(c => c.ParentId == null));
         }
 
+        [HttpPost("add")]
+        public async Task<IActionResult> AddCommandAsync(AliasDto dto)
+        {
+            if (_dbContext.Commands.Any(c => c.Name.Equals(dto.Name)))
+            {
+                return BadRequest(new MessageResponseDto($"Command with name \"{dto.Name}\" already exists"));
+            }
+
+            Command cmd = new Command()
+            {
+                Name = dto.Name,
+                Permission = dto.Permission,
+                IsEnabled = dto.IsEnabled,
+                DisplayInMenu = dto.DisplayInMenu,
+                ParentId = dto.ParentId
+            };
+
+            _dbContext.Commands.Add(cmd);
+            await _dbContext.SaveChangesAsync();
+            return Created("/api/commands/add", cmd);
+        }
+
         [HttpPost("reload")]
         public async Task<IActionResult> ReloadCommandsAsync()
         {
