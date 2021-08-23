@@ -51,7 +51,7 @@ namespace Masya.TelegramBot.Api.Controllers
         public async Task<IActionResult> SaveCommandsAsync(Command[] commands)
         {
             _logger.LogInformation("Received a request to update commands and aliases.");
-            var commandsToDelete = await _dbContext.Commands.Except(commands).ToListAsync();
+            var commandsToDelete = _dbContext.Commands.ToList().Except(commands);
             _dbContext.Commands.RemoveRange(commandsToDelete);
             _dbContext.Commands.UpdateRange(commands);
             await _dbContext.SaveChangesAsync();
