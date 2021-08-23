@@ -4,10 +4,10 @@ using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Modules;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
@@ -51,6 +51,8 @@ namespace Masya.TelegramBot.Api.Controllers
         public async Task<IActionResult> SaveCommandsAsync(Command[] commands)
         {
             _logger.LogInformation("Received a request to update commands and aliases.");
+            var commandsToDelete = _dbContext.Commands.Except(commands);
+            _dbContext.Commands.RemoveRange(commandsToDelete);
             _dbContext.Commands.UpdateRange(commands);
             await _dbContext.SaveChangesAsync();
             await _commands.LoadCommandsAsync(typeof(BasicModule).Assembly);
