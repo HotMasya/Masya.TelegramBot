@@ -34,7 +34,7 @@ namespace Masya.TelegramBot.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var commands = await _dbContext.Commands.IgnoreAutoIncludes().ToListAsync();
+            var commands = await _dbContext.Commands.ToListAsync();
             return Ok(commands);
         }
 

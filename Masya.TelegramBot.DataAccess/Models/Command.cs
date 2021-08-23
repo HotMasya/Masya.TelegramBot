@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Masya.TelegramBot.DataAccess.Models
 {
@@ -19,8 +19,9 @@ namespace Masya.TelegramBot.DataAccess.Models
 
         public Permission? Permission { get; set; } = Models.Permission.User;
 
-        [JsonIgnore]
         public int? ParentId { get; set; }
+
+        [JsonIgnore]
         public Command ParentCommand { get; set; }
 
         [JsonIgnore]
