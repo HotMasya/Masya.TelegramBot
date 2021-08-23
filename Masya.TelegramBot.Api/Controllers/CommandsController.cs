@@ -48,7 +48,7 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpPut("save")]
-        public async Task<IActionResult> SaveCommandsAsync(IEnumerable<Command> commands)
+        public async Task<IActionResult> SaveCommandsAsync(Command[] commands)
         {
             _logger.LogInformation("Received a request to update commands and aliases.");
             _dbContext.Commands.UpdateRange(commands);
