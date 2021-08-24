@@ -39,7 +39,6 @@ namespace Masya.TelegramBot.Api
                 .WriteTo.Console()
                 .CreateLogger();
 
-            services.Configure<BotServiceOptions>(Configuration.GetSection("Bot"));
             services.Configure<CommandServiceOptions>(Configuration.GetSection("Commands"));
             services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
             services.Configure<CacheOptions>(Configuration.GetSection("Cache"));
@@ -64,7 +63,7 @@ namespace Masya.TelegramBot.Api
             {
                 options.UseSqlServer(Configuration.GetConnectionString("RemoteDb"));
             });
-            services.AddSingleton<IBotService, DefaultBotService>();
+            services.AddSingleton<IBotService, DatabaseBotService>();
             services.AddSingleton<ICommandService, DatabaseCommandService>();
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
