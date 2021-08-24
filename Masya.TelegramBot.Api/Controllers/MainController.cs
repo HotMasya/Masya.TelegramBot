@@ -1,8 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Masya.TelegramBot.Api.Dtos;
 using Masya.TelegramBot.Commands.Abstractions;
+using Masya.TelegramBot.DataAccess;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Telegram.Bot;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
@@ -11,22 +15,45 @@ namespace Masya.TelegramBot.Api.Controllers
     [Route("api/[controller]")]
     public class MainController : ControllerBase
     {
-        private readonly ILogger<MainController> _logger;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IBotService _botService;
-        private readonly ICommandService _commandService;
 
-        public MainController(IBotService botService, ICommandService commandService, ILogger<MainController> logger)
+        public MainController(
+            IBotService botService,
+            ApplicationDbContext dbContext)
         {
             _botService = botService;
-            _commandService = commandService;
-            _logger = logger;
+            _dbContext = dbContext;
         }
 
         [HttpGet("bot")]
-        public async Task<IActionResult> GetBotStatusAsync()
+        public async Task<IActionResult> GetBotSettings()
         {
-            var status = await _botService.GetStatusAsync();
+            var status = await _botService.GetSettingsAsync();
             return Ok(status);
+        }
+
+        [HttpPost("bot/update")]
+        public async Task<IActionResult> UpdateBotSettingsAsync(BotSettingsDto dto)
+        {
+            var settings = _dbContext.BotSettings.FirstOrDefault(bs => bs.Id == dto.Id);
+            if (settings is null)
+            {
+                return BadRequest(new MessageResponseDto("Unable to update settings. Setting not found."));
+            }
+
+            bool testResult = await _botService.TestSettingsAsync(settings.BotToken, settings.WebhookHost);
+            if (!testResult)
+            {
+                return BadRequest(new MessageResponseDto("Invalid bot token or webhook host."));
+            }
+
+            settings.BotToken = dto.Token;
+            settings.WebhookHost = dto.WebhookHost;
+            settings.IsEnabled = dto.IsEnabled ?? settings.IsEnabled;
+            await _dbContext.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

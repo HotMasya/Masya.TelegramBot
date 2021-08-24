@@ -20,7 +20,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
             LoadBot();
         }
 
-        public void LoadBot()
+        public override void LoadBot()
         {
             Options = GetOptionsFromDb();
             EnsureTokenExists();

@@ -11,9 +11,11 @@ namespace Masya.TelegramBot.Commands.Abstractions
     {
         ITelegramBotClient Client { get; }
         BotServiceOptions Options { get; }
+        void LoadBot();
         ICollector CreateMessageCollector(Chat chat, TimeSpan messageTimeout);
         Task SetWebhookAsync();
         Task HandleUpdateAsync(Update update);
-        Task<BotStatus> GetStatusAsync();
+        Task<BotStatus> GetSettingsAsync();
+        Task<bool> TestSettingsAsync(string token, string webhookHost);
     }
 }

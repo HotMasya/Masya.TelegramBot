@@ -30,8 +30,7 @@ namespace Masya.TelegramBot.Commands.Services
         )
         {
             Options = options.Value;
-            EnsureTokenExists();
-            Client = new TelegramBotClient(Options.Token);
+            LoadBot();
             this.services = services;
             _logger = logger;
             _collectors = new List<ICollector>();
@@ -128,7 +127,7 @@ namespace Masya.TelegramBot.Commands.Services
             }
         }
 
-        public async Task<BotStatus> GetStatusAsync()
+        public async Task<BotStatus> GetSettingsAsync()
         {
             var me = await Client.GetMeAsync();
             return new BotStatus
@@ -138,6 +137,33 @@ namespace Masya.TelegramBot.Commands.Services
                 Host = Options.WebhookHost,
                 Token = Options.Token,
             };
+        }
+
+        public async Task<bool> TestSettingsAsync(string token, string webhookHost)
+        {
+            Client = new TelegramBotClient(token);
+            var me = await Client.GetMeAsync();
+            if (me is null)
+            {
+                return false;
+            }
+
+            try
+            {
+                await Client.SetWebhookAsync(webhookHost);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public virtual void LoadBot()
+        {
+            EnsureTokenExists();
+            Client = new TelegramBotClient(Options.Token);
         }
     }
 }
