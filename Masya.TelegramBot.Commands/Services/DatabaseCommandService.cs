@@ -37,6 +37,12 @@ namespace Masya.TelegramBot.Commands.Services
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var user = dbContext.Users.FirstOrDefault(u => u.TelegramAccountId == message.From.Id);
 
+            _logger.LogInformation("\nUser:\t{0}\nUser.Permission:\t{1}\nCommandInfo.Permission:\t{2}",
+                user is not null,
+                user.Permission.HasValue,
+                commandInfo.Permission.HasValue
+            );
+
             return (
                 base.CheckCommandCondition(commandInfo, message) &&
                 user is not null &&
