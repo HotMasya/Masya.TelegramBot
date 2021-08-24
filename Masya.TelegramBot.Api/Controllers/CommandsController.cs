@@ -8,6 +8,7 @@ using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Modules;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using Masya.TelegramBot.Api.Dtos;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
@@ -51,7 +52,13 @@ namespace Masya.TelegramBot.Api.Controllers
         public async Task<IActionResult> SaveCommandsAsync(Command[] commands)
         {
             _logger.LogInformation("Received a request to update commands and aliases.");
-            var commandsToDelete = _dbContext.Commands.ToList().Except(commands);
+            var distinctNames = commands.Select(c => c.Name).Distinct().ToArray();
+            if (distinctNames.Length != commands.Length)
+            {
+                return BadRequest(new MessageResponseDto("Every command or alias name should be unique."));
+            }
+            var dbCommands = await _dbContext.Commands.ToListAsync();
+            var commandsToDelete = dbCommands.Except(commands);
             _dbContext.Commands.RemoveRange(commandsToDelete);
             _dbContext.Commands.UpdateRange(commands);
             await _dbContext.SaveChangesAsync();
