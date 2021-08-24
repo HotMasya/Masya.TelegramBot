@@ -20,7 +20,7 @@ namespace Masya.TelegramBot.Commands.Services
         protected readonly List<CommandInfo> commands;
         protected readonly IServiceProvider services;
 
-        private readonly ILogger<DefaultCommandService> _logger;
+        protected readonly ILogger<DefaultCommandService> _logger;
 
         public IBotService BotService { get; }
         public CommandServiceOptions Options { get; }
@@ -38,6 +38,14 @@ namespace Masya.TelegramBot.Commands.Services
             commands = new List<CommandInfo>();
             this.services = services;
             _logger = logger;
+        }
+
+        public virtual bool CheckCommandCondition(CommandInfo commandInfo, Message message)
+        {
+            return commandInfo is null &&
+            !commandInfo.IsEnabled.HasValue &&
+            !commandInfo.IsEnabled.Value &&
+            commandInfo.MethodInfo is null;
         }
 
         public virtual async Task ExecuteCommandAsync(Message message)
@@ -267,14 +275,6 @@ namespace Masya.TelegramBot.Commands.Services
             var parameters = method.GetParameters();
             return method.GetCustomAttribute<RegisterUserAttribute>() != null &&
                 parameters.Length == 1 && parameters[0].ParameterType == typeof(Contact);
-        }
-
-        public virtual bool CheckCommandCondition(CommandInfo commandInfo, Message message)
-        {
-            return commandInfo is null ||
-            !commandInfo.IsEnabled.HasValue ||
-            !commandInfo.IsEnabled.Value ||
-            commandInfo.MethodInfo is null;
         }
     }
 }
