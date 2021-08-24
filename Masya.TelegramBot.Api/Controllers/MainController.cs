@@ -23,8 +23,7 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpGet("bot")]
-        [Authorize]
-        public async Task<IActionResult> BotStatus()
+        public async Task<IActionResult> GetBotStatusAsync()
         {
             var status = await _botService.GetStatusAsync();
             return Ok(status);

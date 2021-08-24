@@ -4,5 +4,6 @@ namespace Masya.TelegramBot.Commands.Options
     {
         public string Token { get; set; }
         public string WebhookHost { get; set; }
+        public bool IsEnabled { get; set; } = true;
     }
 }

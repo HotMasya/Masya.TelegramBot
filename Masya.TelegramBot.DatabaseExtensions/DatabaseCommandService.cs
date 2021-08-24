@@ -1,6 +1,7 @@
 ﻿using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Commands.Metadata;
 using Masya.TelegramBot.Commands.Options;
+using Masya.TelegramBot.Commands.Services;
 using Masya.TelegramBot.DataAccess;
 using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 
-namespace Masya.TelegramBot.Commands.Services
+namespace Masya.TelegramBot.DatabaseExtensions
 {
     public class DatabaseCommandService : DefaultCommandService
     {

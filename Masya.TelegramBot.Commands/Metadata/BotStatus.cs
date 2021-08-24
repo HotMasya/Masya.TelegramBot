@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Telegram.Bot.Types;
 
 namespace Masya.TelegramBot.Commands.Metadata
@@ -8,7 +7,6 @@ namespace Masya.TelegramBot.Commands.Metadata
         public bool IsWorking { get; set; }
         public User Bot { get; set; }
         public string Host { get; set; }
-        public int CommandsLoaded { get; set; }
-        public IEnumerable<CommandInfo> Commands { get; set; }
+        public string Token { get; set; }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Masya.TelegramBot.Commands.Attributes;
 using Masya.TelegramBot.DataAccess.Models;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -12,7 +11,6 @@ namespace Masya.TelegramBot.Commands.Metadata
     public class CommandInfo : IFormattable
     {
         public string Name { get; }
-        [JsonIgnore]
         public MethodInfo MethodInfo { get; }
         public string Description { get; }
         public IList<AliasInfo> Aliases { get; }

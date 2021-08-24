@@ -1,6 +1,7 @@
 using Masya.TelegramBot.Commands.Services;
 using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Commands.Options;
+using Masya.TelegramBot.DatabaseExtensions;
 using Masya.TelegramBot.DataAccess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

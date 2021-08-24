@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Masya.TelegramBot.Commands\Masya.TelegramBot.Commands.csproj" />
     <ProjectReference Include="..\Masya.TelegramBot.DataAccess\Masya.TelegramBot.DataAccess.csproj" />
+    <ProjectReference Include="..\Masya.TelegramBot.DatabaseExtensions\Masya.TelegramBot.DatabaseExtensions.csproj" />
     <ProjectReference Include="..\Masya.TelegramBot.Modules\Masya.TelegramBot.Modules.csproj" />
   </ItemGroup>
 

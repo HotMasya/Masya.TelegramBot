@@ -13,13 +13,13 @@ using Masya.TelegramBot.Commands.Metadata;
 
 namespace Masya.TelegramBot.Commands.Services
 {
-    public sealed class DefaultBotService : IBotService
+    public class DefaultBotService : IBotService
     {
-        public ITelegramBotClient Client { get; }
-        public BotServiceOptions Options { get; }
-        public bool IsWorking { get; set; }
+        public ITelegramBotClient Client { get; set; }
+        public BotServiceOptions Options { get; set; }
 
-        private readonly IServiceProvider _services;
+        protected readonly IServiceProvider services;
+
         private readonly ILogger<DefaultBotService> _logger;
         private readonly List<ICollector> _collectors;
 
@@ -32,17 +32,21 @@ namespace Masya.TelegramBot.Commands.Services
             Options = options.Value;
             EnsureTokenExists();
             Client = new TelegramBotClient(Options.Token);
-            _services = services;
+            this.services = services;
             _logger = logger;
             _collectors = new List<ICollector>();
-            IsWorking = true;
+        }
+
+        public DefaultBotService(IServiceProvider services)
+        {
+            this.services = services;
         }
 
         public DefaultBotService()
         {
         }
 
-        private void EnsureTokenExists()
+        protected void EnsureTokenExists()
         {
             if (string.IsNullOrEmpty(Options.Token))
             {
@@ -56,7 +60,7 @@ namespace Masya.TelegramBot.Commands.Services
 
         private async Task HandleMessageAsync(Message message)
         {
-            if (!IsWorking)
+            if (!Options.IsEnabled)
             {
                 return;
             }
@@ -70,7 +74,7 @@ namespace Masya.TelegramBot.Commands.Services
                 return;
             }
 
-            var commandService = _services.GetRequiredService<ICommandService>();
+            var commandService = services.GetRequiredService<ICommandService>();
             try
             {
                 await commandService.ExecuteCommandAsync(message);
@@ -122,15 +126,12 @@ namespace Masya.TelegramBot.Commands.Services
         public async Task<BotStatus> GetStatusAsync()
         {
             var me = await Client.GetMeAsync();
-            using var scope = _services.CreateScope();
-            var commandService = scope.ServiceProvider.GetRequiredService<ICommandService>();
             return new BotStatus
             {
-                IsWorking = this.IsWorking,
+                IsWorking = this.Options.IsEnabled,
                 Bot = me,
                 Host = Options.WebhookHost,
-                CommandsLoaded = commandService.Commands.Count,
-                Commands = commandService.Commands
+                Token = Options.Token,
             };
         }
     }
