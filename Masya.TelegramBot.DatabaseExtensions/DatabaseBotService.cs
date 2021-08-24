@@ -4,13 +4,19 @@ using Masya.TelegramBot.Commands.Options;
 using Masya.TelegramBot.Commands.Services;
 using Masya.TelegramBot.DataAccess;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Telegram.Bot;
 
 namespace Masya.TelegramBot.DatabaseExtensions
 {
     public class DatabaseBotService : DefaultBotService
     {
-        public DatabaseBotService(IServiceProvider services) : base(services)
+        public DatabaseBotService(
+            IOptions<BotServiceOptions> options,
+            IServiceProvider services,
+            ILogger<DefaultBotService> logger
+        ) : base(options, services, logger)
         {
             LoadBot();
         }
