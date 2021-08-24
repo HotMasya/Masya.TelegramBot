@@ -42,10 +42,10 @@ namespace Masya.TelegramBot.Commands.Services
 
         public virtual bool CheckCommandCondition(CommandInfo commandInfo, Message message)
         {
-            return commandInfo is null &&
-            !commandInfo.IsEnabled.HasValue &&
-            !commandInfo.IsEnabled.Value &&
-            commandInfo.MethodInfo is null;
+            return commandInfo is not null &&
+            commandInfo.IsEnabled.HasValue &&
+            commandInfo.IsEnabled.Value &&
+            commandInfo.MethodInfo is not null;
         }
 
         public virtual async Task ExecuteCommandAsync(Message message)
