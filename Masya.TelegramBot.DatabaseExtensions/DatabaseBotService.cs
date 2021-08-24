@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
+using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Commands.Options;
 using Masya.TelegramBot.Commands.Services;
 using Masya.TelegramBot.DataAccess;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Telegram.Bot;
 
 namespace Masya.TelegramBot.DatabaseExtensions
@@ -14,7 +14,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
     {
         public DatabaseBotService(
             IServiceProvider services,
-            ILogger<DefaultBotService> logger
+            ILogger<IBotService> logger
         ) : base(services, logger)
         {
             LoadBot();

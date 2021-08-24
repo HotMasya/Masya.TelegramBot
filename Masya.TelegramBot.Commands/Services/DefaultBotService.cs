@@ -20,7 +20,7 @@ namespace Masya.TelegramBot.Commands.Services
 
         protected readonly IServiceProvider services;
 
-        private readonly ILogger<DefaultBotService> _logger;
+        private readonly ILogger<IBotService> _logger;
         private readonly List<ICollector> _collectors;
 
         public DefaultBotService(
@@ -39,11 +39,12 @@ namespace Masya.TelegramBot.Commands.Services
 
         public DefaultBotService(
             IServiceProvider services,
-            ILogger<DefaultBotService> logger
+            ILogger<IBotService> logger
         )
         {
             this.services = services;
             _logger = logger;
+            _collectors = new List<ICollector>();
         }
 
         public DefaultBotService()
