@@ -56,20 +56,18 @@ namespace Masya.TelegramBot.Commands.Services
             await Task.Run(() =>
             {
                 var parts = new CommandParts(message.Text, Options);
-                MethodInfo method = commands
-                    .FirstOrDefault(cm => CommandFilter(cm, parts.Name))
-                    ?.MethodInfo;
+                var commandInfo = commands.FirstOrDefault(cm => CommandFilter(cm, parts.Name));
 
-                if (method == null)
+                if (!CheckCommandCondition(commandInfo, message))
                 {
                     return;
                 }
 
                 _logger.LogInformation($"Executing command: {parts.Name}");
 
-                if (parts.ArgsStr.Length == 0 && method.GetParameters().Length != 0)
+                if (parts.ArgsStr.Length == 0 && commandInfo.MethodInfo.GetParameters().Length != 0)
                 {
-                    var t = new Task(async () => await ExecuteCommandByStepsAsync(message, method, parts));
+                    var t = new Task(async () => await ExecuteCommandByStepsAsync(message, commandInfo.MethodInfo, parts));
                     t.Start();
                 }
                 else
@@ -77,13 +75,13 @@ namespace Masya.TelegramBot.Commands.Services
                     using var scope = services.CreateScope();
                     var moduleInstance = ActivatorUtilities.CreateInstance(
                         scope.ServiceProvider,
-                        method.DeclaringType,
+                        commandInfo.MethodInfo.DeclaringType,
                         Array.Empty<object>()
                     );
-                    var propInfo = method.DeclaringType.GetProperty("Context");
+                    var propInfo = commandInfo.MethodInfo.DeclaringType.GetProperty("Context");
                     var context = new DefaultCommandContext(BotService, message.Chat, message.From, message);
                     propInfo.SetValue(moduleInstance, context);
-                    method.Invoke(moduleInstance, parts.MatchParamTypes(method));
+                    commandInfo.MethodInfo.Invoke(moduleInstance, parts.MatchParamTypes(commandInfo.MethodInfo));
                 }
             });
         }
@@ -269,6 +267,14 @@ namespace Masya.TelegramBot.Commands.Services
             var parameters = method.GetParameters();
             return method.GetCustomAttribute<RegisterUserAttribute>() != null &&
                 parameters.Length == 1 && parameters[0].ParameterType == typeof(Contact);
+        }
+
+        public virtual bool CheckCommandCondition(CommandInfo commandInfo, Message message)
+        {
+            return commandInfo is null ||
+            !commandInfo.IsEnabled.HasValue ||
+            !commandInfo.IsEnabled.Value ||
+            commandInfo.MethodInfo is null;
         }
     }
 }

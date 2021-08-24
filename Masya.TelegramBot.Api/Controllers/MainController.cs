@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace Masya.TelegramBot.Api.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class MainController : ControllerBase
     {
@@ -21,7 +22,7 @@ namespace Masya.TelegramBot.Api.Controllers
             _logger = logger;
         }
 
-        [HttpGet("status")]
+        [HttpGet("bot")]
         [Authorize]
         public async Task<IActionResult> BotStatus()
         {

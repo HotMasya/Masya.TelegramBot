@@ -2,6 +2,7 @@
 using Masya.TelegramBot.Commands.Metadata;
 using Masya.TelegramBot.Commands.Options;
 using Masya.TelegramBot.DataAccess;
+using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Telegram.Bot.Types;
 
 namespace Masya.TelegramBot.Commands.Services
 {
@@ -27,6 +29,15 @@ namespace Masya.TelegramBot.Commands.Services
         {
             await base.LoadCommandsAsync(assembly);
             await MapCommandsAsync();
+        }
+
+        public override bool CheckCommandCondition(CommandInfo commandInfo, Message message)
+        {
+            using var scope = services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var user = dbContext.Users.FirstOrDefault(u => u.TelegramAccountId == message.From.Id);
+            return base.CheckCommandCondition(commandInfo, message) && user is not null &&
+            (user.Permission == Permission.All || user.Permission >= commandInfo.Permission);
         }
 
         private async Task MapCommandsAsync()
