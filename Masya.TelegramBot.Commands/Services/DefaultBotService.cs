@@ -37,6 +37,15 @@ namespace Masya.TelegramBot.Commands.Services
             _collectors = new List<ICollector>();
         }
 
+        public DefaultBotService(
+            IServiceProvider services,
+            ILogger<DefaultBotService> logger
+        )
+        {
+            this.services = services;
+            _logger = logger;
+        }
+
         public DefaultBotService()
         {
         }

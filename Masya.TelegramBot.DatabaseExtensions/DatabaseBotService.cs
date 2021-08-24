@@ -13,10 +13,9 @@ namespace Masya.TelegramBot.DatabaseExtensions
     public class DatabaseBotService : DefaultBotService
     {
         public DatabaseBotService(
-            IOptions<BotServiceOptions> options,
             IServiceProvider services,
             ILogger<DefaultBotService> logger
-        ) : base(options, services, logger)
+        ) : base(services, logger)
         {
             LoadBot();
         }
