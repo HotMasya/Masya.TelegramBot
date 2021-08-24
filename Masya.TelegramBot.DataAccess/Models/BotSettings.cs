@@ -4,6 +4,9 @@ namespace Masya.TelegramBot.DataAccess.Models
 {
     public sealed class BotSettings
     {
+        [Key]
+        public int Id { get; set; }
+
         [Required]
         [MaxLength(50)]
         public string BotToken { get; set; }
