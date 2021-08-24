@@ -48,6 +48,11 @@ namespace Masya.TelegramBot.Commands.Services
             commandInfo.MethodInfo is not null;
         }
 
+        protected virtual CommandInfo GetCommand(string name, Message message)
+        {
+            return commands.FirstOrDefault(cm => CommandFilter(cm, name));
+        }
+
         public virtual async Task ExecuteCommandAsync(Message message)
         {
             if (message.Contact != null)
@@ -64,7 +69,7 @@ namespace Masya.TelegramBot.Commands.Services
             await Task.Run(() =>
             {
                 var parts = new CommandParts(message.Text, Options);
-                var commandInfo = commands.FirstOrDefault(cm => CommandFilter(cm, parts.Name));
+                var commandInfo = GetCommand(parts.Name, message);
 
                 if (!CheckCommandCondition(commandInfo, message))
                 {
@@ -148,10 +153,13 @@ namespace Masya.TelegramBot.Commands.Services
                 type.BaseType.Equals(typeof(Module));
         }
 
-        private static bool CommandFilter(CommandInfo info, string commandName)
+        private bool CommandFilter(CommandInfo info, string commandName)
         {
             return info.Name != null &&
-                (info.Name.Equals(commandName) || info.Aliases.Any(a => a.Name.Equals(commandName)));
+            (
+                info.Name.Equals(commandName) ||
+                info.Aliases.Any(a => a.Name.Equals(commandName) && a.IsEnabled.HasValue && a.IsEnabled.Value)
+            );
         }
 
         protected virtual Task ExecuteCommandByStepsAsync(

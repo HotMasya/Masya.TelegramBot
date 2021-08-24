@@ -45,6 +45,34 @@ namespace Masya.TelegramBot.Commands.Services
             );
         }
 
+        protected override CommandInfo GetCommand(string name, Message message)
+        {
+            using var scope = services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var user = dbContext.Users.FirstOrDefault(u => u.TelegramAccountId == message.From.Id);
+            if (user is null)
+            {
+                throw new InvalidOperationException("Unable to execute command for unknown user.");
+            }
+            return commands.FirstOrDefault(cm => DatabaseCommandFilter(cm, name, user));
+        }
+
+        protected bool DatabaseCommandFilter(CommandInfo commandInfo, string commandName, DataAccess.Models.User user)
+        {
+            return commandInfo.Name != null &&
+            (
+                commandInfo.Name.Equals(commandName) ||
+                commandInfo.Aliases.Any(
+                    a => a.Name.Equals(commandName) &&
+                         a.IsEnabled.HasValue &&
+                         a.IsEnabled.Value &&
+                         user.Permission.HasValue &&
+                         a.Permission.HasValue &&
+                         a.Permission.Value <= user.Permission.Value
+                )
+            );
+        }
+
         private async Task MapCommandsAsync()
         {
             using var scope = services.CreateScope();
@@ -65,7 +93,8 @@ namespace Masya.TelegramBot.Commands.Services
                             new AliasInfo
                             {
                                 Name = al.Name,
-                                CommandInfo = ci,
+                                IsEnabled = al.IsEnabled,
+                                Permission = al.Permission,
                             }
                         );
                     }
