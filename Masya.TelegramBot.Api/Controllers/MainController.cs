@@ -27,10 +27,17 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpGet("bot")]
-        public async Task<IActionResult> GetBotSettings()
+        public IActionResult GetBotSettings()
         {
-            var status = await _botService.GetSettingsAsync();
-            return Ok(status);
+            var settings = _dbContext.BotSettings.First();
+            var dto = new BotSettingsDto()
+            {
+                Id = settings.Id,
+                Token = settings.BotToken,
+                WebhookHost = settings.WebhookHost,
+                IsEnabled = settings.IsEnabled,
+            };
+            return Ok(dto);
         }
 
         [HttpPost("bot/update")]
