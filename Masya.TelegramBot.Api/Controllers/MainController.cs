@@ -60,7 +60,6 @@ namespace Masya.TelegramBot.Api.Controllers
             settings.IsEnabled = dto.IsEnabled ?? settings.IsEnabled;
             await _dbContext.SaveChangesAsync();
             _botService.LoadBot();
-            await _botService.SetWebhookAsync();
             return Ok();
         }
     }
