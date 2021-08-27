@@ -56,7 +56,7 @@ namespace Masya.TelegramBot.Api.Controllers
             }
 
             settings.BotToken = dto.Token;
-            settings.WebhookHost = dto.WebhookHost;
+            settings.WebhookHost = dto.WebhookHost.Replace("{BOT_TOKEN}", dto.Token);
             settings.IsEnabled = dto.IsEnabled ?? settings.IsEnabled;
             await _dbContext.SaveChangesAsync();
 
