@@ -31,11 +31,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
         {
             using var scope = services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var dbOptions = dbContext.BotSettings.FirstOrDefault();
-            if (dbOptions is null)
-            {
-                throw new InvalidOperationException("Unable to load bot options from database. The bot options table was empty.");
-            }
+            var dbOptions = dbContext.BotSettings.First();
 
             return new BotServiceOptions
             {
