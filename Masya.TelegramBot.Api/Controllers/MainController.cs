@@ -49,7 +49,7 @@ namespace Masya.TelegramBot.Api.Controllers
                 return BadRequest(new MessageResponseDto("Unable to update settings. Setting not found."));
             }
 
-            bool testResult = await _botService.TestSettingsAsync(dto.Token, dto.WebhookHost);
+            bool testResult = await _botService.TestSettingsAsync(dto.Token, dto.WebhookHost.Replace("{BOT_TOKEN}", dto.Token));
             if (!testResult)
             {
                 return BadRequest(new MessageResponseDto("Invalid bot token or webhook host."));
