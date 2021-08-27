@@ -102,15 +102,20 @@ namespace Masya.TelegramBot.Api
             app.UseCors(CorsPolicyName);
             app.UseAuthentication();
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapTelegramUpdatesRoute(Configuration["Bot:Token"]);
                 endpoints.MapControllers();
                 endpoints.Map("/", async context =>
                 {
                     await context.Response.WriteAsync("<h1>Kinda homepage</h1>");
                     await context.Response.CompleteAsync();
                 });
+                endpoints.MapControllerRoute(
+                    name: "Wilcard_or_update",
+                    pattern: "{**catchAll}",
+                    defaults: new { Controller = "Bot", Action = "Index" }
+                );
             });
         }
     }
