@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Telegram.Bot.Types;
 using Masya.TelegramBot.DataAccess.Models;
 using Telegram.Bot.Types.ReplyMarkups;
+using Microsoft.Extensions.Logging;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -19,12 +20,19 @@ namespace Masya.TelegramBot.Modules
         private readonly ApplicationDbContext _dbContext;
         private readonly CommandServiceOptions _options;
         private readonly IServiceProvider _services;
+        private readonly ILogger<BasicModule> _logger;
 
-        public BasicModule(ApplicationDbContext context, IServiceProvider services, IOptions<CommandServiceOptions> options)
+        public BasicModule(
+            ApplicationDbContext context,
+            IServiceProvider services,
+            IOptions<CommandServiceOptions> options,
+            ILogger<BasicModule> logger
+        )
         {
             _dbContext = context;
             _options = options.Value;
             _services = services;
+            _logger = logger;
         }
 
         private string GenerateMenuMessage(Message message)
@@ -46,6 +54,7 @@ namespace Masya.TelegramBot.Modules
         [Command("/start")]
         public async Task StartCommandAsync()
         {
+            _logger.LogInformation("Executing /start command.");
             if (!_dbContext.Users.Any(u => u.TelegramAccountId == Context.User.Id))
             {
                 await ReplyAsync(

@@ -96,11 +96,11 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 base.CheckCommandCondition(commandInfo, message) &&
                 commandInfo.Permission.HasValue &&
                 (
-                    (
+                    commandInfo.Permission.Value == Permission.Guest || (
                         user is not null &&
                         user.Permission.HasValue &&
                         user.Permission.Value >= commandInfo.Permission.Value
-                    ) || commandInfo.Permission.Value == Permission.Guest
+                    )
                 )
             );
         }
@@ -124,11 +124,11 @@ namespace Masya.TelegramBot.DatabaseExtensions
                         a.IsEnabled.Value &&
                         a.Permission.HasValue &&
                         (
-                            (
+                            a.Permission.Value == Permission.Guest || (
                                 user is not null &&
                                 user.Permission.HasValue &&
                                 user.Permission.Value >= a.Permission.Value
-                            ) || a.Permission.Value == Permission.Guest
+                            )
                         )
                 )
             );
