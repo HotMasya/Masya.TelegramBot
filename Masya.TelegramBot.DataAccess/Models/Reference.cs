@@ -9,8 +9,6 @@ namespace Masya.TelegramBot.DataAccess.Models
 
         public int ReferenceId { get; set; }
 
-        public int AgencyId { get; set; }
-
-        public Agency Agency { get; set; }
+        public string Value { get; set; }
     }
 }

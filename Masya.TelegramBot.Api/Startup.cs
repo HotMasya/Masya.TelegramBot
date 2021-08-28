@@ -2,21 +2,22 @@ using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Commands.Options;
 using Masya.TelegramBot.DatabaseExtensions;
 using Masya.TelegramBot.DataAccess;
+using Masya.TelegramBot.Api.Options;
+using Masya.TelegramBot.Api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Newtonsoft.Json;
 using System.Text;
-using Masya.TelegramBot.Api.Options;
-using Masya.TelegramBot.Api.Services;
 using System;
+using Coravel;
 
 namespace Masya.TelegramBot.Api
 {
@@ -40,8 +41,8 @@ namespace Masya.TelegramBot.Api
 
             services.Configure<CommandServiceOptions>(Configuration.GetSection("Commands"));
             services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
-            services.Configure<XmlOptions>(Configuration.GetSection("XmlOptions"));
             services.Configure<CacheOptions>(Configuration.GetSection("Cache"));
+            services.AddScheduler();
             services.AddCors(options =>
             {
                 options.AddPolicy(
@@ -73,6 +74,7 @@ namespace Masya.TelegramBot.Api
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
             services.AddSingleton<IJwtService, JwtService>();
+            services.AddScoped<IXmlService, XmlService>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
                 options =>
@@ -91,12 +93,24 @@ namespace Masya.TelegramBot.Api
                 });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(
+            IApplicationBuilder app,
+            IWebHostEnvironment env,
+            IServiceProvider services
+        )
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            var provider = app.ApplicationServices;
+            provider.UseScheduler(scheduler =>
+            {
+                scheduler
+                    .Schedule<UpdateXmlImportsInvokable>()
+                    .Daily();
+            });
 
             app.UseRouting();
             app.UseCors(CorsPolicyName);

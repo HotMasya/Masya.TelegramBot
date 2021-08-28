@@ -1,54 +1,172 @@
-using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
-using Masya.TelegramBot.Api.Options;
 using Masya.TelegramBot.Api.Xml;
 using Masya.TelegramBot.DataAccess;
+using Masya.TelegramBot.DataAccess.Models;
 using Masya.TelegramBot.DataAccess.Types;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Masya.TelegramBot.Api.Services
 {
     public sealed class XmlService : IXmlService
     {
-        public IServiceProvider Services { get; }
-        public XmlOptions Options { get; }
+        public ApplicationDbContext DbContext { get; }
+        public List<string> ErrorsList { get; }
 
         private readonly ILogger<XmlService> _logger;
 
-        public XmlService(IServiceProvider services, IOptions<XmlOptions> options)
+        private readonly IEnumerable<DirectoryItem> _streets;
+        private readonly IEnumerable<DirectoryItem> _districts;
+        private readonly IEnumerable<DirectoryItem> _wallMaterials;
+        private readonly IEnumerable<DirectoryItem> _states;
+        private readonly IEnumerable<DirectoryItem> _types;
+        private readonly IEnumerable<DirectoryItem> _misc;
+        private readonly IEnumerable<Category> _categories;
+
+        public XmlService(ApplicationDbContext dbContext)
         {
-            Services = services;
-            Options = options.Value;
+            DbContext = dbContext;
+            ErrorsList = new List<string>();
+
+            _categories = DbContext.Categories.ToList();
+
+            var diretoryItems = DbContext.DirectoryItems.Include(i => i.Directory).ToList();
+            _streets = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.Street));
+            _districts = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.District));
+            _wallMaterials = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.WallsMaterial));
+            _states = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.State));
+            _types = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.Type));
+            _misc = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.Misc));
         }
 
-        private async Task<RealtyFeed> GetRealtyFeed(HttpContent content)
+        public async Task<RealtyFeed> GetRealtyFeed(HttpContent content)
         {
             using var stream = await content.ReadAsStreamAsync();
             return XmlHelper.ParseFromXml<RealtyFeed>(stream);
         }
 
-        public static async Task UpdateObjectsAsync(ApplicationDbContext context, RealtyFeed feed)
+        private int? GetRefId(string value)
         {
-            var realtyObjects = await context.RealtyObjects
-                .ToListAsync();
+            var reference = DbContext.References.FirstOrDefault(r => r.Value == value);
+            return reference is not null ? reference.ReferenceId : null;
+        }
 
-            var diretoryItems = await context.DirectoryItems
-                .Include(i => i.Directory)
-                .ToListAsync();
+        private void MapObjects(RealtyObject offerFromDb, Offer offer)
+        {
+            offerFromDb.Floor = offer.Floor;
+            offerFromDb.TotalFloors = offer.FloorsTotal;
+            offerFromDb.Description = offer.Description;
+            offerFromDb.CreatedAt = offer.CreationDate;
+            offerFromDb.EditedAt = offer.LastUpdateDate;
+            offerFromDb.KitchenSpace = offer.KitchenSpace.Value;
+            offerFromDb.TotalArea = offer.Area.Value;
+            offerFromDb.LivingSpace = offer.LivingSpace.Value;
+            offerFromDb.LotArea = offer.LotArea.Value;
 
-            var streets = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.Street));
-            var districts = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.District));
-            var wallMaterials = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.WallsMaterial));
-            var states = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.State));
-            var types = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.Type));
-            var misc = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.Misc));
+            if (!string.IsNullOrEmpty(offer.Location.District))
+            {
+                var districtId = _districts
+                    .FirstOrDefault(d => d.Value.Equals(offer.Location.District))?.Id
+                    ?? GetRefId(offer.Location.District);
+
+                if (districtId.HasValue)
+                {
+                    offerFromDb.DistrictId = districtId.Value;
+                }
+                else
+                {
+                    ErrorsList.Add("Unable to find district with name: " + offer.Location.District);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(offer.Location.Address))
+            {
+                var streetId = _streets
+                    .FirstOrDefault(s => s.Value.Equals(offer.Location.Address))?.Id
+                    ?? GetRefId(offer.Location.Address);
+
+                if (streetId.HasValue)
+                {
+                    offerFromDb.StreetId = streetId.Value;
+                }
+                else
+                {
+                    ErrorsList.Add("Unable to find address with name: " + offer.Location.Address);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(offer.Renovation))
+            {
+                var stateId = _states
+                    .FirstOrDefault(s => s.Value.Equals(offer.Renovation))?.Id
+                    ?? GetRefId(offer.Renovation);
+
+                if (stateId.HasValue)
+                {
+                    offerFromDb.StateId = stateId.Value;
+                }
+                else
+                {
+                    ErrorsList.Add("Unable to find renovation with name: " + offer.Renovation);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(offer.BuildingType))
+            {
+                var wallMaterialId = _wallMaterials
+                    .FirstOrDefault(w => w.Value.Equals(offer.BuildingType))?.Id
+                    ?? GetRefId(offer.BuildingType);
+
+                if (wallMaterialId.HasValue)
+                {
+                    offerFromDb.WallMaterialId = wallMaterialId.Value;
+                }
+                else
+                {
+                    ErrorsList.Add("Unable to find building type with name: " + offer.BuildingType);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(offer.Type))
+            {
+                var typeId = _types
+                    .FirstOrDefault(t => t.Value.Equals(offer.Type))?.Id
+                    ?? GetRefId(offer.Type);
+
+                if (typeId.HasValue)
+                {
+                    offerFromDb.WallMaterialId = typeId.Value;
+                }
+                else
+                {
+                    ErrorsList.Add("Unable to find type with name: " + offer.Type);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(offer.Category))
+            {
+                var categoryId = _types
+                    .FirstOrDefault(t => t.Value.Equals(offer.Category))?.Id
+                    ?? GetRefId(offer.Category);
+
+                if (categoryId.HasValue)
+                {
+                    offerFromDb.CategoryId = categoryId.Value;
+                }
+                else
+                {
+                    ErrorsList.Add("Unable to find category with name: " + offer.Category);
+                }
+            }
+        }
+
+        public async Task UpdateObjectsAsync(RealtyFeed feed)
+        {
+            var realtyObjects = await DbContext.RealtyObjects
+                .ToListAsync();
 
             foreach (var offer in feed.Offers)
             {
@@ -59,50 +177,16 @@ namespace Masya.TelegramBot.Api.Services
 
                 if (offerFromDb is null)
                 {
+                    var newOffer = new RealtyObject();
+                    MapObjects(newOffer, offer);
+                    DbContext.RealtyObjects.Add(newOffer);
                     continue;
                 }
 
-                offerFromDb.Floor = offer.Floor;
-                offerFromDb.TotalFloors = offer.FloorsTotal;
-                offerFromDb.Description = offer.Description;
-                offerFromDb.CreatedAt = offer.CreationDate;
-                offerFromDb.EditedAt = offer.LastUpdateDate;
-                offerFromDb.KitchenSpace = offer.KitchenSpace.Value;
-                offerFromDb.TotalArea = offer.Area.Value;
-                offerFromDb.LivingSpace = offer.LivingSpace.Value;
-                offerFromDb.LotArea = offer.LotArea.Value;
-
+                MapObjects(offerFromDb, offer);
             }
-        }
 
-        public async Task StartWatching(CancellationToken token = default)
-        {
-            while (!token.IsCancellationRequested)
-            {
-                _logger.LogInformation("Starting to update objects the database.");
-                using (var scope = Services.CreateScope())
-                {
-                    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                    var xmlUrls = dbContext.Agencies.Select(a => a.ImportUrl).ToList();
-                    var httpClient = new HttpClient();
-                    foreach (var url in xmlUrls)
-                    {
-                        if (!string.IsNullOrEmpty(url))
-                        {
-                            var response = await httpClient.GetAsync(url);
-                            if (response.StatusCode == HttpStatusCode.OK)
-                            {
-                                var realtyFeed = await GetRealtyFeed(response.Content);
-
-                            }
-
-                            _logger.LogInformation("{0} - Finished with status code: {1}", url, ((int)response.StatusCode));
-                        }
-                    }
-                }
-                _logger.LogInformation("Finished updating objects in the database.");
-                await Task.Delay(TimeSpan.FromHours(Options.UpdateTimeInHours), token);
-            }
+            await DbContext.SaveChangesAsync();
         }
     }
 }
