@@ -71,7 +71,8 @@ namespace Masya.TelegramBot.DatabaseExtensions
                     UpdateButtons(buttons, ref currentRowIndex);
                     buttons[currentRowIndex].Add(new KeyboardButton(c.Name));
                 }
-                else if (c.Aliases is not null && c.Aliases.Count > 0)
+
+                if (c.Aliases is not null && c.Aliases.Count > 0)
                 {
                     foreach (var a in c.Aliases)
                     {
