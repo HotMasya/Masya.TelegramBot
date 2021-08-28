@@ -40,7 +40,7 @@ namespace Masya.TelegramBot.DataAccess.Models
         public int TotalArea { get; set; }
         public int LiveArea { get; set; }
         public int KitchenArea { get; set; }
-        public int SectorArea { get; set; }
+        public int LotArea { get; set; }
 
         public int? Floor { get; set; }
         public int? TotalFloors { get; set; }
