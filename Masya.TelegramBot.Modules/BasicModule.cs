@@ -26,15 +26,31 @@ namespace Masya.TelegramBot.Modules
             _services = services;
         }
 
+        private string GenerateMenuMessage(Message message)
+        {
+            var user = _dbContext.Users.First(u => u.TelegramAccountId == message.From.Id);
+            var fullName = user.TelegramFirstName + (
+                string.IsNullOrEmpty(user.TelegramLastName)
+                    ? ""
+                    : " " + user.TelegramLastName
+            );
+
+            return string.Format(
+                "Hello, <b>{0}</b>!\nYour status: <b>{1}</b>.\nYour are in main menu now.",
+                fullName,
+                user.Permission.ToString()
+            );
+        }
+
         [Command("/start")]
         public async Task StartCommandAsync()
         {
             if (_dbContext.Users.Any(u => u.TelegramAccountId == Context.User.Id) == false)
             {
-                await ReplyAsync("Registration goes first.", replyMarkup: Markups.RegisterButton());
+                await ReplyAsync("First, you have to sign up.", replyMarkup: Markups.RegisterButton());
                 return;
             }
-            await ReplyAsync("Menu", replyMarkup: Context.CommandService.GetMenuKeyboard());
+            await ReplyAsync(GenerateMenuMessage(Context.Message), replyMarkup: Context.CommandService.GetMenuKeyboard());
         }
 
         [RegisterUser]
@@ -58,7 +74,8 @@ namespace Masya.TelegramBot.Modules
                 .Collect(m => m.Contact)
                 .Collect(m => m.Text);
 
-            var resultText = "";
+            string resultText = "";
+            string password = null;
             var scope = _services.CreateScope();
             collector.OnStart += (sender, args) =>
             {
@@ -67,6 +84,37 @@ namespace Masya.TelegramBot.Modules
 
             collector.OnMessageReceived += (sender, args) =>
             {
+                if (dbUser.Permission.HasValue)
+                {
+                    if (password is null)
+                    {
+                        Context.BotService.Client.SendTextMessageAsync(
+                            chatId: args.Message.Chat.Id,
+                            text: "Enter agency registration key, please."
+                        );
+                        return;
+                    }
+
+                    var ctx = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    var agency = ctx.Agencies.FirstOrDefault(a => a.RegistrationKey.Equals(password));
+
+                    if (agency != null)
+                    {
+                        dbUser.AgencyId = agency.Id;
+                        collector.Finish();
+                        return;
+                    }
+
+                    dbUser.Permission = null;
+                    password = null;
+                    Context.BotService.Client.SendTextMessageAsync(
+                        chatId: args.Message.Chat.Id,
+                        text: "Invalid agency registration key."
+                    );
+                    SendRoleQuestionAsync(args.Message.Chat.Id).Wait();
+                    return;
+                }
+
                 string formattedText = args.Message.Text.Trim().ToLower();
                 switch (formattedText)
                 {
@@ -77,7 +125,6 @@ namespace Masya.TelegramBot.Modules
 
                     case UserRoles.Agent:
                         dbUser.Permission = Permission.Agent;
-                        resultText = "You're now registered as an agent.";
                         break;
 
                     default:
