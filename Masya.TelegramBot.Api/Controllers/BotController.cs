@@ -33,10 +33,9 @@ namespace Masya.TelegramBot.Api.Controllers
             if (url.EndsWith(Request.Path))
             {
                 await _botService.HandleUpdateAsync(update);
-                return Ok();
             }
 
-            return NotFound();
+            return Ok();
         }
     }
 }
