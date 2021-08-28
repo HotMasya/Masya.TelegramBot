@@ -29,9 +29,6 @@ namespace Masya.TelegramBot.Api.Controllers
         {
             var settings = _dbContext.BotSettings.First();
             var url = settings.WebhookHost.Replace("{BOT_TOKEN}", settings.BotToken);
-            _logger.LogInformation("Webhook url: " + url);
-            _logger.LogInformation("Request Path: " + Request.Path);
-            _logger.LogInformation("Request Path Base: " + Request.PathBase);
 
             if (url.EndsWith(Request.Path))
             {

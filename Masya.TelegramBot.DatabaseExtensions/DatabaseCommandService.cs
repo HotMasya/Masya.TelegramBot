@@ -125,6 +125,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                         a.Permission.HasValue &&
                         (
                             (
+                                user is not null &&
                                 user.Permission.HasValue &&
                                 user.Permission.Value >= a.Permission.Value
                             ) || a.Permission == Permission.Guest
