@@ -94,10 +94,14 @@ namespace Masya.TelegramBot.DatabaseExtensions
             var user = dbContext.Users.FirstOrDefault(u => u.TelegramAccountId == message.From.Id);
             return (
                 base.CheckCommandCondition(commandInfo, message) &&
-                user is not null &&
-                user.Permission.HasValue &&
                 commandInfo.Permission.HasValue &&
-                (user.Permission.Value == Permission.All || user.Permission.Value >= commandInfo.Permission.Value)
+                (
+                    (
+                        user is not null &&
+                        user.Permission.HasValue &&
+                        user.Permission.Value >= commandInfo.Permission.Value
+                    ) || commandInfo.Permission == Permission.Guest
+                )
             );
         }
 
@@ -106,10 +110,6 @@ namespace Masya.TelegramBot.DatabaseExtensions
             using var scope = services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var user = dbContext.Users.FirstOrDefault(u => u.TelegramAccountId == message.From.Id);
-            if (user is null)
-            {
-                throw new InvalidOperationException("Unable to execute command for unknown user.");
-            }
             return commands.FirstOrDefault(cm => DatabaseCommandFilter(cm, name, user));
         }
 
@@ -120,11 +120,15 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 commandInfo.Name.Equals(commandName) ||
                 commandInfo.Aliases.Any(
                     a => a.Name.Equals(commandName) &&
-                         a.IsEnabled.HasValue &&
-                         a.IsEnabled.Value &&
-                         user.Permission.HasValue &&
-                         a.Permission.HasValue &&
-                         a.Permission.Value <= user.Permission.Value
+                        a.IsEnabled.HasValue &&
+                        a.IsEnabled.Value &&
+                        a.Permission.HasValue &&
+                        (
+                            (
+                                user.Permission.HasValue &&
+                                user.Permission.Value >= a.Permission.Value
+                            ) || a.Permission == Permission.Guest
+                        )
                 )
             );
         }

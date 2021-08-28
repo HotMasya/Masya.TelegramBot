@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Telegram.Bot.Types;
 using Masya.TelegramBot.DataAccess.Models;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -36,7 +37,7 @@ namespace Masya.TelegramBot.Modules
             );
 
             return string.Format(
-                "Hello, <b>{0}</b>!\nYour status: <b>{1}</b>.\nYour are in main menu now.",
+                "Welcome back, <b>{0}</b>!\nYour status: <b>{1}</b>.\nYour are in main menu now.",
                 fullName,
                 user.Permission.ToString()
             );
@@ -45,9 +46,12 @@ namespace Masya.TelegramBot.Modules
         [Command("/start")]
         public async Task StartCommandAsync()
         {
-            if (_dbContext.Users.Any(u => u.TelegramAccountId == Context.User.Id) == false)
+            if (!_dbContext.Users.Any(u => u.TelegramAccountId == Context.User.Id))
             {
-                await ReplyAsync("First, you have to sign up.", replyMarkup: Markups.RegisterButton());
+                await ReplyAsync(
+                    "First, you have to sign up.",
+                    replyMarkup: new ReplyKeyboardMarkup(KeyboardButton.WithRequestContact("Send information about me."))
+                );
                 return;
             }
             await ReplyAsync(GenerateMenuMessage(Context.Message), replyMarkup: Context.CommandService.GetMenuKeyboard());

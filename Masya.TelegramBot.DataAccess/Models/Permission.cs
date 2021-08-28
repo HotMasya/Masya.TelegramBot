@@ -2,6 +2,8 @@
 {
     public enum Permission
     {
+        //  0
+        Guest = 0,
         //  1
         User = 1 << 0,
         //  2
@@ -9,8 +11,6 @@
         //  4
         Admin = 1 << 2,
         //  8
-        SuperAdmin = 1 << 3,
-        //  15
-        All = User | Agent | Admin | SuperAdmin
+        SuperAdmin = 1 << 3
     }
 }

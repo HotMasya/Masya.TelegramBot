@@ -5,17 +5,12 @@ namespace Masya.TelegramBot.Modules
 {
     public static class Markups
     {
-        public static IReplyMarkup RegisterButton()
-        {
-            return new ReplyKeyboardMarkup(KeyboardButton.WithRequestContact("РЕГИСТРАЦИЯ"));
-        }
-
         public static IReplyMarkup ClientAgentButtons()
         {
             var buttons = new List<KeyboardButton>
             {
-                new KeyboardButton("Агент"),
-                new KeyboardButton("Покупатель")
+                new KeyboardButton("Agent"),
+                new KeyboardButton("Customer")
             };
             return new ReplyKeyboardMarkup(buttons);
         }
