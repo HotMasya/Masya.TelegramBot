@@ -8,7 +8,7 @@ namespace Masya.TelegramBot.DataAccess.Models
         public int Id { get; set; }
 
         public int PropertyObjectId { get; set; }
-        public PropertyObject PropertyObject { get; set; }
+        public RealtyObject PropertyObject { get; set; }
 
         public int UserId { get; set; }
         public User User { get; set; }

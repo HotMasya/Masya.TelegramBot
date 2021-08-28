@@ -20,5 +20,8 @@ namespace Masya.TelegramBot.DataAccess.Models
         public string RegistrationKey { get; set; }
 
         public bool? IsRegWithoutAdmin { get; set; }
+
+        [MaxLength(256)]
+        public string ImportUrl { get; set; }
     }
 }

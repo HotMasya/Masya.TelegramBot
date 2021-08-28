@@ -13,7 +13,7 @@ namespace Masya.TelegramBot.DataAccess
         public DbSet<Directory> Directories { get; set; }
         public DbSet<DirectoryItem> DirectoryItems { get; set; }
         public DbSet<Favorites> Favorites { get; set; }
-        public DbSet<PropertyObject> PropertyObjects { get; set; }
+        public DbSet<RealtyObject> RealtyObjects { get; set; }
         public DbSet<Reference> References { get; set; }
         public DbSet<Report> Reports { get; set; }
         public DbSet<User> Users { get; set; }

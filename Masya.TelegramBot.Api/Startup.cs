@@ -1,4 +1,3 @@
-using Masya.TelegramBot.Commands.Services;
 using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Commands.Options;
 using Masya.TelegramBot.DatabaseExtensions;
@@ -41,6 +40,7 @@ namespace Masya.TelegramBot.Api
 
             services.Configure<CommandServiceOptions>(Configuration.GetSection("Commands"));
             services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
+            services.Configure<XmlOptions>(Configuration.GetSection("XmlOptions"));
             services.Configure<CacheOptions>(Configuration.GetSection("Cache"));
             services.AddCors(options =>
             {

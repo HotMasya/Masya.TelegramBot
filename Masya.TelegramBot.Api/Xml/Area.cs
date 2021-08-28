@@ -7,7 +7,7 @@ namespace Masya.TelegramBot.Api.Xml
     public sealed class Area
     {
         [XmlElement(ElementName = "value")]
-        public int Value { get; set; }
+        public float Value { get; set; }
 
         [XmlElement(ElementName = "unit")]
         public string Unit { get; set; }

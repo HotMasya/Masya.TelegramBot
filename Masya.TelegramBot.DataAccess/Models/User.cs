@@ -44,7 +44,7 @@ namespace Masya.TelegramBot.DataAccess.Models
         [MaxLength(255)]
         public string Note { get; set; }
 
-        public List<PropertyObject> PropertyObjects { get; set; }
+        public List<RealtyObject> PropertyObjects { get; set; }
 
         public override string ToString()
         {
