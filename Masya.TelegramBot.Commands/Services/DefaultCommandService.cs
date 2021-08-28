@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Masya.TelegramBot.Commands.Services
 {
@@ -92,7 +93,7 @@ namespace Masya.TelegramBot.Commands.Services
                         Array.Empty<object>()
                     );
                     var propInfo = commandInfo.MethodInfo.DeclaringType.GetProperty("Context");
-                    var context = new DefaultCommandContext(BotService, message.Chat, message.From, message);
+                    var context = new DefaultCommandContext(BotService, this, message.Chat, message.From, message);
                     propInfo.SetValue(moduleInstance, context);
                     commandInfo.MethodInfo.Invoke(moduleInstance, parts.MatchParamTypes(commandInfo.MethodInfo));
                 }
@@ -176,7 +177,7 @@ namespace Masya.TelegramBot.Commands.Services
                 Array.Empty<object>()
             );
             var propInfo = method.DeclaringType.GetProperty("Context");
-            var context = new DefaultCommandContext(BotService, message.Chat, message.From, message);
+            var context = new DefaultCommandContext(BotService, this, message.Chat, message.From, message);
             propInfo.SetValue(moduleInstance, context);
 
             var result = new List<object>();
@@ -271,7 +272,7 @@ namespace Masya.TelegramBot.Commands.Services
                 Array.Empty<object>()
             );
             var propInfo = handleMethod.DeclaringType.GetProperty("Context");
-            var context = new DefaultCommandContext(BotService, message.Chat, message.From, message);
+            var context = new DefaultCommandContext(BotService, this, message.Chat, message.From, message);
             propInfo.SetValue(moduleInstance, context);
 
             handleMethod.Invoke(moduleInstance, new[] { message.Contact });
@@ -283,6 +284,11 @@ namespace Masya.TelegramBot.Commands.Services
             var parameters = method.GetParameters();
             return method.GetCustomAttribute<RegisterUserAttribute>() != null &&
                 parameters.Length == 1 && parameters[0].ParameterType == typeof(Contact);
+        }
+
+        public virtual IReplyMarkup GetMenuKeyboard()
+        {
+            return new ReplyKeyboardMarkup(new KeyboardButton("/start")) { ResizeKeyboard = true };
         }
     }
 }

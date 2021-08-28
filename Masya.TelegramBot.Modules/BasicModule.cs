@@ -18,6 +18,7 @@ namespace Masya.TelegramBot.Modules
         private readonly ApplicationDbContext _dbContext;
         private readonly CommandServiceOptions _options;
         private readonly IServiceProvider _services;
+
         public BasicModule(ApplicationDbContext context, IServiceProvider services, IOptions<CommandServiceOptions> options)
         {
             _dbContext = context;
@@ -33,7 +34,7 @@ namespace Masya.TelegramBot.Modules
                 await ReplyAsync("Registration goes first.", replyMarkup: Markups.RegisterButton());
                 return;
             }
-            await ReplyAsync("Menu", replyMarkup: Markups.MainMenuButtons());
+            await ReplyAsync("Menu", replyMarkup: Context.CommandService.GetMenuKeyboard());
         }
 
         [RegisterUser]
@@ -95,7 +96,7 @@ namespace Masya.TelegramBot.Modules
                 Context.BotService.Client.SendTextMessageAsync(
                     chatId: Context.Message.Chat.Id,
                     text: resultText,
-                    replyMarkup: Markups.MainMenuButtons()
+                    replyMarkup: Context.CommandService.GetMenuKeyboard()
                     ).Wait();
             };
 

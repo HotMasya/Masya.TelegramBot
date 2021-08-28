@@ -5,33 +5,6 @@ namespace Masya.TelegramBot.Modules
 {
     public static class Markups
     {
-        public static IReplyMarkup MainMenuButtons()
-        {
-            var buttons = new List<List<KeyboardButton>>
-            {
-                new List<KeyboardButton>
-                {
-                    new KeyboardButton("СТАРТ"),
-                    new KeyboardButton("СПРАВКА"),
-                    new KeyboardButton("ОБЪЕКТ"),
-                },
-                new List<KeyboardButton>
-                {
-                    new KeyboardButton("ПОИСК"),
-                    new KeyboardButton("МОИ"),
-                    new KeyboardButton("РАССЫЛКА"),
-                },
-                new List<KeyboardButton>
-                {
-                    new KeyboardButton("ДОБАВИТЬ"),
-                    new KeyboardButton("ЭКСПОРТ"),
-                    new KeyboardButton("РЕГИСТРАЦИЯ")
-                }
-            };
-
-            return new ReplyKeyboardMarkup(buttons) { ResizeKeyboard = true };
-        }
-
         public static IReplyMarkup RegisterButton()
         {
             return new ReplyKeyboardMarkup(KeyboardButton.WithRequestContact("РЕГИСТРАЦИЯ"));

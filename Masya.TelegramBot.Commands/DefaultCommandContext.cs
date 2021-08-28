@@ -8,18 +8,24 @@ namespace Masya.TelegramBot.Commands
     {
         public IBotService BotService { get; }
 
+        public ICommandService CommandService { get; }
+
         public Chat Chat { get; }
 
         public User User { get; }
 
         public Message Message { get; }
 
-        public DefaultCommandContext(IBotService botService,
-                                    Chat chat,
-                                    User user,
-                                    Message message)
+        public DefaultCommandContext(
+            IBotService botService,
+            ICommandService commandService,
+            Chat chat,
+            User user,
+            Message message
+        )
         {
             BotService = botService;
+            CommandService = commandService;
             Chat = chat;
             User = user;
             Message = message;
