@@ -159,7 +159,6 @@ namespace Masya.TelegramBot.Modules
                 var ctx = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 ctx.Users.Add(dbUser);
                 ctx.SaveChanges();
-                scope.Dispose();
                 Context.BotService.Client.SendTextMessageAsync(
                     chatId: Context.Message.Chat.Id,
                     text: GenerateMenuMessage(Context.Message, ctx),
