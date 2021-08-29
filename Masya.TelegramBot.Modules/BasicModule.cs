@@ -99,7 +99,7 @@ namespace Masya.TelegramBot.Modules
                         Context.BotService.Client.SendTextMessageAsync(
                             chatId: args.Message.Chat.Id,
                             text: "Enter agency registration key, please."
-                        );
+                        ).Wait();
                         return;
                     }
 
@@ -112,7 +112,7 @@ namespace Masya.TelegramBot.Modules
                         Context.BotService.Client.SendTextMessageAsync(
                             chatId: args.Message.Chat.Id,
                             text: "You're now the agent of the agency: <b>" + agency.Name + "</b>."
-                        );
+                        ).Wait();
                         collector.Finish();
                         return;
                     }
@@ -122,7 +122,7 @@ namespace Masya.TelegramBot.Modules
                     Context.BotService.Client.SendTextMessageAsync(
                         chatId: args.Message.Chat.Id,
                         text: "Invalid agency registration key."
-                    );
+                    ).Wait();
                     SendRoleQuestionAsync(args.Message.Chat.Id).Wait();
                     return;
                 }
@@ -132,12 +132,15 @@ namespace Masya.TelegramBot.Modules
                 {
                     case UserRoles.Customer:
                         dbUser.Permission = Permission.User;
-                        resultText = "You're now registered as a customer.";
+                        Context.BotService.Client.SendTextMessageAsync(
+                            chatId: args.Message.Chat.Id,
+                            text: "Invalid agency registration key."
+                        ).Wait();
                         break;
 
                     case UserRoles.Agent:
                         dbUser.Permission = Permission.Agent;
-                        break;
+                        return;
 
                     default:
                         SendRoleQuestionAsync(args.Message.Chat.Id).Wait();
