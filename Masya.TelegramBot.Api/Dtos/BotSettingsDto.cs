@@ -1,3 +1,6 @@
+
+using Telegram.Bot.Types;
+
 namespace Masya.TelegramBot.Api.Dtos
 {
     public sealed class BotSettingsDto
@@ -6,5 +9,6 @@ namespace Masya.TelegramBot.Api.Dtos
         public string Token { get; set; }
         public string WebhookHost { get; set; }
         public bool? IsEnabled { get; set; }
+        public User BotUser { get; set; }
     }
 }

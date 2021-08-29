@@ -7,7 +7,6 @@ using Masya.TelegramBot.DataAccess;
 using Masya.TelegramBot.DataAccess.Models;
 using Masya.TelegramBot.DataAccess.Types;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Masya.TelegramBot.Api.Services
 {
