@@ -83,7 +83,6 @@ namespace Masya.TelegramBot.Modules
                 .Collect(m => m.Contact)
                 .Collect(m => m.Text);
 
-            string resultText = "";
             var scope = _services.CreateScope();
             collector.OnStart += (sender, args) =>
             {
@@ -163,7 +162,7 @@ namespace Masya.TelegramBot.Modules
                 scope.Dispose();
                 Context.BotService.Client.SendTextMessageAsync(
                     chatId: Context.Message.Chat.Id,
-                    text: resultText,
+                    text: GenerateMenuMessage(Context.Message),
                     replyMarkup: Context.CommandService.GetMenuKeyboard()
                     ).Wait();
             };
@@ -172,7 +171,8 @@ namespace Masya.TelegramBot.Modules
             {
                 Context.BotService.Client.SendTextMessageAsync(
                         chatId: Context.Message.Chat.Id,
-                        text: "The time is out, please, try again."
+                        text: "The time is out, please, try again.",
+                        replyMarkup: Context.CommandService.GetMenuKeyboard()
                     ).Wait();
             };
 
