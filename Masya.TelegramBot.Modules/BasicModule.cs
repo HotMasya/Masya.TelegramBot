@@ -109,6 +109,10 @@ namespace Masya.TelegramBot.Modules
                     if (agency != null)
                     {
                         dbUser.AgencyId = agency.Id;
+                        Context.BotService.Client.SendTextMessageAsync(
+                            chatId: args.Message.Chat.Id,
+                            text: "You're now the agent of the agency: <b>" + agency.Name + "</b>."
+                        );
                         collector.Finish();
                         return;
                     }
