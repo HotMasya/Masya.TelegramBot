@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Telegram.Bot.Types;
 using Masya.TelegramBot.DataAccess.Models;
 using Telegram.Bot.Types.ReplyMarkups;
+using Telegram.Bot.Types.Enums;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -102,7 +103,8 @@ namespace Masya.TelegramBot.Modules
                         dbUser.AgencyId = agency.Id;
                         Context.BotService.Client.SendTextMessageAsync(
                             chatId: args.Message.Chat.Id,
-                            text: "You're now the agent of the agency: <b>" + agency.Name + "</b>."
+                            text: "You're now the agent of the agency: <b>" + agency.Name + "</b>.",
+                            parseMode: ParseMode.Html
                         ).Wait();
                         collector.Finish();
                         return;
@@ -113,7 +115,7 @@ namespace Masya.TelegramBot.Modules
                         chatId: args.Message.Chat.Id,
                         text: "Invalid agency registration key."
                     ).Wait();
-                    SendRoleQuestionAsync(args.Message.Chat.Id).Wait();
+                    collector.Finish();
                     return;
                 }
 
