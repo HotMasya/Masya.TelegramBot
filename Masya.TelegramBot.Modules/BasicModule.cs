@@ -83,7 +83,6 @@ namespace Masya.TelegramBot.Modules
                 .Collect(m => m.Text);
 
             string resultText = "";
-            string password = null;
             var scope = _services.CreateScope();
             collector.OnStart += (sender, args) =>
             {
@@ -94,17 +93,9 @@ namespace Masya.TelegramBot.Modules
             {
                 if (dbUser.Permission.HasValue && dbUser.Permission.Value == Permission.Agent)
                 {
-                    if (string.IsNullOrEmpty(password))
-                    {
-                        Context.BotService.Client.SendTextMessageAsync(
-                            chatId: args.Message.Chat.Id,
-                            text: "Enter agency registration key, please."
-                        ).Wait();
-                        return;
-                    }
-
+                    var key = args.Message.Text;
                     var ctx = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                    var agency = ctx.Agencies.FirstOrDefault(a => a.RegistrationKey.Equals(password));
+                    var agency = ctx.Agencies.FirstOrDefault(a => a.RegistrationKey.Equals(key));
 
                     if (agency is not null)
                     {
@@ -118,7 +109,6 @@ namespace Masya.TelegramBot.Modules
                     }
 
                     dbUser.Permission = null;
-                    password = null;
                     Context.BotService.Client.SendTextMessageAsync(
                         chatId: args.Message.Chat.Id,
                         text: "Invalid agency registration key."
@@ -140,6 +130,10 @@ namespace Masya.TelegramBot.Modules
 
                     case UserRoles.Agent:
                         dbUser.Permission = Permission.Agent;
+                        Context.BotService.Client.SendTextMessageAsync(
+                            chatId: args.Message.Chat.Id,
+                            text: "Enter agency registration key, please."
+                        ).Wait();
                         return;
 
                     default:
