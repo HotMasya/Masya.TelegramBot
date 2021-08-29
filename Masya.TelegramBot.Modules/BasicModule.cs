@@ -32,9 +32,9 @@ namespace Masya.TelegramBot.Modules
             _services = services;
         }
 
-        private string GenerateMenuMessage(Message message)
+        private static string GenerateMenuMessage(Message message, ApplicationDbContext dbContext)
         {
-            var user = _dbContext.Users.First(u => u.TelegramAccountId == message.From.Id);
+            var user = dbContext.Users.First(u => u.TelegramAccountId == message.From.Id);
             var fullName = user.TelegramFirstName + (
                 string.IsNullOrEmpty(user.TelegramLastName)
                     ? ""
@@ -59,7 +59,7 @@ namespace Masya.TelegramBot.Modules
                 );
                 return;
             }
-            await ReplyAsync(GenerateMenuMessage(Context.Message), replyMarkup: Context.CommandService.GetMenuKeyboard());
+            await ReplyAsync(GenerateMenuMessage(Context.Message, _dbContext), replyMarkup: Context.CommandService.GetMenuKeyboard());
         }
 
         [RegisterUser]
@@ -162,7 +162,7 @@ namespace Masya.TelegramBot.Modules
                 scope.Dispose();
                 Context.BotService.Client.SendTextMessageAsync(
                     chatId: Context.Message.Chat.Id,
-                    text: GenerateMenuMessage(Context.Message),
+                    text: GenerateMenuMessage(Context.Message, ctx),
                     replyMarkup: Context.CommandService.GetMenuKeyboard()
                     ).Wait();
             };
