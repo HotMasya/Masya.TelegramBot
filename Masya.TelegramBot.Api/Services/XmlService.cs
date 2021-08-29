@@ -48,7 +48,7 @@ namespace Masya.TelegramBot.Api.Services
 
         private int? GetRefId(string value)
         {
-            var reference = DbContext.References.FirstOrDefault(r => r.Value == value);
+            var reference = DbContext.References.FirstOrDefault(r => r.Value.ToLower() == value.ToLower());
             return reference is not null ? reference.ReferenceId : null;
         }
 
@@ -67,7 +67,7 @@ namespace Masya.TelegramBot.Api.Services
             if (!string.IsNullOrEmpty(offer.Location.District))
             {
                 var districtId = _districts
-                    .FirstOrDefault(d => d.Value.Equals(offer.Location.District))?.Id
+                    .FirstOrDefault(d => d.Value.ToLower().Equals(offer.Location.District.ToLower()))?.Id
                     ?? GetRefId(offer.Location.District);
 
                 if (districtId.HasValue)
@@ -83,7 +83,7 @@ namespace Masya.TelegramBot.Api.Services
             if (!string.IsNullOrEmpty(offer.Location.Address))
             {
                 var streetId = _streets
-                    .FirstOrDefault(s => s.Value.Equals(offer.Location.Address))?.Id
+                    .FirstOrDefault(s => s.Value.ToLower().Equals(offer.Location.Address.ToLower()))?.Id
                     ?? GetRefId(offer.Location.Address);
 
                 if (streetId.HasValue)
@@ -99,7 +99,7 @@ namespace Masya.TelegramBot.Api.Services
             if (!string.IsNullOrEmpty(offer.Renovation))
             {
                 var stateId = _states
-                    .FirstOrDefault(s => s.Value.Equals(offer.Renovation))?.Id
+                    .FirstOrDefault(s => s.Value.ToLower().Equals(offer.Renovation.ToLower()))?.Id
                     ?? GetRefId(offer.Renovation);
 
                 if (stateId.HasValue)
@@ -115,7 +115,7 @@ namespace Masya.TelegramBot.Api.Services
             if (!string.IsNullOrEmpty(offer.BuildingType))
             {
                 var wallMaterialId = _wallMaterials
-                    .FirstOrDefault(w => w.Value.Equals(offer.BuildingType))?.Id
+                    .FirstOrDefault(w => w.Value.ToLower().Equals(offer.BuildingType.ToLower()))?.Id
                     ?? GetRefId(offer.BuildingType);
 
                 if (wallMaterialId.HasValue)
@@ -131,7 +131,7 @@ namespace Masya.TelegramBot.Api.Services
             if (!string.IsNullOrEmpty(offer.Type))
             {
                 var typeId = _types
-                    .FirstOrDefault(t => t.Value.Equals(offer.Type))?.Id
+                    .FirstOrDefault(t => t.Value.ToLower().Equals(offer.Type.ToLower()))?.Id
                     ?? GetRefId(offer.Type);
 
                 if (typeId.HasValue)
@@ -147,7 +147,7 @@ namespace Masya.TelegramBot.Api.Services
             if (!string.IsNullOrEmpty(offer.Category))
             {
                 var categoryId = _types
-                    .FirstOrDefault(t => t.Value.Equals(offer.Category))?.Id
+                    .FirstOrDefault(t => t.Value.ToLower().Equals(offer.Category.ToLower()))?.Id
                     ?? GetRefId(offer.Category);
 
                 if (categoryId.HasValue)

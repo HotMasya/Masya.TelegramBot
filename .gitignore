@@ -20,6 +20,7 @@ bin/
 *.Development.json
 out/
 sql/
+Masya.TelegramBot.DatabaseInserting/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

@@ -162,6 +162,7 @@ namespace Masya.TelegramBot.Modules
                 Context.BotService.Client.SendTextMessageAsync(
                     chatId: Context.Message.Chat.Id,
                     text: GenerateMenuMessage(Context.Message, ctx),
+                    parseMode: ParseMode.Html,
                     replyMarkup: Context.CommandService.GetMenuKeyboard()
                     ).Wait();
             };
