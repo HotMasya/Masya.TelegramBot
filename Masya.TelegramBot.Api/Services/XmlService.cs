@@ -16,8 +16,6 @@ namespace Masya.TelegramBot.Api.Services
         public ApplicationDbContext DbContext { get; }
         public List<string> ErrorsList { get; }
 
-        private readonly ILogger<XmlService> _logger;
-
         private readonly IEnumerable<DirectoryItem> _streets;
         private readonly IEnumerable<DirectoryItem> _districts;
         private readonly IEnumerable<DirectoryItem> _wallMaterials;

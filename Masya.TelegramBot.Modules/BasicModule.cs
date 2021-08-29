@@ -92,9 +92,9 @@ namespace Masya.TelegramBot.Modules
 
             collector.OnMessageReceived += (sender, args) =>
             {
-                if (dbUser.Permission.HasValue)
+                if (dbUser.Permission.HasValue && dbUser.Permission.Value == Permission.Agent)
                 {
-                    if (password is null)
+                    if (string.IsNullOrEmpty(password))
                     {
                         Context.BotService.Client.SendTextMessageAsync(
                             chatId: args.Message.Chat.Id,
@@ -106,7 +106,7 @@ namespace Masya.TelegramBot.Modules
                     var ctx = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                     var agency = ctx.Agencies.FirstOrDefault(a => a.RegistrationKey.Equals(password));
 
-                    if (agency != null)
+                    if (agency is not null)
                     {
                         dbUser.AgencyId = agency.Id;
                         Context.BotService.Client.SendTextMessageAsync(
