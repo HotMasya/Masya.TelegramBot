@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masya.TelegramBot.DatabaseE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masya.TelegramBot.Modules", "Masya.TelegramBot.Modules\Masya.TelegramBot.Modules.csproj", "{4568FB22-95F3-4999-A852-C480158F04A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masya.TelegramBot.DatabaseInserting", "Masya.TelegramBot.DatabaseInserting\Masya.TelegramBot.DatabaseInserting.csproj", "{D69D320B-4B72-49A4-A362-8E7BD9C59633}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,17 +86,5 @@ Global
 		{4568FB22-95F3-4999-A852-C480158F04A0}.Release|x64.Build.0 = Release|Any CPU
 		{4568FB22-95F3-4999-A852-C480158F04A0}.Release|x86.ActiveCfg = Release|Any CPU
 		{4568FB22-95F3-4999-A852-C480158F04A0}.Release|x86.Build.0 = Release|Any CPU
-		{D69D320B-4B72-49A4-A362-8E7BD9C59633}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D69D320B-4B72-49A4-A362-8E7BD9C59633}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D69D320B-4B72-49A4-A362-8E7BD9C59633}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D69D320B-4B72-49A4-A362-8E7BD9C59633}.Debug|x64.Build.0 = Debug|Any CPU
-		{D69D320B-4B72-49A4-A362-8E7BD9C59633}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D69D320B-4B72-49A4-A362-8E7BD9C59633}.Debug|x86.Build.0 = Debug|Any CPU
-		{D69D320B-4B72-49A4-A362-8E7BD9C59633}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D69D320B-4B72-49A4-A362-8E7BD9C59633}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D69D320B-4B72-49A4-A362-8E7BD9C59633}.Release|x64.ActiveCfg = Release|Any CPU
-		{D69D320B-4B72-49A4-A362-8E7BD9C59633}.Release|x64.Build.0 = Release|Any CPU
-		{D69D320B-4B72-49A4-A362-8E7BD9C59633}.Release|x86.ActiveCfg = Release|Any CPU
-		{D69D320B-4B72-49A4-A362-8E7BD9C59633}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
