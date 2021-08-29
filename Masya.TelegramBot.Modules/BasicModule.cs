@@ -147,6 +147,16 @@ namespace Masya.TelegramBot.Modules
 
             collector.OnFinish += (sender, args) =>
             {
+                if (!dbUser.Permission.HasValue)
+                {
+                    Context.BotService.Client.SendTextMessageAsync(
+                        chatId: Context.Message.Chat.Id,
+                        text: "Signing up failed. Please, try again.",
+                        replyMarkup: new ReplyKeyboardRemove()
+                    ).Wait();
+                    return;
+                }
+
                 var ctx = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 ctx.Users.Add(dbUser);
                 ctx.SaveChanges();
