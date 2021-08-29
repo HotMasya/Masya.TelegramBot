@@ -6,7 +6,7 @@ namespace Masya.TelegramBot.DataAccess.Models
     {
         public int Id { get; set; }
         public int DirectoryId { get; set; }
-        public int CategoryId { get; set; }
+        public int? CategoryId { get; set; }
 
         [Required, MaxLength(256)]
         public string Value { get; set; }
