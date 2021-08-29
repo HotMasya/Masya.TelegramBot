@@ -29,7 +29,6 @@ namespace Masya.TelegramBot.Modules
             _dbContext = context;
             _options = options.Value;
             _services = services;
-
         }
 
         private string GenerateMenuMessage(Message message)
