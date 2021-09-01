@@ -19,9 +19,10 @@ namespace Masya.TelegramBot.Api.Controllers
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public UsersController(ApplicationDbContext dbContext)
+        public UsersController(ApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
         [HttpGet("me")]
