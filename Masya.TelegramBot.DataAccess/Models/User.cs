@@ -11,7 +11,7 @@ namespace Masya.TelegramBot.DataAccess.Models
 
         public int? AgencyId { get; set; }
 
-        public Permission? Permission { get; set; }
+        public Permission Permission { get; set; }
 
         public long TelegramAccountId { get; set; }
 
@@ -54,7 +54,7 @@ namespace Masya.TelegramBot.DataAccess.Models
                 TelegramFirstName,
                 TelegramLastName,
                 TelegramLogin,
-                Permission.HasValue ? Permission.Value.ToString() : "None");
+                Permission.ToString());
         }
     }
 }

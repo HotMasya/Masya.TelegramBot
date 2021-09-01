@@ -30,7 +30,7 @@ namespace Masya.TelegramBot.Api.Controllers
                 {
                     return BadRequest(new ResponseDto<object>("Invalid access token."));
                 }
-                var dto = new UserDto(user);
+                var dto = new AccountDto(user);
                 return Ok(dto);
             }
 

@@ -94,13 +94,9 @@ namespace Masya.TelegramBot.DatabaseExtensions
             var user = dbContext.Users.FirstOrDefault(u => u.TelegramAccountId == message.From.Id);
             return (
                 base.CheckCommandCondition(commandInfo, message) &&
-                commandInfo.Permission.HasValue &&
-                (
-                    commandInfo.Permission.Value == Permission.Guest || (
-                        user is not null &&
-                        user.Permission.HasValue &&
-                        user.Permission.Value >= commandInfo.Permission.Value
-                    )
+                commandInfo.Permission == Permission.Guest || (
+                    user is not null &&
+                    user.Permission >= commandInfo.Permission
                 )
             );
         }
@@ -122,13 +118,9 @@ namespace Masya.TelegramBot.DatabaseExtensions
                     a => a.Name.Equals(commandName) &&
                         a.IsEnabled.HasValue &&
                         a.IsEnabled.Value &&
-                        a.Permission.HasValue &&
-                        (
-                            a.Permission.Value == Permission.Guest || (
-                                user is not null &&
-                                user.Permission.HasValue &&
-                                user.Permission.Value >= a.Permission.Value
-                            )
+                        a.Permission == Permission.Guest || (
+                            user is not null &&
+                            user.Permission >= a.Permission
                         )
                 )
             );

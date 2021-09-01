@@ -1,28 +1,46 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using Masya.TelegramBot.DataAccess.Models;
 
 namespace Masya.TelegramBot.Api.Dtos
 {
     public sealed class UserDto
     {
-        public long TelegramAccountId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Avatar { get; set; }
-        public string PhoneNumber { get; set; }
-        public Permission? Permission { get; set; }
+        [Required]
+        public long Id { get; set; }
 
-        public UserDto(User user)
-        {
-            FirstName = user.TelegramFirstName;
-            LastName = user.TelegramLastName;
-            TelegramAccountId = user.TelegramAccountId;
-            Permission = user.Permission;
-            PhoneNumber = user.TelegramPhoneNumber;
-            if (user.TelegramAvatar != null && user.TelegramAvatar.Length > 0)
-            {
-                Avatar = Convert.ToBase64String(user.TelegramAvatar);
-            }
-        }
+        public string AgencyName { get; set; }
+
+        [Required]
+        public Permission Permission { get; set; }
+
+        [Required]
+        public long TelegramAccountId { get; set; }
+
+        [Required]
+        public string TelegramLogin { get; set; }
+
+        [Required]
+        public byte[] TelegramAvatar { get; set; }
+
+        [Required]
+        public string TelegramFirstName { get; set; }
+
+        public string TelegramLastName { get; set; }
+
+        [Required]
+        public string TelegramPhoneNumber { get; set; }
+
+        [Required]
+        public bool IsBlocked { get; set; }
+
+        public string BlockReason { get; set; }
+
+        public bool? IsBlockedByBot { get; set; }
+
+        [Required]
+        public bool IsIgnored { get; set; }
+
+        public string Note { get; set; }
     }
 }

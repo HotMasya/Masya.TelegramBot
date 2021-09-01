@@ -91,7 +91,7 @@ namespace Masya.TelegramBot.Modules
 
             collector.OnMessageReceived += (sender, args) =>
             {
-                if (dbUser.Permission.HasValue && dbUser.Permission.Value == Permission.Agent)
+                if (dbUser.Permission == Permission.Agent)
                 {
                     var key = args.Message.Text;
                     var ctx = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -109,7 +109,7 @@ namespace Masya.TelegramBot.Modules
                         return;
                     }
 
-                    dbUser.Permission = null;
+                    dbUser.Permission = Permission.Guest;
                     Context.BotService.Client.SendTextMessageAsync(
                         chatId: args.Message.Chat.Id,
                         text: "Invalid agency registration key."
@@ -125,7 +125,7 @@ namespace Masya.TelegramBot.Modules
                         dbUser.Permission = Permission.User;
                         Context.BotService.Client.SendTextMessageAsync(
                             chatId: args.Message.Chat.Id,
-                            text: "Invalid agency registration key."
+                            text: "You are now registered as a customer."
                         ).Wait();
                         break;
 
@@ -146,7 +146,7 @@ namespace Masya.TelegramBot.Modules
 
             collector.OnFinish += (sender, args) =>
             {
-                if (!dbUser.Permission.HasValue)
+                if (dbUser.Permission != Permission.Guest)
                 {
                     Context.BotService.Client.SendTextMessageAsync(
                         chatId: Context.Message.Chat.Id,

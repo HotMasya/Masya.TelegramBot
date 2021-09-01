@@ -9,7 +9,7 @@ namespace Masya.TelegramBot.Api.Dtos
         [MaxLength(32)]
         [Required]
         public string Name { get; set; }
-        public Permission? Permission { get; set; }
+        public Permission Permission { get; set; }
         public bool? IsEnabled { get; set; }
         public bool? DisplayInMenu { get; set; }
         public IEnumerable<CommandDto> Aliases { get; set; }

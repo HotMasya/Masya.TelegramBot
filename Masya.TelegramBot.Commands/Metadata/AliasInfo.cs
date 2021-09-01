@@ -6,6 +6,6 @@ namespace Masya.TelegramBot.Commands.Metadata
     {
         public string Name { get; set; }
         public bool? IsEnabled { get; set; }
-        public Permission? Permission { get; set; }
+        public Permission Permission { get; set; }
     }
 }
