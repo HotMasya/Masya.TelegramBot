@@ -13,9 +13,9 @@ namespace Masya.TelegramBot.DataAccess.Models
         [Required]
         public string Name { get; set; }
 
-        public bool? IsEnabled { get; set; }
+        public bool IsEnabled { get; set; }
 
-        public bool? DisplayInMenu { get; set; }
+        public bool DisplayInMenu { get; set; }
 
         public Permission Permission { get; set; } = Models.Permission.User;
 

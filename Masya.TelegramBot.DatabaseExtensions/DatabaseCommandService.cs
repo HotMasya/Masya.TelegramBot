@@ -66,7 +66,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
             foreach (var c in commands)
             {
-                if (c.DisplayInMenu.HasValue && c.DisplayInMenu.Value == true)
+                if (c.DisplayInMenu)
                 {
                     UpdateButtons(buttons, ref currentRowIndex);
                     buttons[currentRowIndex].Add(new KeyboardButton(c.Name));
@@ -76,7 +76,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 {
                     foreach (var a in c.Aliases)
                     {
-                        if (a.DisplayInMenu.HasValue && a.DisplayInMenu.Value == true)
+                        if (a.DisplayInMenu)
                         {
                             UpdateButtons(buttons, ref currentRowIndex);
                             buttons[currentRowIndex].Add(new KeyboardButton(a.Name));
@@ -111,17 +111,22 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
         protected bool DatabaseCommandFilter(CommandInfo commandInfo, string commandName, DataAccess.Models.User user)
         {
-            return commandInfo.Name != null &&
+            _logger.LogInformation(
+                "CommandInfo name: {0}\nCommand name: {1}",
+                commandInfo.Name,
+                commandName
+            );
+
+            return !string.IsNullOrEmpty(commandInfo.Name) &&
             (
                 commandInfo.Name.Equals(commandName) ||
                 commandInfo.Aliases.Any(
-                    a => a.Name.Equals(commandName) &&
-                        a.IsEnabled.HasValue &&
-                        a.IsEnabled.Value &&
-                        a.Permission == Permission.Guest || (
-                            user is not null &&
-                            user.Permission >= a.Permission
-                        )
+                    a => a.Name.Equals(commandName)
+                    && a.IsEnabled
+                    && a.Permission == Permission.Guest || (
+                        user is not null &&
+                        user.Permission >= a.Permission
+                    )
                 )
             );
         }

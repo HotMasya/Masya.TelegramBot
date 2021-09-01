@@ -159,7 +159,7 @@ namespace Masya.TelegramBot.Commands.Services
             return info.Name != null &&
             (
                 info.Name.Equals(commandName) ||
-                info.Aliases.Any(a => a.Name.Equals(commandName) && a.IsEnabled.HasValue && a.IsEnabled.Value)
+                info.Aliases.Any(a => a.Name.Equals(commandName) && a.IsEnabled)
             );
         }
 
