@@ -43,7 +43,7 @@ namespace Masya.TelegramBot.Api.Controllers
             return BadRequest(new ResponseDto<object>("Invalid access token."));
         }
 
-        [HttpGet("/")]
+        [HttpGet]
         public async Task<IActionResult> LoadUsersAsync()
         {
             if (!User.HasPermission(Permission.SuperAdmin)) return Forbid();
