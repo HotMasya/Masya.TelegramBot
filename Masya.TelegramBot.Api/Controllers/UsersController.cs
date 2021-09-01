@@ -23,7 +23,7 @@ namespace Masya.TelegramBot.Api.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet("/")]
         [Authorize]
         public async Task<IActionResult> LoadUsersAsync()
         {
@@ -35,7 +35,7 @@ namespace Masya.TelegramBot.Api.Controllers
             return Ok(dtos);
         }
 
-        [HttpPost]
+        [HttpPost("/save")]
         [Authorize]
         public async Task<IActionResult> SaveUsersAsync(UserDto[] dtos)
         {
