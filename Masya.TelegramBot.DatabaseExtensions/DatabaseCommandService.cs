@@ -123,9 +123,11 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 commandInfo.Aliases.Any(
                     a => a.Name.Equals(commandName)
                     && a.IsEnabled
-                    && a.Permission == Permission.Guest || (
-                        user is not null &&
-                        user.Permission >= a.Permission
+                    && (
+                        a.Permission == Permission.Guest || (
+                            user is not null &&
+                            user.Permission >= a.Permission
+                        )
                     )
                 )
             );
