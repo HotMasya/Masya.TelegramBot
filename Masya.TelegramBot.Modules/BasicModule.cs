@@ -146,7 +146,7 @@ namespace Masya.TelegramBot.Modules
 
             collector.OnFinish += (sender, args) =>
             {
-                if (dbUser.Permission != Permission.Guest)
+                if (dbUser.Permission == Permission.Guest)
                 {
                     Context.BotService.Client.SendTextMessageAsync(
                         chatId: Context.Message.Chat.Id,
