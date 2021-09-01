@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public sealed class UsersController : ControllerBase
@@ -24,7 +25,6 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpGet("/")]
-        [Authorize]
         public async Task<IActionResult> LoadUsersAsync()
         {
             if (!User.HasPermission(Permission.SuperAdmin)) return Forbid();
@@ -36,7 +36,6 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpPost("/save")]
-        [Authorize]
         public async Task<IActionResult> SaveUsersAsync(UserDto[] dtos)
         {
             if (!User.HasPermission(Permission.SuperAdmin)) return Forbid();
