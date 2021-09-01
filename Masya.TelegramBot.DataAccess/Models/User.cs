@@ -10,6 +10,7 @@ namespace Masya.TelegramBot.DataAccess.Models
         public long Id { get; set; }
 
         public int? AgencyId { get; set; }
+        public Agency Agency { get; set; }
 
         public Permission Permission { get; set; }
 

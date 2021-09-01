@@ -43,6 +43,7 @@ namespace Masya.TelegramBot.Api
             services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
             services.Configure<CacheOptions>(Configuration.GetSection("Cache"));
             services.AddScheduler();
+            services.AddAutoMapper(typeof(Startup));
             services.AddCors(options =>
             {
                 options.AddPolicy(
