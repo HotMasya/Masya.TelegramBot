@@ -5,6 +5,7 @@ namespace Masya.TelegramBot.Api.Dtos
 {
     public sealed class AccountDto
     {
+        public long Id { get; set; }
         public long TelegramAccountId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -14,6 +15,7 @@ namespace Masya.TelegramBot.Api.Dtos
 
         public AccountDto(User user)
         {
+            Id = user.Id;
             FirstName = user.TelegramFirstName;
             LastName = user.TelegramLastName;
             TelegramAccountId = user.TelegramAccountId;
