@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
+using Masya.TelegramBot.DataAccess.Models;
 
 namespace Masya.TelegramBot.Commands.Services
 {
@@ -286,7 +287,7 @@ namespace Masya.TelegramBot.Commands.Services
                 parameters.Length == 1 && parameters[0].ParameterType == typeof(Contact);
         }
 
-        public virtual IReplyMarkup GetMenuKeyboard()
+        public virtual IReplyMarkup GetMenuKeyboard(Permission userPermission)
         {
             return new ReplyKeyboardMarkup(new KeyboardButton("/start")) { ResizeKeyboard = true };
         }

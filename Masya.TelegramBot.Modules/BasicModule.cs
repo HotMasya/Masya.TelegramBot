@@ -51,7 +51,8 @@ namespace Masya.TelegramBot.Modules
         [Command("/start")]
         public async Task StartCommandAsync()
         {
-            if (!_dbContext.Users.Any(u => u.TelegramAccountId == Context.User.Id))
+            var user = _dbContext.Users.FirstOrDefault(u => u.TelegramAccountId == Context.User.Id);
+            if (user is null)
             {
                 await ReplyAsync(
                     "First, you have to sign up.",
@@ -59,7 +60,8 @@ namespace Masya.TelegramBot.Modules
                 );
                 return;
             }
-            await ReplyAsync(GenerateMenuMessage(Context.Message, _dbContext), replyMarkup: Context.CommandService.GetMenuKeyboard());
+
+            await ReplyAsync(GenerateMenuMessage(Context.Message, _dbContext), replyMarkup: Context.CommandService.GetMenuKeyboard(user.Permission));
         }
 
         [RegisterUser]
@@ -163,7 +165,7 @@ namespace Masya.TelegramBot.Modules
                     chatId: Context.Message.Chat.Id,
                     text: GenerateMenuMessage(Context.Message, ctx),
                     parseMode: ParseMode.Html,
-                    replyMarkup: Context.CommandService.GetMenuKeyboard()
+                    replyMarkup: Context.CommandService.GetMenuKeyboard(dbUser.Permission)
                     ).Wait();
             };
 
@@ -172,7 +174,7 @@ namespace Masya.TelegramBot.Modules
                 Context.BotService.Client.SendTextMessageAsync(
                         chatId: Context.Message.Chat.Id,
                         text: "The time is out, please, try again.",
-                        replyMarkup: Context.CommandService.GetMenuKeyboard()
+                        replyMarkup: Context.CommandService.GetMenuKeyboard(dbUser.Permission)
                     ).Wait();
             };
 

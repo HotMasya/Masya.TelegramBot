@@ -47,7 +47,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
             }
         }
 
-        public override IReplyMarkup GetMenuKeyboard()
+        public override IReplyMarkup GetMenuKeyboard(Permission userPermission)
         {
             var buttons = new List<List<KeyboardButton>>();
             int currentRowIndex = 0;
@@ -66,7 +66,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
             foreach (var c in commands)
             {
-                if (c.DisplayInMenu)
+                if (c.DisplayInMenu && userPermission >= c.Permission)
                 {
                     UpdateButtons(buttons, ref currentRowIndex);
                     buttons[currentRowIndex].Add(new KeyboardButton(c.Name));
@@ -76,7 +76,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 {
                     foreach (var a in c.Aliases)
                     {
-                        if (a.DisplayInMenu)
+                        if (a.DisplayInMenu && userPermission >= a.Permission)
                         {
                             UpdateButtons(buttons, ref currentRowIndex);
                             buttons[currentRowIndex].Add(new KeyboardButton(a.Name));

@@ -100,7 +100,7 @@ namespace Masya.TelegramBot.Api.Controllers
             await _cache.SetRecordAsync(
                 recordId: recordId,
                 item: user.TelegramPhoneNumber,
-                TimeSpan.FromSeconds(60)
+                absoluteExpirationTime: TimeSpan.FromSeconds(60)
             );
             await _botService.Client.SendTextMessageAsync(
                 chatId: user.TelegramAccountId,

@@ -5,8 +5,6 @@ using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.DataAccess;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Telegram.Bot;
 
 namespace Masya.TelegramBot.Api.Controllers
 {

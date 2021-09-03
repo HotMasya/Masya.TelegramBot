@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Masya.TelegramBot.Commands.Metadata;
 using Masya.TelegramBot.Commands.Options;
+using Masya.TelegramBot.DataAccess.Models;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -16,6 +17,6 @@ namespace Masya.TelegramBot.Commands.Abstractions
         Task LoadCommandsAsync(Assembly assembly);
         Task ExecuteCommandAsync(Message message);
         bool CheckCommandCondition(CommandInfo commandInfo, Message message);
-        IReplyMarkup GetMenuKeyboard();
+        IReplyMarkup GetMenuKeyboard(Permission userPermission);
     }
 }
