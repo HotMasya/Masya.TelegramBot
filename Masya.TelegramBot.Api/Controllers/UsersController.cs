@@ -58,7 +58,10 @@ namespace Masya.TelegramBot.Api.Controllers
         public async Task<IActionResult> SaveUsersAsync(UserDto[] dtos)
         {
             if (!User.HasPermission(Permission.SuperAdmin)) return Forbid();
+
             var users = await _dbContext.Users.ToListAsync();
+            var usersToDeleteIds = users.Select(u => u.Id).Except(dtos.Select(d => d.Id));
+            var usersToDelete = users.Where(u => usersToDeleteIds.FirstOrDefault(id => u.Id == id) != default(long));
 
             foreach (var dto in dtos)
             {
@@ -67,6 +70,7 @@ namespace Masya.TelegramBot.Api.Controllers
                 _mapper.Map(dto, user);
             }
 
+            _dbContext.Users.RemoveRange(usersToDelete);
             await _dbContext.SaveChangesAsync();
 
             return Ok();
