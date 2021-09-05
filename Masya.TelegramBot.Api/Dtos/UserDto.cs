@@ -21,7 +21,7 @@ namespace Masya.TelegramBot.Api.Dtos
         public string TelegramLogin { get; set; }
 
         [Required]
-        public byte[] TelegramAvatar { get; set; }
+        public string TelegramAvatar { get; set; }
 
         [Required]
         public string TelegramFirstName { get; set; }

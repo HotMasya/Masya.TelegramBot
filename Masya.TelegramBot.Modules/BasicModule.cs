@@ -12,6 +12,7 @@ using Telegram.Bot.Types;
 using Masya.TelegramBot.DataAccess.Models;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
+using System.IO;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -64,6 +65,22 @@ namespace Masya.TelegramBot.Modules
             await ReplyAsync(GenerateMenuMessage(Context.Message, _dbContext), replyMarkup: Context.CommandService.GetMenuKeyboard(user.Permission));
         }
 
+        private async Task<byte[]> GetUserProfilePhotosAsync(long userId)
+        {
+            var client = Context.BotService.Client;
+            var photos = await client.GetUserProfilePhotosAsync(userId, 0, 1);
+            if (photos.Photos == null || photos.Photos.LongLength == 0)
+            {
+                return null;
+            }
+
+            var firstPhoto = photos.Photos[0][0];
+            var filePath = await client.GetFileAsync(firstPhoto.FileId);
+            using var ms = new MemoryStream();
+            await client.DownloadFileAsync(filePath.FilePath, ms);
+            return ms.ToArray();
+        }
+
         [RegisterUser]
         public Task RegisterUserAsync(Contact contact)
         {
@@ -102,6 +119,7 @@ namespace Masya.TelegramBot.Modules
                     if (agency is not null)
                     {
                         dbUser.AgencyId = agency.Id;
+                        dbUser.TelegramAvatar = GetUserProfilePhotosAsync(contact.UserId).GetAwaiter().GetResult();
                         Context.BotService.Client.SendTextMessageAsync(
                             chatId: args.Message.Chat.Id,
                             text: "You're now the agent of the agency: <b>" + agency.Name + "</b>.",
@@ -125,6 +143,7 @@ namespace Masya.TelegramBot.Modules
                 {
                     case UserRoles.Customer:
                         dbUser.Permission = Permission.User;
+                        dbUser.TelegramAvatar = GetUserProfilePhotosAsync(contact.UserId).GetAwaiter().GetResult();
                         Context.BotService.Client.SendTextMessageAsync(
                             chatId: args.Message.Chat.Id,
                             text: "You are now registered as a customer."
