@@ -74,10 +74,10 @@ namespace Masya.TelegramBot.Modules
                 return null;
             }
 
-            var firstPhoto = photos.Photos[0][0];
-            var filePath = await client.GetFileAsync(firstPhoto.FileId);
+            var actualAvatar = photos.Photos[photos.Photos.Length - 1][0];
+            var fileMeta = await client.GetFileAsync(actualAvatar.FileId);
             using var ms = new MemoryStream();
-            await client.DownloadFileAsync(filePath.FilePath, ms);
+            await client.DownloadFileAsync(fileMeta.FilePath, ms);
             return ms.ToArray();
         }
 
