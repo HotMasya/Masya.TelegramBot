@@ -18,6 +18,7 @@ namespace Masya.TelegramBot.DataAccess.Models
         public DateTime DateOfUnblock { get; set; }
 
         [MaxLength(128)]
+        [Required]
         public string RegistrationKey { get; set; }
 
         public bool? IsRegWithoutAdmin { get; set; }
