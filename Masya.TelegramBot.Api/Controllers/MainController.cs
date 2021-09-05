@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Masya.TelegramBot.Api.Dtos;
 using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.DataAccess;
+using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,8 +33,8 @@ namespace Masya.TelegramBot.Api.Controllers
             var dto = new BotSettingsDto()
             {
                 Id = settings.Id,
-                Token = settings.BotToken,
-                WebhookHost = settings.WebhookHost,
+                Token = User.HasPermission(Permission.SuperAdmin) ? settings.BotToken : null,
+                WebhookHost = User.HasPermission(Permission.SuperAdmin) ? settings.WebhookHost : null,
                 IsEnabled = settings.IsEnabled,
                 BotUser = me
             };
@@ -43,6 +44,8 @@ namespace Masya.TelegramBot.Api.Controllers
         [HttpPost("bot/update")]
         public async Task<IActionResult> UpdateBotSettingsAsync(BotSettingsDto dto)
         {
+            if (!User.HasPermission(Permission.SuperAdmin)) return Forbid();
+
             var settings = _dbContext.BotSettings.FirstOrDefault(bs => bs.Id == dto.Id);
             if (settings is null)
             {
