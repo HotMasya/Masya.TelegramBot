@@ -31,12 +31,16 @@ namespace Masya.TelegramBot.Api.Controllers
             var idClaim = User.Claims.First(u => u.Type == ClaimTypes.NameIdentifier);
             if (long.TryParse(idClaim.Value, out long telegramUserId))
             {
-                var user = _dbContext.Users.FirstOrDefault(u => u.TelegramAccountId == telegramUserId);
+                var user = _dbContext.Users
+                    .Include(u => u.Agency)
+                    .FirstOrDefault(u => u.TelegramAccountId == telegramUserId);
+
                 if (user is null)
                 {
                     return BadRequest(new ResponseDto<object>("Invalid access token."));
                 }
-                var dto = new AccountDto(user);
+
+                var dto = _mapper.Map<UserDto>(user);
                 return Ok(dto);
             }
 

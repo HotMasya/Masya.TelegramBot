@@ -9,6 +9,7 @@ namespace Masya.TelegramBot.DataAccess.Models
         public int Id { get; set; }
 
         [MaxLength(255)]
+        [Required]
         public string Name { get; set; }
 
         [MaxLength(1024)]
