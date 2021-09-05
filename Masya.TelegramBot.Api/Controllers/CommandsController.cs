@@ -57,6 +57,12 @@ namespace Masya.TelegramBot.Api.Controllers
             {
                 return BadRequest(new MessageResponseDto("Every command or alias name should be unique."));
             }
+
+            if (distinctNames.Any(n => n.Contains(' ')))
+            {
+                return BadRequest(new MessageResponseDto("The command or alias name should not contain any whitespaces."));
+            }
+
             var dbCommands = await _dbContext.Commands.ToListAsync();
             var commandsToDelete = dbCommands.Except(commands);
             _dbContext.Commands.RemoveRange(commandsToDelete);
