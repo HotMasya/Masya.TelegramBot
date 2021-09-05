@@ -111,7 +111,9 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
         protected bool DatabaseCommandFilter(CommandInfo commandInfo, string commandName, DataAccess.Models.User user)
         {
-            return commandInfo.Name.ToLower().Equals(commandName) ||
+            return !string.IsNullOrEmpty(commandInfo.Name) &&
+            (
+                commandInfo.Name.ToLower().Equals(commandName) ||
                 commandInfo.Aliases.Any(
                     a => a.Name.ToLower().Equals(commandName)
                     && a.IsEnabled
@@ -121,7 +123,8 @@ namespace Masya.TelegramBot.DatabaseExtensions
                             user.Permission >= a.Permission
                         )
                     )
-                );
+                )
+            );
         }
 
         private async Task MapCommandsAsync()
