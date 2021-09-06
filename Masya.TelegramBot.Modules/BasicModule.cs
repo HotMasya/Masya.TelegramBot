@@ -57,7 +57,10 @@ namespace Masya.TelegramBot.Modules
             {
                 await ReplyAsync(
                     "First, you have to sign up.",
-                    replyMarkup: new ReplyKeyboardMarkup(KeyboardButton.WithRequestContact("Send information about me."))
+                    replyMarkup: new ReplyKeyboardMarkup(
+                        KeyboardButton.WithRequestContact("Send information about me.")
+                    )
+                    { ResizeKeyboard = true }
                 );
                 return;
             }

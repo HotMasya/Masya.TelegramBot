@@ -35,6 +35,8 @@ namespace Masya.TelegramBot.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            if (!User.HasPermission(Permission.SuperAdmin)) return Forbid();
+
             var commands = await _dbContext.Commands.ToListAsync();
             return Ok(commands);
         }
@@ -42,6 +44,8 @@ namespace Masya.TelegramBot.Api.Controllers
         [HttpPost("reload")]
         public async Task<IActionResult> ReloadCommandsAsync()
         {
+            if (!User.HasPermission(Permission.SuperAdmin)) return Forbid();
+
             _logger.LogInformation("Reloading commands and aliases...");
             await _commands.LoadCommandsAsync(typeof(BasicModule).Assembly);
             _logger.LogInformation("Reloaded all commands and aliases.");
@@ -51,6 +55,8 @@ namespace Masya.TelegramBot.Api.Controllers
         [HttpPut("save")]
         public async Task<IActionResult> SaveCommandsAsync(Command[] commands)
         {
+            if (!User.HasPermission(Permission.SuperAdmin)) return Forbid();
+
             _logger.LogInformation("Received a request to update commands and aliases.");
             var distinctNames = commands.Select(c => c.Name.ToLower()).Distinct().ToArray();
             if (distinctNames.Length != commands.Length)
