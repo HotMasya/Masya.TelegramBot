@@ -25,11 +25,11 @@ namespace Masya.TelegramBot.Api.Controllers
             _dbContext = dbContext;
         }
 
-        private async Task<Agency> GetUsetAgencyAsync(int? agencyId = null)
+        private async Task<Agency> GetUsetAgencyAsync()
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
             var user = await _dbContext.Users.Include(u => u.Agency).FirstOrDefaultAsync(u => u.TelegramAccountId == long.Parse(userIdClaim.Value));
-            if (user?.Agency != null || (agencyId.HasValue && agencyId.Value != user.AgencyId))
+            if (user?.Agency != null)
             {
                 return user.Agency;
             }
@@ -65,7 +65,7 @@ namespace Masya.TelegramBot.Api.Controllers
         [HttpPost("save")]
         public async Task<IActionResult> SaveAgencyAsync(Agency agency)
         {
-            var userAgency = await GetUsetAgencyAsync(agency.Id);
+            var userAgency = await GetUsetAgencyAsync();
             if (userAgency == null)
             {
                 return BadRequest(new MessageResponseDto("The user is not an admin of the agency."));
