@@ -15,7 +15,7 @@ namespace Masya.TelegramBot.DataAccess.Models
         [MaxLength(1024)]
         public string Description { get; set; }
 
-        public DateTime DateOfUnblock { get; set; }
+        public DateTime? DateOfUnblock { get; set; }
 
         [MaxLength(128)]
         [Required]
