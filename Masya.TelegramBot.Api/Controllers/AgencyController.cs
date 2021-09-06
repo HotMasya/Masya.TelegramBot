@@ -62,7 +62,7 @@ namespace Masya.TelegramBot.Api.Controllers
             return Created("/api/agency/create", result);
         }
 
-        [HttpGet]
+        [HttpPost("save")]
         public async Task<IActionResult> SaveAgencyAsync(Agency agency)
         {
             var userAgency = await GetUsetAgencyAsync(agency.Id);
