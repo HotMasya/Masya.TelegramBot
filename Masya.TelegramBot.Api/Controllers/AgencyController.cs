@@ -29,7 +29,7 @@ namespace Masya.TelegramBot.Api.Controllers
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
             var user = await _dbContext.Users.Include(u => u.Agency).FirstOrDefaultAsync(u => u.TelegramAccountId == long.Parse(userIdClaim.Value));
-            if (user == null || (agencyId.HasValue && agencyId.Value == user.AgencyId))
+            if (user == null || agencyId!.HasValue || agencyId.Value != user.AgencyId)
             {
                 return null;
             }
