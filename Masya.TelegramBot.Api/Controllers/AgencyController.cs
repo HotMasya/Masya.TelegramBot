@@ -25,8 +25,32 @@ namespace Masya.TelegramBot.Api.Controllers
             _dbContext = dbContext;
         }
 
+        private async Task<Agency> GetUsetAgencyAsync(int? agencyId = null)
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            var user = await _dbContext.Users.Include(u => u.Agency).FirstOrDefaultAsync(u => u.TelegramAccountId == long.Parse(userIdClaim.Value));
+            if (user == null || (agencyId.HasValue && agencyId.Value == user.AgencyId))
+            {
+                return null;
+            }
+
+            return user.Agency;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAgencyAsync()
+        {
+            var userAgency = await GetUsetAgencyAsync();
+            if (userAgency == null)
+            {
+                return BadRequest(new MessageResponseDto("The user is not an admin of the agency."));
+            }
+
+            return Ok(userAgency);
+        }
+
         [HttpPost("create")]
-        public async Task<IActionResult> CreateAgency(AgencyDto dto)
+        public async Task<IActionResult> CreateAgencyAsync(AgencyDto dto)
         {
             if (!User.HasPermission(Permission.SuperAdmin)) return Forbid();
 
@@ -39,16 +63,15 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SaveAgency(Agency agency)
+        public async Task<IActionResult> SaveAgencyAsync(Agency agency)
         {
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            var user = await _dbContext.Users.Include(u => u.Agency).FirstOrDefaultAsync(u => u.TelegramAccountId == long.Parse(userIdClaim.Value));
-            if (user == null || agency.Id != user.AgencyId)
+            var userAgency = await GetUsetAgencyAsync(agency.Id);
+            if (userAgency == null)
             {
                 return BadRequest(new MessageResponseDto("The user is not an admin of the agency."));
             }
 
-            _mapper.Map(agency, user.Agency);
+            _mapper.Map(agency, userAgency);
             await _dbContext.SaveChangesAsync();
             return Ok();
         }
