@@ -29,10 +29,13 @@ namespace Masya.TelegramBot.Api.Controllers
         private async Task<Agency> GetUserAgencyAsync()
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            var user = await _dbContext.Users.Include(u => u.Agency).FirstOrDefaultAsync(u => u.TelegramAccountId == long.Parse(userIdClaim.Value));
-            if (user?.Agency != null)
+            if (long.TryParse(userIdClaim.Value, out long telegramId))
             {
-                return user.Agency;
+                return await _dbContext.Agencies
+                    .Include(a => a.Users)
+                    .FirstOrDefaultAsync(
+                        a => a.Users.Any(u => u.TelegramAccountId == telegramId)
+                    );
             }
 
             return null;
