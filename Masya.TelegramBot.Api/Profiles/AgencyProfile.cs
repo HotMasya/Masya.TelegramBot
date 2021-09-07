@@ -1,3 +1,4 @@
+using System;
 using AutoMapper;
 using Masya.TelegramBot.Api.Dtos;
 using Masya.TelegramBot.DataAccess.Models;
@@ -22,7 +23,11 @@ namespace Masya.TelegramBot.Api.Profiles
                     opt => opt.Ignore()
                 );
 
-            CreateMap<User, AgentDto>();
+            CreateMap<User, AgentDto>()
+                .ForMember(
+                    dest => dest.TelegramAvatar,
+                    opt => opt.MapFrom(src => Convert.ToBase64String(src.TelegramAvatar))
+                );
         }
     }
 }
