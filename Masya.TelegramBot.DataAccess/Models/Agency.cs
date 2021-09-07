@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Masya.TelegramBot.DataAccess.Models
@@ -25,5 +26,7 @@ namespace Masya.TelegramBot.DataAccess.Models
 
         [MaxLength(256)]
         public string ImportUrl { get; set; }
+
+        public List<User> Users { get; set; }
     }
 }

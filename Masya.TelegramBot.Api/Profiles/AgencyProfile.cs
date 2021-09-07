@@ -16,6 +16,8 @@ namespace Masya.TelegramBot.Api.Profiles
                     dest => dest.Id,
                     opt => opt.Ignore()
                 );
+
+            CreateMap<User, AgentDto>();
         }
     }
 }

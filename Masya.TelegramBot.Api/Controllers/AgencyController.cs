@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -25,7 +26,20 @@ namespace Masya.TelegramBot.Api.Controllers
             _dbContext = dbContext;
         }
 
-        private async Task<Agency> GetUsetAgencyAsync()
+        [HttpGet("agents")]
+        public async Task<IActionResult> GetAgencyAgentsAsync()
+        {
+            var agency = await GetUserAgencyAsync();
+            if (agency == null)
+            {
+                return BadRequest(new MessageResponseDto("The user is not an admin of the agency."));
+            }
+
+            var agents = _mapper.Map<List<AgentDto>>(agency.Users);
+            return Ok(agents);
+        }
+
+        private async Task<Agency> GetUserAgencyAsync()
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
             var user = await _dbContext.Users.Include(u => u.Agency).FirstOrDefaultAsync(u => u.TelegramAccountId == long.Parse(userIdClaim.Value));
@@ -40,7 +54,7 @@ namespace Masya.TelegramBot.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAgencyAsync()
         {
-            var userAgency = await GetUsetAgencyAsync();
+            var userAgency = await GetUserAgencyAsync();
             if (userAgency == null)
             {
                 return BadRequest(new MessageResponseDto("The user is not an admin of the agency."));
@@ -65,7 +79,7 @@ namespace Masya.TelegramBot.Api.Controllers
         [HttpPost("save")]
         public async Task<IActionResult> SaveAgencyAsync(Agency agency)
         {
-            var userAgency = await GetUsetAgencyAsync();
+            var userAgency = await GetUserAgencyAsync();
             if (userAgency == null)
             {
                 return BadRequest(new MessageResponseDto("The user is not an admin of the agency."));
