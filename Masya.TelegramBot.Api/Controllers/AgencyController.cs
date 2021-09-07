@@ -26,19 +26,6 @@ namespace Masya.TelegramBot.Api.Controllers
             _dbContext = dbContext;
         }
 
-        [HttpGet("agents")]
-        public async Task<IActionResult> GetAgencyAgentsAsync()
-        {
-            var agency = await GetUserAgencyAsync();
-            if (agency == null)
-            {
-                return BadRequest(new MessageResponseDto("The user is not an admin of the agency."));
-            }
-
-            var agents = _mapper.Map<List<AgentDto>>(agency.Users);
-            return Ok(agents);
-        }
-
         private async Task<Agency> GetUserAgencyAsync()
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
@@ -60,7 +47,9 @@ namespace Masya.TelegramBot.Api.Controllers
                 return BadRequest(new MessageResponseDto("The user is not an admin of the agency."));
             }
 
-            return Ok(userAgency);
+            var dto = _mapper.Map<AgencyDto>(userAgency);
+
+            return Ok(dto);
         }
 
         [HttpPost("create")]

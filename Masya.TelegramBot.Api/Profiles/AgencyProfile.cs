@@ -9,7 +9,12 @@ namespace Masya.TelegramBot.Api.Profiles
         public AgencyProfile()
         {
             CreateMap<Agency, AgencyDto>()
-                .ReverseMap();
+                .ForMember(
+                    dest => dest.Agents,
+                    opt => opt.MapFrom(src => src.Users)
+                );
+
+            CreateMap<AgencyDto, AgencyDto>();
 
             CreateMap<Agency, Agency>()
                 .ForMember(

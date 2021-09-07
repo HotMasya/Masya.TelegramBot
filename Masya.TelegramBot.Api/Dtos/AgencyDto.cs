@@ -1,9 +1,12 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Masya.TelegramBot.Api.Dtos
 {
     public sealed class AgencyDto
     {
+        public int Id { get; set; }
+
         [MaxLength(255)]
         [Required]
         public string Name { get; set; }
@@ -19,5 +22,7 @@ namespace Masya.TelegramBot.Api.Dtos
 
         [MaxLength(256)]
         public string ImportUrl { get; set; }
+
+        public List<AgentDto> Agents { get; set; }
     }
 }
