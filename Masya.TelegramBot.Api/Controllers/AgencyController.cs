@@ -68,7 +68,7 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpPost("save")]
-        public async Task<IActionResult> SaveAgencyAsync(Agency agency)
+        public async Task<IActionResult> SaveAgencyAsync(AgencyDto dto)
         {
             var userAgency = await GetUserAgencyAsync();
             if (userAgency == null)
@@ -76,7 +76,7 @@ namespace Masya.TelegramBot.Api.Controllers
                 return BadRequest(new MessageResponseDto("The user is not an admin of the agency."));
             }
 
-            _mapper.Map(agency, userAgency);
+            _mapper.Map(dto, userAgency);
             await _dbContext.SaveChangesAsync();
             return Ok();
         }
