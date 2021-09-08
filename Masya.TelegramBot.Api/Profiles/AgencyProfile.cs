@@ -15,7 +15,11 @@ namespace Masya.TelegramBot.Api.Profiles
                     opt => opt.MapFrom(src => src.Users)
                 );
 
-            CreateMap<AgencyDto, AgencyDto>();
+            CreateMap<AgencyDto, Agency>()
+                .ForMember(
+                    dest => dest.Users,
+                    opt => opt.Ignore()
+                );
 
             CreateMap<Agency, Agency>()
                 .ForMember(
