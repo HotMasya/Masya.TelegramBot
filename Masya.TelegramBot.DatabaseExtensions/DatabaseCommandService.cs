@@ -106,25 +106,22 @@ namespace Masya.TelegramBot.DatabaseExtensions
             using var scope = services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var user = dbContext.Users.FirstOrDefault(u => u.TelegramAccountId == message.From.Id);
-            return commands.FirstOrDefault(cm => DatabaseCommandFilter(cm, name.ToLower(), user));
+            return commands?.FirstOrDefault(cm => DatabaseCommandFilter(cm, name?.ToLower(), user));
         }
 
         protected bool DatabaseCommandFilter(CommandInfo commandInfo, string commandName, DataAccess.Models.User user)
         {
-            return !string.IsNullOrEmpty(commandInfo.Name) &&
-            (
-                commandInfo.Name.ToLower().Equals(commandName) ||
-                commandInfo.Aliases.Any(
-                    a => a.Name.ToLower().Equals(commandName)
-                    && a.IsEnabled
-                    && (
-                        a.Permission == Permission.Guest || (
-                            user is not null &&
-                            user.Permission >= a.Permission
+            return commandInfo.Name.ToLower().Equals(commandName)
+                || commandInfo.Aliases.Any(
+                        a => a.Name.ToLower().Equals(commandName)
+                        && a.IsEnabled
+                        && (
+                            a.Permission == Permission.Guest || (
+                                user is not null &&
+                                user.Permission >= a.Permission
+                            )
                         )
-                    )
-                )
-            );
+                    );
         }
 
         private async Task MapCommandsAsync()
