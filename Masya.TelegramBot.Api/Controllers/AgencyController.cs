@@ -75,8 +75,13 @@ namespace Masya.TelegramBot.Api.Controllers
             {
                 return BadRequest(new MessageResponseDto("The user is not an admin of the agency."));
             }
-
             _mapper.Map(dto, userAgency);
+
+            var users = userAgency.Users;
+            var usersToDeleteIds = users.Select(u => u.Id).Except(dto.Agents.Select(d => d.Id));
+            var usersToDelete = users.Where(u => usersToDeleteIds.FirstOrDefault(id => u.Id == id) != default(long));
+
+            _dbContext.Users.RemoveRange(usersToDelete);
             await _dbContext.SaveChangesAsync();
             return Ok();
         }
