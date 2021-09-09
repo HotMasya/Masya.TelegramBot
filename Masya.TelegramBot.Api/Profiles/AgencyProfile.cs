@@ -32,6 +32,12 @@ namespace Masya.TelegramBot.Api.Profiles
                     dest => dest.TelegramAvatar,
                     opt => opt.MapFrom(src => Convert.ToBase64String(src.TelegramAvatar))
                 );
+
+            CreateMap<AgentDto, User>()
+                .ForMember(
+                    dest => dest.TelegramAvatar,
+                    opt => opt.Ignore()
+                );
         }
     }
 }
