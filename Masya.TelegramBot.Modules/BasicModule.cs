@@ -13,6 +13,7 @@ using Masya.TelegramBot.DataAccess.Models;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
 using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -21,16 +22,19 @@ namespace Masya.TelegramBot.Modules
         private readonly ApplicationDbContext _dbContext;
         private readonly CommandServiceOptions _options;
         private readonly IServiceProvider _services;
+        private readonly ILogger<BasicModule> _logger;
 
         public BasicModule(
             ApplicationDbContext context,
             IServiceProvider services,
-            IOptions<CommandServiceOptions> options
+            IOptions<CommandServiceOptions> options,
+            ILogger<BasicModule> logger
             )
         {
             _dbContext = context;
             _options = options.Value;
             _services = services;
+            _logger = logger;
         }
 
         private static string GenerateMenuMessage(Message message, ApplicationDbContext dbContext)
@@ -141,7 +145,8 @@ namespace Masya.TelegramBot.Modules
                     return;
                 }
 
-                string formattedText = args.Message.Text.Trim().ToLower();
+                string formattedText = args.Message.Text?.Trim()?.ToLower();
+                _logger.LogInformation(formattedText);
                 switch (formattedText)
                 {
                     case UserRoles.Customer:
