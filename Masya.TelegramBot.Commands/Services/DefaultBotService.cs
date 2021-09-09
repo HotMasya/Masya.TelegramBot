@@ -85,7 +85,7 @@ namespace Masya.TelegramBot.Commands.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Failed to execute command: " + ex.Message);
+                _logger.LogError("Failed to execute command: " + ex.ToString());
             }
         }
 
