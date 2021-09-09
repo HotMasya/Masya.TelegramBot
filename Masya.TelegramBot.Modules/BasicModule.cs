@@ -146,7 +146,6 @@ namespace Masya.TelegramBot.Modules
                 }
 
                 string formattedText = args.Message.Text?.Trim()?.ToLower();
-                _logger.LogInformation(formattedText);
                 switch (formattedText)
                 {
                     case UserRoles.Customer:
