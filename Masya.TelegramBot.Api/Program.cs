@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Modules;
 using Masya.TelegramBot.DataAccess;
+using Masya.TelegramBot.DatabaseExtensions.Metadata;
 
 namespace Masya.TelegramBot.Api
 {
@@ -24,8 +25,8 @@ namespace Masya.TelegramBot.Api
             using var scope = services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             await ApplicationDbContext.SeedDatabase(dbContext);
-            var commandService = services.GetRequiredService<ICommandService>();
-            var botService = services.GetRequiredService<IBotService>();
+            var commandService = services.GetRequiredService<ICommandService<DatabaseCommandInfo, DatabaseAliasInfo>>();
+            var botService = services.GetRequiredService<IBotService<DatabaseCommandInfo, DatabaseAliasInfo>>();
             await commandService.LoadCommandsAsync(typeof(BasicModule).Assembly);
             await botService.SetWebhookAsync();
         }

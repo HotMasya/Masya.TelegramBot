@@ -1,7 +1,7 @@
-﻿using Masya.TelegramBot.Commands;
-using Masya.TelegramBot.Commands.Attributes;
+﻿using Masya.TelegramBot.Commands.Attributes;
 using Masya.TelegramBot.DataAccess;
 using Masya.TelegramBot.DataAccess.Models;
+using Masya.TelegramBot.DatabaseExtensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Masya.TelegramBot.Modules
 {
-    public sealed class DbModule : Module
+    public sealed class DbModule : DatabaseModule
     {
         private readonly ApplicationDbContext _dbContext;
 

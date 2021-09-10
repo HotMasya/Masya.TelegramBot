@@ -18,6 +18,8 @@ using Newtonsoft.Json;
 using System.Text;
 using System;
 using Coravel;
+using Masya.TelegramBot.DatabaseExtensions.Metadata;
+using Masya.TelegramBot.DatabaseExtensions.Abstractions;
 
 namespace Masya.TelegramBot.Api
 {
@@ -56,6 +58,7 @@ namespace Masya.TelegramBot.Api
                     }
                 );
             });
+            services.AddSingleton<IKeyboardGenerator, KeyboardGenerator>();
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = Configuration.GetConnectionString("Redis");
@@ -65,8 +68,8 @@ namespace Masya.TelegramBot.Api
             {
                 options.UseSqlServer(Configuration.GetConnectionString("RemoteDb"));
             });
-            services.AddSingleton<IBotService, DatabaseBotService>();
-            services.AddSingleton<ICommandService, DatabaseCommandService>();
+            services.AddSingleton<DatabaseBotService>();
+            services.AddSingleton<DatabaseCommandService>();
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {

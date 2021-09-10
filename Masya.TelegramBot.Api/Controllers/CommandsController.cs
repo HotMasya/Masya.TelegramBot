@@ -4,11 +4,11 @@ using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Modules;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using Masya.TelegramBot.Api.Dtos;
+using Masya.TelegramBot.DatabaseExtensions;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
@@ -18,12 +18,12 @@ namespace Masya.TelegramBot.Api.Controllers
     public sealed class CommandsController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly ICommandService _commands;
+        private readonly DatabaseCommandService _commands;
         private readonly ILogger<CommandsController> _logger;
 
         public CommandsController(
             ApplicationDbContext dbContext,
-            ICommandService commands,
+            DatabaseCommandService commands,
             ILogger<CommandsController> logger
         )
         {

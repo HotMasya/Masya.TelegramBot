@@ -1,15 +1,18 @@
 using System;
 using System.Threading.Tasks;
 using Masya.TelegramBot.Commands.Abstractions;
+using Masya.TelegramBot.Commands.Metadata;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Masya.TelegramBot.Commands
 {
-    public abstract class Module : IModule
+    public abstract class Module<TCommandInfo, TAliasInfo> : IModule<TCommandInfo, TAliasInfo>
+        where TAliasInfo : AliasInfo
+        where TCommandInfo : CommandInfo<TAliasInfo>
     {
-        public ICommandContext Context { get; init; }
+        public ICommandContext<TCommandInfo, TAliasInfo> Context { get; init; }
 
         public Task<Message> ReplyAsync(
             string content,

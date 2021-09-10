@@ -1,5 +1,4 @@
 ﻿using Masya.TelegramBot.Commands.Attributes;
-using Masya.TelegramBot.DataAccess.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,27 +7,28 @@ using System.Text;
 
 namespace Masya.TelegramBot.Commands.Metadata
 {
-    public class CommandInfo : IFormattable
+    public class CommandInfo<TAliasInfo> : IFormattable where TAliasInfo : AliasInfo
     {
-        public string Name { get; }
-        public MethodInfo MethodInfo { get; }
-        public string Description { get; }
-        public IList<AliasInfo> Aliases { get; }
+        public string Name { get; set; }
+        public MethodInfo MethodInfo { get; set; }
+        public string Description { get; set; }
+        public IList<TAliasInfo> Aliases { get; }
         public bool IsEnabled { get; set; }
-        public Permission Permission { get; set; }
 
         private static readonly string DefaultDescription = "описание отсутствует.";
+
+        public CommandInfo() { }
 
         public CommandInfo(
             string name,
             string description,
             MethodInfo methodInfo,
-            IList<AliasInfo> aliases = null
+            IList<TAliasInfo> aliases = null
         )
         {
             Name = name;
             Description = description ?? DefaultDescription;
-            Aliases = aliases ?? new List<AliasInfo>();
+            Aliases = aliases ?? new List<TAliasInfo>();
             MethodInfo = methodInfo;
         }
 

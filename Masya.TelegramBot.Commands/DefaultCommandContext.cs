@@ -1,14 +1,16 @@
 using Masya.TelegramBot.Commands.Abstractions;
-using Telegram.Bot;
+using Masya.TelegramBot.Commands.Metadata;
 using Telegram.Bot.Types;
 
 namespace Masya.TelegramBot.Commands
 {
-    public sealed class DefaultCommandContext : ICommandContext
+    public sealed class DefaultCommandContext<TCommandInfo, TAliasInfo> : ICommandContext<TCommandInfo, TAliasInfo>
+        where TAliasInfo : AliasInfo
+        where TCommandInfo : CommandInfo<TAliasInfo>
     {
-        public IBotService BotService { get; }
+        public IBotService<TCommandInfo, TAliasInfo> BotService { get; }
 
-        public ICommandService CommandService { get; }
+        public ICommandService<TCommandInfo, TAliasInfo> CommandService { get; }
 
         public Chat Chat { get; }
 
@@ -17,8 +19,8 @@ namespace Masya.TelegramBot.Commands
         public Message Message { get; }
 
         public DefaultCommandContext(
-            IBotService botService,
-            ICommandService commandService,
+            IBotService<TCommandInfo, TAliasInfo> botService,
+            ICommandService<TCommandInfo, TAliasInfo> commandService,
             Chat chat,
             User user,
             Message message

@@ -13,6 +13,8 @@ using Masya.TelegramBot.Api.Options;
 using Microsoft.Extensions.Options;
 using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.Extensions.Logging;
+using Masya.TelegramBot.DatabaseExtensions.Metadata;
+using Masya.TelegramBot.DatabaseExtensions;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
@@ -22,7 +24,7 @@ namespace Masya.TelegramBot.Api.Controllers
     {
 
         private readonly ApplicationDbContext _dbContext;
-        private readonly IBotService _botService;
+        private readonly DatabaseBotService _botService;
         private readonly IDistributedCache _cache;
         private readonly IJwtService _jwtService;
         private readonly CacheOptions _cacheOptions;
@@ -31,7 +33,7 @@ namespace Masya.TelegramBot.Api.Controllers
 
         public AuthController(
             ApplicationDbContext dbContext,
-            IBotService botService,
+            DatabaseBotService botService,
             IDistributedCache cache,
             IJwtService jwtService,
             IOptionsMonitor<CacheOptions> cacheOptions,

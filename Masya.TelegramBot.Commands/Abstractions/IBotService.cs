@@ -7,12 +7,14 @@ using Telegram.Bot.Types;
 
 namespace Masya.TelegramBot.Commands.Abstractions
 {
-    public interface IBotService
+    public interface IBotService<TCommandInfo, TAliasInfo>
+        where TAliasInfo : AliasInfo
+        where TCommandInfo : CommandInfo<TAliasInfo>
     {
         ITelegramBotClient Client { get; }
         BotServiceOptions Options { get; }
         void LoadBot();
-        ICollector CreateMessageCollector(Chat chat, TimeSpan messageTimeout);
+        ICollector<TCommandInfo, TAliasInfo> CreateMessageCollector(Chat chat, TimeSpan messageTimeout);
         Task SetWebhookAsync();
         Task HandleUpdateAsync(Update update);
         Task<BotStatus> GetSettingsAsync();

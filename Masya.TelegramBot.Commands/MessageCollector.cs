@@ -1,5 +1,6 @@
 ﻿using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Commands.Events;
+using Masya.TelegramBot.Commands.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -8,10 +9,12 @@ using Telegram.Bot.Types;
 
 namespace Masya.TelegramBot.Commands
 {
-    public sealed class MessageCollector: ICollector
+    public sealed class MessageCollector<TCommandInfo, TAliasInfo> : ICollector<TCommandInfo, TAliasInfo>
+        where TAliasInfo : AliasInfo
+        where TCommandInfo : CommandInfo<TAliasInfo>
     {
         public Chat Chat { get; }
-        public IBotService BotService { get; }
+        public IBotService<TCommandInfo, TAliasInfo> BotService { get; }
         public bool IsStarted { get; private set; }
         public event MessageHandler OnMessageReceived;
         public event EventHandler OnMessageTimeout;
@@ -24,7 +27,7 @@ namespace Masya.TelegramBot.Commands
         private readonly TimeSpan _messageTimeout;
         private CancellationTokenSource _cts;
 
-        internal MessageCollector(Chat chat, IBotService botService, TimeSpan messageTimeout)
+        internal MessageCollector(Chat chat, IBotService<TCommandInfo, TAliasInfo> botService, TimeSpan messageTimeout)
         {
             _filters = new();
             _semaphore = new SemaphoreSlim(1, 1);
@@ -37,7 +40,7 @@ namespace Masya.TelegramBot.Commands
             BotService = botService;
         }
 
-        public ICollector Collect(Func<Message, object> selector)
+        public ICollector<TCommandInfo, TAliasInfo> Collect(Func<Message, object> selector)
         {
             _filters.Add(selector);
             return this;
@@ -45,7 +48,7 @@ namespace Masya.TelegramBot.Commands
 
         public void Start()
         {
-            if(_filters.Count == 0)
+            if (_filters.Count == 0)
             {
                 throw new InvalidOperationException("Provide fields to collect first.");
             }
@@ -66,7 +69,7 @@ namespace Masya.TelegramBot.Commands
 
         public async Task CollectAsync(Message message)
         {
-            if(IsSuitable(message))
+            if (IsSuitable(message))
             {
                 await _semaphore.WaitAsync();
                 _collectedMessages.Enqueue(message);
@@ -76,10 +79,10 @@ namespace Masya.TelegramBot.Commands
 
         private bool IsSuitable(Message message)
         {
-            foreach(var f in _filters)
+            foreach (var f in _filters)
             {
                 var result = f.Invoke(message);
-                if(result != null)
+                if (result != null)
                 {
                     return true;
                 }
@@ -89,9 +92,9 @@ namespace Masya.TelegramBot.Commands
 
         public async Task RunCollectorLoop()
         {
-            while(!_cts.IsCancellationRequested)
+            while (!_cts.IsCancellationRequested)
             {
-                if(_collectedMessages.Count > 0)
+                if (_collectedMessages.Count > 0)
                 {
                     await _semaphore.WaitAsync();
                     PopAllMessages();

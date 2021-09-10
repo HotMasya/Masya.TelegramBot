@@ -3,20 +3,19 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Masya.TelegramBot.Commands.Metadata;
 using Masya.TelegramBot.Commands.Options;
-using Masya.TelegramBot.DataAccess.Models;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Masya.TelegramBot.Commands.Abstractions
 {
-    public interface ICommandService
+    public interface ICommandService<TCommandInfo, TAliasInfo>
+        where TAliasInfo : AliasInfo
+        where TCommandInfo : CommandInfo<TAliasInfo>
     {
         CommandServiceOptions Options { get; }
-        List<CommandInfo> Commands { get; }
-        IBotService BotService { get; }
+        List<TCommandInfo> Commands { get; }
+        IBotService<TCommandInfo, TAliasInfo> BotService { get; }
         Task LoadCommandsAsync(Assembly assembly);
         Task ExecuteCommandAsync(Message message);
-        bool CheckCommandCondition(CommandInfo commandInfo, Message message);
-        IReplyMarkup GetMenuKeyboard(Permission userPermission);
+        bool CheckCommandCondition(TCommandInfo commandInfo, Message message);
     }
 }

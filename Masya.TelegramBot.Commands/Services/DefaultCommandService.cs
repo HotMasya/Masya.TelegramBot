@@ -12,45 +12,45 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
-using Masya.TelegramBot.DataAccess.Models;
 
 namespace Masya.TelegramBot.Commands.Services
 {
-    public class DefaultCommandService : ICommandService
+    public class DefaultCommandService<TCommandInfo, TAliasInfo> : ICommandService<TCommandInfo, TAliasInfo>
+        where TAliasInfo : AliasInfo
+        where TCommandInfo : CommandInfo<TAliasInfo>, new()
     {
         protected ContactHandlerInfo contactHandler;
-        protected readonly List<CommandInfo> commands;
+        protected readonly List<TCommandInfo> commands;
         protected readonly IServiceProvider services;
 
-        protected readonly ILogger<ICommandService> logger;
+        protected readonly ILogger<ICommandService<TCommandInfo, TAliasInfo>> logger;
 
-        public IBotService BotService { get; }
+        public IBotService<TCommandInfo, TAliasInfo> BotService { get; }
         public CommandServiceOptions Options { get; }
-        public List<CommandInfo> Commands => commands;
+        public List<TCommandInfo> Commands => commands;
 
         public DefaultCommandService(
             IOptionsMonitor<CommandServiceOptions> options,
-            IBotService botService,
+            IBotService<TCommandInfo, TAliasInfo> botService,
             IServiceProvider services,
-            ILogger<ICommandService> logger
+            ILogger<ICommandService<TCommandInfo, TAliasInfo>> logger
         )
         {
             BotService = botService;
             Options = options.CurrentValue;
-            commands = new List<CommandInfo>();
+            commands = new List<TCommandInfo>();
             this.services = services;
             this.logger = logger;
         }
 
-        public virtual bool CheckCommandCondition(CommandInfo commandInfo, Message message)
+        public virtual bool CheckCommandCondition(TCommandInfo commandInfo, Message message)
         {
             return commandInfo is not null
                 && commandInfo.MethodInfo is not null
                 && commandInfo.IsEnabled;
         }
 
-        protected virtual CommandInfo GetCommand(string name, Message message)
+        protected virtual TCommandInfo GetCommand(string name, Message message)
         {
             return commands.FirstOrDefault(cm => CommandFilter(cm, name));
         }
@@ -94,7 +94,7 @@ namespace Masya.TelegramBot.Commands.Services
                         Array.Empty<object>()
                     );
                     var propInfo = commandInfo.MethodInfo.DeclaringType.GetProperty("Context");
-                    var context = new DefaultCommandContext(BotService, this, message.Chat, message.From, message);
+                    var context = new DefaultCommandContext<TCommandInfo, TAliasInfo>(BotService, this, message.Chat, message.From, message);
                     propInfo.SetValue(moduleInstance, context);
                     commandInfo.MethodInfo.Invoke(moduleInstance, parts.MatchParamTypes(commandInfo.MethodInfo));
                 }
@@ -128,17 +128,14 @@ namespace Masya.TelegramBot.Commands.Services
             logger.LogInformation($"Loaded {commands.Count} commands from assembly: " + assembly.GetName().Name);
         }
 
-        public static CommandInfo BuildCommandInfo(MethodInfo methodInfo)
+        public static TCommandInfo BuildCommandInfo(MethodInfo methodInfo)
         {
-            string name = methodInfo
-                .GetCustomAttribute<CommandAttribute>()
-                ?.Name;
-
-            string description = methodInfo
-                .GetCustomAttribute<DescriptionAttribute>()
-                ?.Description;
-
-            return new CommandInfo(name, description, methodInfo);
+            return new TCommandInfo
+            {
+                Name = methodInfo.GetCustomAttribute<CommandAttribute>()?.Name,
+                Description = methodInfo.GetCustomAttribute<DescriptionAttribute>()?.Description,
+                MethodInfo = methodInfo
+            };
         }
 
         public static bool IsValidCommand(MethodInfo method)
@@ -167,7 +164,7 @@ namespace Masya.TelegramBot.Commands.Services
                 && type.BaseType.Equals(typeof(Module));
         }
 
-        private bool CommandFilter(CommandInfo info, string commandName)
+        private bool CommandFilter(TCommandInfo info, string commandName)
         {
             return info.Name.Equals(commandName)
                 || info.Aliases.Any(a => a.Name.Equals(commandName) && a.IsEnabled);
@@ -187,7 +184,7 @@ namespace Masya.TelegramBot.Commands.Services
                 Array.Empty<object>()
             );
             var propInfo = method.DeclaringType.GetProperty("Context");
-            var context = new DefaultCommandContext(BotService, this, message.Chat, message.From, message);
+            var context = new DefaultCommandContext<TCommandInfo, TAliasInfo>(BotService, this, message.Chat, message.From, message);
             propInfo.SetValue(moduleInstance, context);
 
             var result = new List<object>();
@@ -279,7 +276,7 @@ namespace Masya.TelegramBot.Commands.Services
                 Array.Empty<object>()
             );
             var propInfo = contactHandler.MethodInfo.DeclaringType.GetProperty("Context");
-            var context = new DefaultCommandContext(BotService, this, message.Chat, message.From, message);
+            var context = new DefaultCommandContext<TCommandInfo, TAliasInfo>(BotService, this, message.Chat, message.From, message);
             propInfo.SetValue(moduleInstance, context);
 
             contactHandler.MethodInfo.Invoke(moduleInstance, new[] { message.Contact });
@@ -291,11 +288,6 @@ namespace Masya.TelegramBot.Commands.Services
             var parameters = method.GetParameters();
             return method.GetCustomAttribute<RegisterUserAttribute>() != null &&
                 parameters.Length == 1 && parameters[0].ParameterType == typeof(Contact);
-        }
-
-        public virtual IReplyMarkup GetMenuKeyboard(Permission userPermission)
-        {
-            return new ReplyKeyboardMarkup(new KeyboardButton("/start")) { ResizeKeyboard = true };
         }
     }
 }

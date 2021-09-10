@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Masya.TelegramBot.Commands;
 using Masya.TelegramBot.Commands.Attributes;
 using Masya.TelegramBot.Commands.Options;
 using Masya.TelegramBot.DataAccess;
@@ -14,27 +13,32 @@ using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using Masya.TelegramBot.DatabaseExtensions;
+using Masya.TelegramBot.DatabaseExtensions.Abstractions;
 
 namespace Masya.TelegramBot.Modules
 {
-    public sealed class BasicModule : Module
+    public sealed class BasicModule : DatabaseModule
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly CommandServiceOptions _options;
         private readonly IServiceProvider _services;
         private readonly ILogger<BasicModule> _logger;
+        private readonly IKeyboardGenerator _keyboards;
 
         public BasicModule(
             ApplicationDbContext context,
             IServiceProvider services,
             IOptions<CommandServiceOptions> options,
-            ILogger<BasicModule> logger
+            ILogger<BasicModule> logger,
+            IKeyboardGenerator keyboards
             )
         {
             _dbContext = context;
             _options = options.Value;
             _services = services;
             _logger = logger;
+            _keyboards = keyboards;
         }
 
         private static string GenerateMenuMessage(Message message, ApplicationDbContext dbContext)
@@ -69,7 +73,7 @@ namespace Masya.TelegramBot.Modules
                 return;
             }
 
-            await ReplyAsync(GenerateMenuMessage(Context.Message, _dbContext), replyMarkup: Context.CommandService.GetMenuKeyboard(user.Permission));
+            await ReplyAsync(GenerateMenuMessage(Context.Message, _dbContext), replyMarkup: _keyboards.Menu(user.Permission));
         }
 
         private async Task<byte[]> GetUserProfilePhotosAsync(long userId)
@@ -191,7 +195,7 @@ namespace Masya.TelegramBot.Modules
                     chatId: Context.Message.Chat.Id,
                     text: GenerateMenuMessage(Context.Message, ctx),
                     parseMode: ParseMode.Html,
-                    replyMarkup: Context.CommandService.GetMenuKeyboard(dbUser.Permission)
+                    replyMarkup: _keyboards.Menu(dbUser.Permission)
                     ).Wait();
             };
 
@@ -200,7 +204,7 @@ namespace Masya.TelegramBot.Modules
                 Context.BotService.Client.SendTextMessageAsync(
                         chatId: Context.Message.Chat.Id,
                         text: "The time is out, please, try again.",
-                        replyMarkup: Context.CommandService.GetMenuKeyboard(dbUser.Permission)
+                        replyMarkup: _keyboards.Menu(dbUser.Permission)
                     ).Wait();
             };
 

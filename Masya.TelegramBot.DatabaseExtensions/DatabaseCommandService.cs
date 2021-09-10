@@ -1,9 +1,9 @@
 ﻿using Masya.TelegramBot.Commands.Abstractions;
-using Masya.TelegramBot.Commands.Metadata;
 using Masya.TelegramBot.Commands.Options;
 using Masya.TelegramBot.Commands.Services;
 using Masya.TelegramBot.DataAccess;
 using Masya.TelegramBot.DataAccess.Models;
+using Masya.TelegramBot.DatabaseExtensions.Metadata;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,13 +18,13 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Masya.TelegramBot.DatabaseExtensions
 {
-    public class DatabaseCommandService : DefaultCommandService
+    public class DatabaseCommandService : DefaultCommandService<DatabaseCommandInfo, DatabaseAliasInfo>
     {
         public DatabaseCommandService(
             IOptionsMonitor<CommandServiceOptions> options,
-            IBotService botService,
+            IBotService<DatabaseCommandInfo, DatabaseAliasInfo> botService,
             IServiceProvider services,
-            ILogger<DefaultCommandService> logger
+            ILogger<DefaultCommandService<DatabaseCommandInfo, DatabaseAliasInfo>> logger
             )
             : base(options, botService, services, logger) { }
 
@@ -47,7 +47,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
             }
         }
 
-        public override IReplyMarkup GetMenuKeyboard(Permission userPermission)
+        public IReplyMarkup GetMenuKeyboard(Permission userPermission)
         {
             var buttons = new List<List<KeyboardButton>>();
             int currentRowIndex = 0;
@@ -87,7 +87,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
             return new ReplyKeyboardMarkup(buttons) { ResizeKeyboard = true };
         }
 
-        public override bool CheckCommandCondition(CommandInfo commandInfo, Message message)
+        public override bool CheckCommandCondition(DatabaseCommandInfo commandInfo, Message message)
         {
             using var scope = services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -101,7 +101,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
             );
         }
 
-        protected override CommandInfo GetCommand(string name, Message message)
+        protected override DatabaseCommandInfo GetCommand(string name, Message message)
         {
             using var scope = services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -109,7 +109,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
             return commands?.FirstOrDefault(cm => DatabaseCommandFilter(cm, name?.ToLower(), user));
         }
 
-        protected bool DatabaseCommandFilter(CommandInfo commandInfo, string commandName, DataAccess.Models.User user)
+        protected bool DatabaseCommandFilter(DatabaseCommandInfo commandInfo, string commandName, DataAccess.Models.User user)
         {
             return commandInfo.Name.ToLower().Equals(commandName)
                 || commandInfo.Aliases.Any(
@@ -141,7 +141,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                     foreach (var al in command.Aliases)
                     {
                         ci.Aliases.Add(
-                            new AliasInfo
+                            new DatabaseAliasInfo
                             {
                                 Name = al.Name,
                                 IsEnabled = al.IsEnabled,

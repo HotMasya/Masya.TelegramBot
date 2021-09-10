@@ -13,37 +13,39 @@ using Masya.TelegramBot.Commands.Metadata;
 
 namespace Masya.TelegramBot.Commands.Services
 {
-    public class DefaultBotService : IBotService
+    public class DefaultBotService<TCommandInfo, TAliasInfo> : IBotService<TCommandInfo, TAliasInfo>
+     where TAliasInfo : AliasInfo
+     where TCommandInfo : CommandInfo<TAliasInfo>
     {
         public ITelegramBotClient Client { get; set; }
         public BotServiceOptions Options { get; set; }
 
         protected readonly IServiceProvider services;
 
-        private readonly ILogger<IBotService> _logger;
-        private readonly List<ICollector> _collectors;
+        private readonly ILogger<IBotService<TCommandInfo, TAliasInfo>> _logger;
+        private readonly List<ICollector<TCommandInfo, TAliasInfo>> _collectors;
 
         public DefaultBotService(
             IOptions<BotServiceOptions> options,
             IServiceProvider services,
-            ILogger<DefaultBotService> logger
+            ILogger<IBotService<TCommandInfo, TAliasInfo>> logger
         )
         {
             Options = options.Value;
             LoadBot();
             this.services = services;
             _logger = logger;
-            _collectors = new List<ICollector>();
+            _collectors = new List<ICollector<TCommandInfo, TAliasInfo>>();
         }
 
         public DefaultBotService(
             IServiceProvider services,
-            ILogger<IBotService> logger
+            ILogger<IBotService<TCommandInfo, TAliasInfo>> logger
         )
         {
             this.services = services;
             _logger = logger;
-            _collectors = new List<ICollector>();
+            _collectors = new List<ICollector<TCommandInfo, TAliasInfo>>();
         }
 
         public DefaultBotService()
@@ -78,7 +80,7 @@ namespace Masya.TelegramBot.Commands.Services
                 return;
             }
 
-            var commandService = services.GetRequiredService<ICommandService>();
+            var commandService = services.GetRequiredService<ICommandService<TCommandInfo, TAliasInfo>>();
             try
             {
                 await commandService.ExecuteCommandAsync(message);
@@ -89,9 +91,9 @@ namespace Masya.TelegramBot.Commands.Services
             }
         }
 
-        public ICollector CreateMessageCollector(Chat chat, TimeSpan messageTimeout)
+        public ICollector<TCommandInfo, TAliasInfo> CreateMessageCollector(Chat chat, TimeSpan messageTimeout)
         {
-            var mcol = new MessageCollector(chat, this, messageTimeout);
+            var mcol = new MessageCollector<TCommandInfo, TAliasInfo>(chat, this, messageTimeout);
             mcol.OnFinish += (sender, args) => RemoveCollector(mcol);
             mcol.OnMessageTimeout += (sender, args) => RemoveCollector(mcol);
 
@@ -99,7 +101,7 @@ namespace Masya.TelegramBot.Commands.Services
             return mcol;
         }
 
-        private Task RemoveCollector(ICollector col)
+        private Task RemoveCollector(ICollector<TCommandInfo, TAliasInfo> col)
         {
             if (_collectors.Contains(col))
             {

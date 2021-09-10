@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.DataAccess;
+using Masya.TelegramBot.DatabaseExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot.Types;
@@ -10,12 +10,12 @@ namespace Masya.TelegramBot.Api.Controllers
 {
     public class BotController : ControllerBase
     {
-        private readonly IBotService _botService;
+        private readonly DatabaseBotService _botService;
         private readonly ApplicationDbContext _dbContext;
         private readonly ILogger<BotController> _logger;
 
         public BotController(
-            IBotService botService,
+            DatabaseBotService botService,
             ApplicationDbContext dbContext,
             ILogger<BotController> logger)
         {
