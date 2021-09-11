@@ -68,8 +68,8 @@ namespace Masya.TelegramBot.Api
             {
                 options.UseSqlServer(Configuration.GetConnectionString("RemoteDb"));
             });
-            services.AddSingleton<DatabaseBotService>();
-            services.AddSingleton<DatabaseCommandService>();
+            services.AddSingleton<IBotService<DatabaseCommandInfo, DatabaseAliasInfo>, DatabaseBotService>();
+            services.AddSingleton<ICommandService<DatabaseCommandInfo, DatabaseAliasInfo>, DatabaseCommandService>();
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {

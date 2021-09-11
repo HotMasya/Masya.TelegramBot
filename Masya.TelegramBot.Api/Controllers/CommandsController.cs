@@ -8,7 +8,8 @@ using Masya.TelegramBot.Modules;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using Masya.TelegramBot.Api.Dtos;
-using Masya.TelegramBot.DatabaseExtensions;
+using Masya.TelegramBot.Commands.Abstractions;
+using Masya.TelegramBot.DatabaseExtensions.Metadata;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
@@ -18,12 +19,12 @@ namespace Masya.TelegramBot.Api.Controllers
     public sealed class CommandsController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DatabaseCommandService _commands;
+        private readonly ICommandService<DatabaseCommandInfo, DatabaseAliasInfo> _commands;
         private readonly ILogger<CommandsController> _logger;
 
         public CommandsController(
             ApplicationDbContext dbContext,
-            DatabaseCommandService commands,
+            ICommandService<DatabaseCommandInfo, DatabaseAliasInfo> commands,
             ILogger<CommandsController> logger
         )
         {

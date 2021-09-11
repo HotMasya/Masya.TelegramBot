@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Masya.TelegramBot.Api.Dtos;
+using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.DataAccess;
 using Masya.TelegramBot.DataAccess.Models;
-using Masya.TelegramBot.DatabaseExtensions;
+using Masya.TelegramBot.DatabaseExtensions.Metadata;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,10 +16,10 @@ namespace Masya.TelegramBot.Api.Controllers
     public class MainController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DatabaseBotService _botService;
+        private readonly IBotService<DatabaseCommandInfo, DatabaseAliasInfo> _botService;
 
         public MainController(
-            DatabaseBotService botService,
+            IBotService<DatabaseCommandInfo, DatabaseAliasInfo> botService,
             ApplicationDbContext dbContext)
         {
             _botService = botService;
