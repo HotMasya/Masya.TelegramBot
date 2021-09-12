@@ -17,7 +17,10 @@ namespace Masya.TelegramBot.Commands.Metadata
 
         private const string DefaultDescription = "описание отсутствует.";
 
-        public CommandInfo() { }
+        public CommandInfo()
+        {
+            Aliases = new List<TAliasInfo>();
+        }
 
         public CommandInfo(
             string name,

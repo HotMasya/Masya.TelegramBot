@@ -43,17 +43,12 @@ namespace Masya.TelegramBot.Commands.Services
             this.logger = logger;
         }
 
-        public virtual bool CheckCommandCondition(TCommandInfo commandInfo, Message message)
-        {
-            return commandInfo is not null
+        public virtual bool CheckCommandCondition(TCommandInfo commandInfo, Message message) =>
+                commandInfo is not null
                 && commandInfo.MethodInfo is not null
                 && commandInfo.IsEnabled;
-        }
 
-        protected virtual TCommandInfo GetCommand(string name, Message message)
-        {
-            return commands.FirstOrDefault(cm => CommandFilter(cm, name));
-        }
+        protected virtual TCommandInfo GetCommand(string name, Message message) => commands.FirstOrDefault(cm => CommandFilter(cm, name));
 
         public virtual async Task ExecuteCommandAsync(Message message)
         {
@@ -133,15 +128,12 @@ namespace Masya.TelegramBot.Commands.Services
             logger.LogInformation($"Loaded {commands.Count} commands from assembly: " + assembly.GetName().Name);
         }
 
-        public static TCommandInfo BuildCommandInfo(MethodInfo methodInfo)
+        public static TCommandInfo BuildCommandInfo(MethodInfo methodInfo) => new()
         {
-            return new TCommandInfo
-            {
-                Name = methodInfo.GetCustomAttribute<CommandAttribute>()?.Name,
-                Description = methodInfo.GetCustomAttribute<DescriptionAttribute>()?.Description,
-                MethodInfo = methodInfo
-            };
-        }
+            Name = methodInfo.GetCustomAttribute<CommandAttribute>()?.Name,
+            Description = methodInfo.GetCustomAttribute<DescriptionAttribute>()?.Description,
+            MethodInfo = methodInfo
+        };
 
         public static bool IsValidCommand(MethodInfo method)
         {
@@ -162,6 +154,18 @@ namespace Masya.TelegramBot.Commands.Services
 
         public static bool IsContactHandler(MethodInfo method)
         {
+            var methodParams = method.GetParameters();
+
+            if (methodParams.Length != 1 || methodParams[0].ParameterType != typeof(Contact))
+            {
+                throw new FormatException(
+                    string.Format(
+                        "The contact handler should accept only one parameter of type {0}",
+                        typeof(Contact).FullName
+                    )
+                );
+            }
+
             return method.GetCustomAttribute<RegisterUserAttribute>() != null
                 && method.IsPublic
                 && !method.IsAbstract
@@ -169,21 +173,17 @@ namespace Masya.TelegramBot.Commands.Services
                 && (method.ReturnType == typeof(Task) || method.ReturnType == typeof(Task<>));
         }
 
-        public static bool IsModuleType(TypeInfo type)
-        {
-            return type.IsPublic
+        public static bool IsModuleType(TypeInfo type) =>
+                type.IsPublic
                 && !type.IsAbstract
                 && !type.IsGenericType
                 && type.GetInterfaces().Any(
                     i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IModule<,>)
                    );
-        }
 
-        private static bool CommandFilter(TCommandInfo info, string commandName)
-        {
-            return info.Name.Equals(commandName)
+        private static bool CommandFilter(TCommandInfo info, string commandName) =>
+                info.Name.Equals(commandName)
                 || info.Aliases.Any(a => a.Name.Equals(commandName) && a.IsEnabled);
-        }
 
         protected virtual Task ExecuteCommandByStepsAsync(
             Message message,
@@ -296,13 +296,6 @@ namespace Masya.TelegramBot.Commands.Services
 
             contactHandler.MethodInfo.Invoke(moduleInstance, new[] { message.Contact });
             return Task.CompletedTask;
-        }
-
-        private static bool IsRegisterUserMethod(MethodInfo method)
-        {
-            var parameters = method.GetParameters();
-            return method.GetCustomAttribute<RegisterUserAttribute>() != null &&
-                parameters.Length == 1 && parameters[0].ParameterType == typeof(Contact);
         }
     }
 }
