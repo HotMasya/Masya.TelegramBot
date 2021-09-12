@@ -70,6 +70,11 @@ namespace Masya.TelegramBot.Commands.Services
 
             await Task.Run(() =>
             {
+                if (commands is null || commands.Count == 0)
+                {
+                    return;
+                }
+
                 var parts = new CommandParts(message.Text, Options);
                 var commandInfo = GetCommand(parts.Name, message);
 
@@ -169,7 +174,7 @@ namespace Masya.TelegramBot.Commands.Services
             return type.IsPublic
                 && !type.IsAbstract
                 && !type.IsGenericType
-                && type.BaseType.Equals(typeof(Module));
+                && type.BaseType.Equals(typeof(Module<TCommandInfo, TAliasInfo>));
         }
 
         private bool CommandFilter(TCommandInfo info, string commandName)
