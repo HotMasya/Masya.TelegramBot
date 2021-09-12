@@ -174,7 +174,7 @@ namespace Masya.TelegramBot.Commands.Services
             return type.IsPublic
                 && !type.IsAbstract
                 && !type.IsGenericType
-                && type.BaseType.Equals(typeof(Module<,>));
+                && type.GetInterfaces().FirstOrDefault(i => i.Equals(typeof(IModule<,>))) != null;
         }
 
         private bool CommandFilter(TCommandInfo info, string commandName)
