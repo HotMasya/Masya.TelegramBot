@@ -156,6 +156,11 @@ namespace Masya.TelegramBot.Commands.Services
         {
             var methodParams = method.GetParameters();
 
+            if (method.GetCustomAttribute<RegisterUserAttribute>() == null)
+            {
+                return false;
+            }
+
             if (methodParams.Length != 1 || methodParams[0].ParameterType != typeof(Contact))
             {
                 throw new FormatException(
@@ -166,8 +171,7 @@ namespace Masya.TelegramBot.Commands.Services
                 );
             }
 
-            return method.GetCustomAttribute<RegisterUserAttribute>() != null
-                && method.IsPublic
+            return method.IsPublic
                 && !method.IsAbstract
                 && !method.IsGenericMethod
                 && (method.ReturnType == typeof(Task) || method.ReturnType == typeof(Task<>));
@@ -223,7 +227,7 @@ namespace Masya.TelegramBot.Commands.Services
                 BotService.Client
                 .SendTextMessageAsync(
                     message.Chat,
-                    "Время ожидания истекло. Введите команду ещё раз.",
+                    "Time is out. Please, repeat the command.",
                     cancellationToken: cancellationToken
                     )
                 .Wait();
@@ -268,7 +272,7 @@ namespace Masya.TelegramBot.Commands.Services
             string paramName = nameAttr?.Name ?? parameters[index].Name;
             await BotService.Client.SendTextMessageAsync(
                 chatId,
-                $"Пожалуйста, укажите {paramName}",
+                $"Please, specify {paramName}",
                 cancellationToken: cancellationToken
                 );
         }
