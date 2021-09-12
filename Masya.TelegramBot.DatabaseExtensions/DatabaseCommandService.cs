@@ -92,6 +92,14 @@ namespace Masya.TelegramBot.DatabaseExtensions
             using var scope = services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var user = dbContext.Users.FirstOrDefault(u => u.TelegramAccountId == message.From.Id);
+            logger.LogInformation(
+                "Is command null: {0}\nIs message null: {1}",
+                commandInfo == null,
+                message == null
+            );
+
+            logger.LogInformation("Command condition: " + commandInfo.Name);
+
             return (
                 base.CheckCommandCondition(commandInfo, message) &&
                 commandInfo.Permission == Permission.Guest || (
