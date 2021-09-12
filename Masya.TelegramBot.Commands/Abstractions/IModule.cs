@@ -13,7 +13,7 @@ namespace Masya.TelegramBot.Commands.Abstractions
         ICommandContext<TCommandInfo, TAliasInfo> Context { get; }
         Task<Message> ReplyAsync(
             string content,
-            ParseMode parseMode = ParseMode.MarkdownV2,
+            ParseMode parseMode = ParseMode.Markdown,
             bool disableWebPagePreview = false,
             bool disableNotification = false,
             int replyToMessageId = 0,

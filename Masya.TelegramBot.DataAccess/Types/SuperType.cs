@@ -1,6 +1,6 @@
 ﻿namespace Masya.TelegramBot.DataAccess.Types
 {
-    public enum SuperType : int
+    public enum SuperType
     {
         // Квартира 1
         Flat = 1 << 0,

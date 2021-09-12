@@ -134,7 +134,7 @@ namespace Masya.TelegramBot.Modules
                         Context.BotService.Client.SendTextMessageAsync(
                             chatId: args.Message.Chat.Id,
                             text: string.Format("You're now the agent of the agency: *{0}*.", agency.Name),
-                            parseMode: ParseMode.MarkdownV2
+                            parseMode: ParseMode.Markdown
                         ).Wait();
                         collector.Finish();
                         return;
@@ -194,7 +194,7 @@ namespace Masya.TelegramBot.Modules
                 Context.BotService.Client.SendTextMessageAsync(
                     chatId: Context.Message.Chat.Id,
                     text: GenerateMenuMessage(Context.Message, ctx),
-                    parseMode: ParseMode.MarkdownV2,
+                    parseMode: ParseMode.Markdown,
                     replyMarkup: _keyboards.Menu(dbUser.Permission)
                     ).Wait();
             };

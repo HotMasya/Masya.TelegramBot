@@ -106,7 +106,7 @@ namespace Masya.TelegramBot.Api.Controllers
             await _botService.Client.SendTextMessageAsync(
                 chatId: user.TelegramAccountId,
                 text: messageWithCode,
-                parseMode: ParseMode.MarkdownV2
+                parseMode: ParseMode.Markdown
             );
             return Ok();
         }

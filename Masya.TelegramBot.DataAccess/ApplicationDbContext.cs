@@ -20,7 +20,7 @@ namespace Masya.TelegramBot.DataAccess
         public DbSet<Command> Commands { get; set; }
         public DbSet<BotSettings> BotSettings { get; set; }
 
-        public List<User> Agents => Users
+        public List<User> GetAgents() => Users
             .AsQueryable()
             .Where(u => u.AgencyId.HasValue)
             .ToList();
