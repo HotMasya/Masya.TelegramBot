@@ -15,6 +15,7 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using Masya.TelegramBot.DatabaseExtensions;
 using Masya.TelegramBot.DatabaseExtensions.Abstractions;
+using Telegram.Bot;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -101,11 +102,11 @@ namespace Masya.TelegramBot.Modules
         {
             var user = Context.Message.From;
 
-            if (contact.UserId != user.Id) return Task.CompletedTask;
+            if (!contact.UserId.HasValue || contact.UserId.Value != user.Id) return Task.CompletedTask;
 
             var dbUser = new DataAccess.Models.User()
             {
-                TelegramAccountId = contact.UserId,
+                TelegramAccountId = contact.UserId.Value,
                 TelegramFirstName = contact.FirstName,
                 TelegramLastName = contact.LastName,
                 TelegramLogin = user.Username,
@@ -134,7 +135,7 @@ namespace Masya.TelegramBot.Modules
                     if (agency is not null)
                     {
                         dbUser.AgencyId = agency.Id;
-                        dbUser.TelegramAvatar = GetUserProfilePhotosAsync(contact.UserId).GetAwaiter().GetResult();
+                        dbUser.TelegramAvatar = GetUserProfilePhotosAsync(contact.UserId.Value).GetAwaiter().GetResult();
                         Context.BotService.Client.SendTextMessageAsync(
                             chatId: args.Message.Chat.Id,
                             text: string.Format("You're now the agent of the agency: *{0}*.", agency.Name),
@@ -158,7 +159,7 @@ namespace Masya.TelegramBot.Modules
                 {
                     case UserRoles.Customer:
                         dbUser.Permission = Permission.User;
-                        dbUser.TelegramAvatar = GetUserProfilePhotosAsync(contact.UserId).GetAwaiter().GetResult();
+                        dbUser.TelegramAvatar = GetUserProfilePhotosAsync(contact.UserId.Value).GetAwaiter().GetResult();
                         Context.BotService.Client.SendTextMessageAsync(
                             chatId: args.Message.Chat.Id,
                             text: "You are now registered as a customer."

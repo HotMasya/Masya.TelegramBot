@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.Extensions.Logging;
 using Masya.TelegramBot.DatabaseExtensions.Metadata;
+using Telegram.Bot;
 
 namespace Masya.TelegramBot.Api.Controllers
 {

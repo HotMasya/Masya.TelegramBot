@@ -50,7 +50,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
             if (commands.Count == 0)
             {
-                return new ReplyKeyboardMarkup();
+                return new ReplyKeyboardRemove();
             }
 
             foreach (var c in commands)

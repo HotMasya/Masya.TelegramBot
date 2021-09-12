@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Commands.Metadata;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -16,7 +17,7 @@ namespace Masya.TelegramBot.Commands
 
         public Task<Message> ReplyAsync(
             string content,
-            ParseMode parseMode = ParseMode.Default,
+            ParseMode? parseMode = null,
             bool disableWebPagePreview = false,
             bool disableNotification = false,
             int replyToMessageId = 0,

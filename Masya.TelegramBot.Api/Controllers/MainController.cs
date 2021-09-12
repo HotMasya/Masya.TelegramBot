@@ -7,6 +7,7 @@ using Masya.TelegramBot.DataAccess.Models;
 using Masya.TelegramBot.DatabaseExtensions.Metadata;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Telegram.Bot;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
