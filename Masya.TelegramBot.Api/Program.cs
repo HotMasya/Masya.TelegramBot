@@ -11,7 +11,7 @@ using Masya.TelegramBot.DatabaseExtensions.Metadata;
 
 namespace Masya.TelegramBot.Api
 {
-    public class Program
+    public static class Program
     {
         public static async Task Main(string[] args)
         {

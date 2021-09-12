@@ -92,7 +92,7 @@ namespace Masya.TelegramBot.Api.Controllers
             int code2 = rng.Next(100, 1000);
             int fullCode = code1 * 1000 + code2;
             string messageWithCode = string.Format(
-                "Your code: <b>{0} {1}</b>.\nIt will be valid only for {2} seconds.",
+                "Your code: *{0} {1}*.\nIt will be valid only for *{2}* second(s).",
                 code1,
                 code2,
                 _cacheOptions.CodeDurationInSecs
@@ -106,7 +106,7 @@ namespace Masya.TelegramBot.Api.Controllers
             await _botService.Client.SendTextMessageAsync(
                 chatId: user.TelegramAccountId,
                 text: messageWithCode,
-                parseMode: ParseMode.Html
+                parseMode: ParseMode.MarkdownV2
             );
             return Ok();
         }

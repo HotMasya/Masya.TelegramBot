@@ -89,7 +89,7 @@ namespace Masya.TelegramBot.Commands
         {
             ParameterInfo[] mParams = info.GetParameters();
 
-            int reqParamsCount = mParams.Where(p => !p.IsOptional && p.GetCustomAttribute<ParamArrayAttribute>() == null).Count();
+            int reqParamsCount = mParams.Count(p => !p.IsOptional && p.GetCustomAttribute<ParamArrayAttribute>() == null);
 
             if (ArgsStr.Length < reqParamsCount)
             {

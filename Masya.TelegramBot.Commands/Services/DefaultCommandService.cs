@@ -150,7 +150,7 @@ namespace Masya.TelegramBot.Commands.Services
 
             if (commandAttr != null && regUserAttr != null)
             {
-                throw new Exception("RegisterUserAttribute should not be used with CommandAttribute.");
+                throw new FormatException("RegisterUserAttribute should not be used with CommandAttribute.");
             }
 
             return commandAttr != null
@@ -174,10 +174,12 @@ namespace Masya.TelegramBot.Commands.Services
             return type.IsPublic
                 && !type.IsAbstract
                 && !type.IsGenericType
-                && type.GetInterfaces().FirstOrDefault(i => i.Equals(typeof(IModule<,>))) != null;
+                && type.GetInterfaces().Any(
+                    i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IModule<,>)
+                   );
         }
 
-        private bool CommandFilter(TCommandInfo info, string commandName)
+        private static bool CommandFilter(TCommandInfo info, string commandName)
         {
             return info.Name.Equals(commandName)
                 || info.Aliases.Any(a => a.Name.Equals(commandName) && a.IsEnabled);

@@ -101,13 +101,12 @@ namespace Masya.TelegramBot.Commands.Services
             return mcol;
         }
 
-        private Task RemoveCollector(ICollector<TCommandInfo, TAliasInfo> col)
+        private void RemoveCollector(ICollector<TCommandInfo, TAliasInfo> col)
         {
             if (_collectors.Contains(col))
             {
                 _collectors.Remove(col);
             }
-            return Task.CompletedTask;
         }
 
         public async Task SetWebhookAsync()

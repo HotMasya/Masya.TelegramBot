@@ -110,7 +110,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
             return commands?.FirstOrDefault(cm => DatabaseCommandFilter(cm, name?.ToLower(), user));
         }
 
-        protected bool DatabaseCommandFilter(DatabaseCommandInfo commandInfo, string commandName, DataAccess.Models.User user)
+        private static bool DatabaseCommandFilter(DatabaseCommandInfo commandInfo, string commandName, DataAccess.Models.User user)
         {
             return commandInfo.Name.ToLower().Equals(commandName)
                 || commandInfo.Aliases.Any(

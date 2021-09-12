@@ -15,7 +15,7 @@ namespace Masya.TelegramBot.Commands.Metadata
         public IList<TAliasInfo> Aliases { get; }
         public bool IsEnabled { get; set; }
 
-        private static readonly string DefaultDescription = "описание отсутствует.";
+        private const string DefaultDescription = "описание отсутствует.";
 
         public CommandInfo() { }
 
@@ -51,15 +51,15 @@ namespace Masya.TelegramBot.Commands.Metadata
             return builder.ToString();
         }
 
+        //  Command formatting
+        private const string CommandFormat = "cmd";
+        private const string ParamsFormat = "params";
+        private const string DescriptionFormat = "descr";
+
         public override string ToString()
         {
             return string.Format("{0} {1} - {2}", Name, MethodParamsToString(), Description);
         }
-
-        //  Command formatting
-        private static readonly string CommandFormat = "cmd";
-        private static readonly string ParamsFormat = "params";
-        private static readonly string DescriptionFormat = "descr";
 
         public string ToString(string format, IFormatProvider formatProvider)
         {

@@ -51,7 +51,7 @@ namespace Masya.TelegramBot.Modules
             );
 
             return string.Format(
-                "Welcome back, <b>{0}</b>!\nYour status: <b>{1}</b>.\nYour are in main menu now.",
+                "Welcome back, *{0}*!\nYour status: *{1}*.\nYour are in main menu now.",
                 fullName,
                 user.Permission.ToString()
             );
@@ -85,7 +85,7 @@ namespace Masya.TelegramBot.Modules
                 return null;
             }
 
-            var actualAvatar = photos.Photos[photos.Photos.Length - 1][0];
+            var actualAvatar = photos.Photos[^1][0];
             var fileMeta = await client.GetFileAsync(actualAvatar.FileId);
             using var ms = new MemoryStream();
             await client.DownloadFileAsync(fileMeta.FilePath, ms);
@@ -133,8 +133,8 @@ namespace Masya.TelegramBot.Modules
                         dbUser.TelegramAvatar = GetUserProfilePhotosAsync(contact.UserId).GetAwaiter().GetResult();
                         Context.BotService.Client.SendTextMessageAsync(
                             chatId: args.Message.Chat.Id,
-                            text: "You're now the agent of the agency: <b>" + agency.Name + "</b>.",
-                            parseMode: ParseMode.Html
+                            text: string.Format("You're now the agent of the agency: *{0}*.", agency.Name),
+                            parseMode: ParseMode.MarkdownV2
                         ).Wait();
                         collector.Finish();
                         return;
@@ -194,7 +194,7 @@ namespace Masya.TelegramBot.Modules
                 Context.BotService.Client.SendTextMessageAsync(
                     chatId: Context.Message.Chat.Id,
                     text: GenerateMenuMessage(Context.Message, ctx),
-                    parseMode: ParseMode.Html,
+                    parseMode: ParseMode.MarkdownV2,
                     replyMarkup: _keyboards.Menu(dbUser.Permission)
                     ).Wait();
             };
