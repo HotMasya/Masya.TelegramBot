@@ -16,7 +16,7 @@ namespace Masya.TelegramBot.Commands
 
         public Task<Message> ReplyAsync(
             string content,
-            ParseMode parseMode = ParseMode.Markdown,
+            ParseMode parseMode = ParseMode.Default,
             bool disableWebPagePreview = false,
             bool disableNotification = false,
             int replyToMessageId = 0,

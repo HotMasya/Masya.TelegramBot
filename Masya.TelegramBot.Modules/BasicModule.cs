@@ -73,7 +73,11 @@ namespace Masya.TelegramBot.Modules
                 return;
             }
 
-            await ReplyAsync(GenerateMenuMessage(Context.Message, _dbContext), replyMarkup: _keyboards.Menu(user.Permission));
+            await ReplyAsync(
+                content: GenerateMenuMessage(Context.Message, _dbContext),
+                replyMarkup: _keyboards.Menu(user.Permission),
+                parseMode: ParseMode.Markdown
+                );
         }
 
         private async Task<byte[]> GetUserProfilePhotosAsync(long userId)
