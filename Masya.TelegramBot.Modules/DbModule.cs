@@ -36,7 +36,7 @@ namespace Masya.TelegramBot.Modules
                 builder.AppendLine(user.ToString());
             }
 
-            await ReplyAsync(builder.ToString());
+            await ReplyAsync(builder.ToString(), ParseMode.MarkdownV2);
         }
     }
 }
