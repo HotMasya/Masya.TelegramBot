@@ -93,6 +93,9 @@ namespace Masya.TelegramBot.DatabaseExtensions
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var user = dbContext.Users.FirstOrDefault(u => u.TelegramAccountId == message.From.Id);
 
+            logger.LogInformation("CheckCommandCondition command permission: " + commandInfo.Permission.ToString());
+            logger.LogInformation("CheckCommandCondition user permission: " + user.Permission.ToString());
+
             return (
                 base.CheckCommandCondition(commandInfo, message) &&
                 commandInfo.Permission == Permission.Guest || (

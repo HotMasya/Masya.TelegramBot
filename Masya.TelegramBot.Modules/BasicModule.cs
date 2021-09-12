@@ -217,7 +217,7 @@ namespace Masya.TelegramBot.Modules
             await Context.BotService.Client.SendTextMessageAsync(
                         chatId: chatId,
                         text: "Who are you?",
-                        replyMarkup: Markups.ClientAgentButtons()
+                        replyMarkup: _keyboards.Roles()
                     );
         }
     }

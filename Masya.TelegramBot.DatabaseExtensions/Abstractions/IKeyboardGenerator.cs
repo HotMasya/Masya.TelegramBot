@@ -10,5 +10,6 @@ namespace Masya.TelegramBot.DatabaseExtensions.Abstractions
         IServiceProvider Services { get; }
         CommandServiceOptions Options { get; }
         IReplyMarkup Menu(Permission userPermission);
+        IReplyMarkup Roles();
     }
 }
