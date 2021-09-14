@@ -51,7 +51,7 @@ namespace Masya.TelegramBot.DataAccess.Models
         {
             return string.Format(
                 "{0} - {1} {2} @{3}, Permission: {4}",
-                 Id,
+                Id,
                 TelegramFirstName,
                 TelegramLastName,
                 TelegramLogin,
