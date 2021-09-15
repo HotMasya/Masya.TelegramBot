@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using Newtonsoft.Json;
 using System.Text;
 using System;
@@ -36,11 +35,6 @@ namespace Masya.TelegramBot.Api
 
     public void ConfigureServices(IServiceCollection services)
     {
-      Log.Logger = new LoggerConfiguration()
-          .ReadFrom.Configuration(Configuration)
-          .WriteTo.Console()
-          .CreateLogger();
-
       services.Configure<CommandServiceOptions>(Configuration.GetSection("Commands"));
       services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
       services.Configure<CacheOptions>(Configuration.GetSection("Cache"));

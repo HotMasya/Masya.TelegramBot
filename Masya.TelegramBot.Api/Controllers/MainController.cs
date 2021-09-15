@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Coravel.Scheduling.Schedule.Interfaces;
 using Masya.TelegramBot.Api.Dtos;
 using Masya.TelegramBot.Api.Services;
 using Masya.TelegramBot.Commands.Abstractions;
@@ -19,23 +20,22 @@ namespace Masya.TelegramBot.Api.Controllers
   {
     private readonly ApplicationDbContext _dbContext;
     private readonly IBotService<DatabaseCommandInfo, DatabaseAliasInfo> _botService;
-    private readonly UpdateXmlImportsInvokable _updateImports;
+    private readonly IScheduler _scheduler;
 
     public MainController(
         IBotService<DatabaseCommandInfo, DatabaseAliasInfo> botService,
         ApplicationDbContext dbContext,
-        UpdateXmlImportsInvokable updateImports
+        IScheduler scheduler
     )
     {
       _botService = botService;
       _dbContext = dbContext;
-      _updateImports = updateImports;
+      _scheduler = scheduler;
     }
 
     [HttpPost("imports/update")]
     public async Task<IActionResult> UpdateImportsAsync()
     {
-      await _updateImports.Invoke();
       return Ok();
     }
 
