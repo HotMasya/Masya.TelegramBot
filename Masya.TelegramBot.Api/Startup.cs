@@ -23,6 +23,7 @@ using Masya.TelegramBot.Api.Services.Abstractions;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
 using System.Data;
+using System.Collections.ObjectModel;
 
 namespace Masya.TelegramBot.Api
 {
@@ -43,11 +44,15 @@ namespace Masya.TelegramBot.Api
             {
                 TableName = "Serilogs",
                 AutoCreateSqlTable = true,
-
             };
 
-            var columnOptions = new ColumnOptions();
-            columnOptions.AdditionalColumns.Add(new SqlColumn("AgencyId", SqlDbType.Int));
+            var columnOptions = new ColumnOptions()
+            {
+                AdditionalColumns = new Collection<SqlColumn> {
+                    new SqlColumn { ColumnName = "AgencyId", DataType = SqlDbType.Int}
+                },
+            };
+
             columnOptions.Store.Remove(StandardColumn.Properties);
 
             return new LoggerConfiguration()
