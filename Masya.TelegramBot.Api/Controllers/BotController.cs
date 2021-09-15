@@ -13,16 +13,14 @@ namespace Masya.TelegramBot.Api.Controllers
     {
         private readonly IBotService<DatabaseCommandInfo, DatabaseAliasInfo> _botService;
         private readonly ApplicationDbContext _dbContext;
-        private readonly ILogger<BotController> _logger;
 
         public BotController(
             IBotService<DatabaseCommandInfo, DatabaseAliasInfo> botService,
-            ApplicationDbContext dbContext,
-            ILogger<BotController> logger)
+            ApplicationDbContext dbContext
+            )
         {
             _botService = botService;
             _dbContext = dbContext;
-            _logger = logger;
         }
 
         [HttpPost]

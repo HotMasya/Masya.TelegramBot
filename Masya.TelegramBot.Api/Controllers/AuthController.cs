@@ -2,19 +2,22 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Masya.TelegramBot.Api.Dtos;
-using Masya.TelegramBot.Api.Services;
-using Masya.TelegramBot.Commands.Abstractions;
-using Masya.TelegramBot.DataAccess;
+
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot;
+
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
-using Telegram.Bot.Types.Enums;
+
 using Masya.TelegramBot.Api.Options;
-using Microsoft.Extensions.Options;
+using Masya.TelegramBot.Api.Services.Abstractions;
+using Masya.TelegramBot.Api.Dtos;
+using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.DataAccess.Models;
-using Microsoft.Extensions.Logging;
+using Masya.TelegramBot.DataAccess;
 using Masya.TelegramBot.DatabaseExtensions.Metadata;
-using Telegram.Bot;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
