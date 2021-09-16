@@ -9,8 +9,10 @@ using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.Modules;
 using Masya.TelegramBot.DataAccess;
 using Masya.TelegramBot.DatabaseExtensions.Metadata;
-using Microsoft.Extensions.Logging;
-using System.IO;
+using Serilog.Sinks.MSSqlServer;
+using System.Collections.ObjectModel;
+using System.Data;
+using Serilog.Filters;
 
 namespace Masya.TelegramBot.Api
 {
@@ -41,14 +43,41 @@ namespace Masya.TelegramBot.Api
                     configBuilder
                     .AddEnvironmentVariables()
                     .AddJsonFile(
-                      path: Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"),
-                      optional: false,
-                      reloadOnChange: true
+                        path: "appsettings.json",
+                        optional: false,
+                        reloadOnChange: true
                     );
                 })
-                .ConfigureLogging(loggingBuilder =>
+                .UseSerilog((context, logger) =>
                 {
-                    loggingBuilder.AddSerilog();
+                    var sinkOptions = new MSSqlServerSinkOptions()
+                    {
+                        TableName = "Serilogs",
+                        AutoCreateSqlTable = true,
+                    };
+
+                    var columnOptions = new ColumnOptions()
+                    {
+                        AdditionalColumns = new Collection<SqlColumn> {
+                            new SqlColumn { ColumnName = "AgencyId", DataType = SqlDbType.Int, AllowNull = true }
+                        },
+                    };
+
+                    columnOptions.Store.Remove(StandardColumn.Properties);
+                    columnOptions.Store.Remove(StandardColumn.MessageTemplate);
+                    columnOptions.Store.Remove(StandardColumn.LogEvent);
+
+                    logger
+                        .MinimumLevel.Information()
+                        .WriteTo.Console()
+                        .Filter.ByExcluding(Matching.FromSource("Microsoft"))
+                        .Filter.ByExcluding(Matching.FromSource("System"))
+                        .WriteTo.MSSqlServer(
+                            connectionString: context.Configuration.GetConnectionString("RemoteDb"),
+                            sinkOptions: sinkOptions,
+                            appConfiguration: context.Configuration,
+                            columnOptions: columnOptions
+                        );
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

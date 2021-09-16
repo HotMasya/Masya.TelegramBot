@@ -24,6 +24,7 @@ using Serilog;
 using Serilog.Sinks.MSSqlServer;
 using System.Data;
 using System.Collections.ObjectModel;
+using Serilog.Filters;
 
 namespace Masya.TelegramBot.Api
 {
@@ -38,41 +39,8 @@ namespace Masya.TelegramBot.Api
             Configuration = configuration;
         }
 
-        private ILogger ConfigureLogger()
-        {
-            var sinkOptions = new MSSqlServerSinkOptions()
-            {
-                TableName = "Serilogs",
-                AutoCreateSqlTable = true,
-            };
-
-            var columnOptions = new ColumnOptions()
-            {
-                AdditionalColumns = new Collection<SqlColumn> {
-                    new SqlColumn { ColumnName = "AgencyId", DataType = SqlDbType.Int, AllowNull = true }
-                },
-            };
-
-            columnOptions.Store.Remove(StandardColumn.Properties);
-            columnOptions.Store.Remove(StandardColumn.MessageTemplate);
-            columnOptions.Store.Remove(StandardColumn.LogEvent);
-
-            return new LoggerConfiguration()
-                .ReadFrom.Configuration(Configuration)
-                .WriteTo.Console()
-                .WriteTo.MSSqlServer(
-                    connectionString: Configuration.GetConnectionString("RemoteDb"),
-                    sinkOptions: sinkOptions,
-                    appConfiguration: Configuration,
-                    columnOptions: columnOptions
-                )
-                .CreateLogger();
-        }
-
         public void ConfigureServices(IServiceCollection services)
         {
-            Log.Logger = ConfigureLogger();
-
             services.Configure<CommandServiceOptions>(Configuration.GetSection("Commands"));
             services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
             services.Configure<CacheOptions>(Configuration.GetSection("Cache"));

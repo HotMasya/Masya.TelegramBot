@@ -5,7 +5,6 @@ using Masya.TelegramBot.Api.Dtos;
 using Masya.TelegramBot.Api.Services.Abstractions;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace Masya.TelegramBot.Api.Services
 {
@@ -13,12 +12,9 @@ namespace Masya.TelegramBot.Api.Services
     {
         public IConfiguration Configuration { get; }
 
-        private readonly ILogger<IDatabaseLogsService> _logger;
-
-        public DatabaseLogsService(IConfiguration configuration, ILogger<IDatabaseLogsService> logger)
+        public DatabaseLogsService(IConfiguration configuration)
         {
             Configuration = configuration;
-            _logger = logger;
         }
 
         private SqlConnection GetConnection()
@@ -26,30 +22,19 @@ namespace Masya.TelegramBot.Api.Services
             return new SqlConnection(Configuration.GetConnectionString("RemoteDb"));
         }
 
-        private IEnumerable<LogDto> MapLogsAsync(SqlDataReader reader)
+        private static IEnumerable<LogDto> MapLogsAsync(SqlDataReader reader)
         {
             var result = new List<LogDto>();
-            int count = 0;
-            try
+            while (reader.Read())
             {
-                while (reader.Read())
+                var dto = new LogDto
                 {
-                    count++;
-                    var dto = new LogDto
-                    {
-                        Message = reader["Message"].ToString(),
-                        Level = reader["Level"].ToString(),
-                        TimeStamp = DateTime.Parse(reader["TimeStamp"].ToString())
-                    };
-                    result.Add(dto);
-                }
+                    Message = reader["Message"].ToString(),
+                    Level = reader["Level"].ToString(),
+                    TimeStamp = DateTime.Parse(reader["TimeStamp"].ToString())
+                };
+                result.Add(dto);
             }
-            catch
-            {
-                _logger.LogError("Something went wrong");
-            }
-
-            _logger.LogInformation("Total rows found: {0}", count);
             return result;
         }
 
