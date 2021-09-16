@@ -22,10 +22,10 @@ namespace Masya.TelegramBot.Api.Services
             return new SqlConnection(Configuration.GetConnectionString("RemoteDb"));
         }
 
-        private async Task<IEnumerable<LogDto>> MapLogsAsync(SqlDataReader reader)
+        private IEnumerable<LogDto> MapLogsAsync(SqlDataReader reader)
         {
             var result = new List<LogDto>();
-            while (await reader.ReadAsync())
+            while (reader.Read())
             {
                 var dto = new LogDto
                 {
@@ -47,7 +47,7 @@ namespace Masya.TelegramBot.Api.Services
             await conn.OpenAsync();
             using var reader = await command.ExecuteReaderAsync();
 
-            return await MapLogsAsync(reader);
+            return MapLogsAsync(reader);
         }
 
         public async Task<IEnumerable<LogDto>> GetBotLogsAsync()
@@ -58,7 +58,7 @@ namespace Masya.TelegramBot.Api.Services
             await conn.OpenAsync();
             using var reader = await command.ExecuteReaderAsync();
 
-            return await MapLogsAsync(reader);
+            return MapLogsAsync(reader);
         }
     }
 }
