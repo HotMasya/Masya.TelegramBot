@@ -5,6 +5,7 @@ using Masya.TelegramBot.Api.Dtos;
 using Masya.TelegramBot.Api.Services.Abstractions;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Masya.TelegramBot.Api.Services
 {
@@ -12,9 +13,12 @@ namespace Masya.TelegramBot.Api.Services
     {
         public IConfiguration Configuration { get; }
 
-        public DatabaseLogsService(IConfiguration configuration)
+        private readonly ILogger<IDatabaseLogsService> _logger;
+
+        public DatabaseLogsService(IConfiguration configuration, ILogger<IDatabaseLogsService> logger)
         {
             Configuration = configuration;
+            _logger = logger;
         }
 
         private SqlConnection GetConnection()
@@ -22,26 +26,40 @@ namespace Masya.TelegramBot.Api.Services
             return new SqlConnection(Configuration.GetConnectionString("RemoteDb"));
         }
 
-        private static IEnumerable<LogDto> MapLogsAsync(SqlDataReader reader)
+        private IEnumerable<LogDto> MapLogsAsync(SqlDataReader reader)
         {
             var result = new List<LogDto>();
-            while (reader.Read())
+            int count = 0;
+            try
             {
-                var dto = new LogDto
+                while (reader.Read())
                 {
-                    Message = reader["Message"].ToString(),
-                    Level = reader["Level"].ToString(),
-                    TimeStamp = DateTime.Parse(reader["TimeStamp"].ToString())
-                };
-                result.Add(dto);
+                    count++;
+                    var dto = new LogDto
+                    {
+                        Message = reader["Message"].ToString(),
+                        Level = reader["Level"].ToString(),
+                        TimeStamp = DateTime.Parse(reader["TimeStamp"].ToString())
+                    };
+                    result.Add(dto);
+                }
             }
+            catch
+            {
+                _logger.LogError("Something went wrong");
+            }
+
+            _logger.LogInformation("Total rows found: {0}", count);
             return result;
         }
 
         public async Task<IEnumerable<LogDto>> GetBotLogsAsync(int? agencyId = null)
         {
             using SqlConnection conn = GetConnection();
-            string query = "SELECT * FROM Serilogs WHERE AgencyId " + (agencyId.HasValue ? "= @agencyId" : "IS NULL");
+            string query = string.Format(
+                "SELECT * FROM Serilogs WHERE AgencyId {0}",
+                agencyId.HasValue ? "= @agencyId" : "IS NULL"
+            );
             var command = new SqlCommand(query, conn);
             if (agencyId.HasValue)
             {
