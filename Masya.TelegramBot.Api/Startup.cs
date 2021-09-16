@@ -49,7 +49,7 @@ namespace Masya.TelegramBot.Api
             var columnOptions = new ColumnOptions()
             {
                 AdditionalColumns = new Collection<SqlColumn> {
-                    new SqlColumn { ColumnName = "AgencyId", DataType = SqlDbType.Int}
+                    new SqlColumn { ColumnName = "AgencyId", DataType = SqlDbType.Int, AllowNull = true }
                 },
             };
 
