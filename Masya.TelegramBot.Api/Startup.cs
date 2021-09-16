@@ -54,8 +54,12 @@ namespace Masya.TelegramBot.Api
             };
 
             columnOptions.Store.Remove(StandardColumn.Properties);
+            columnOptions.Store.Remove(StandardColumn.MessageTemplate);
+            columnOptions.Store.Remove(StandardColumn.LogEvent);
 
             return new LoggerConfiguration()
+                .ReadFrom.Configuration(Configuration)
+                .WriteTo.Console()
                 .WriteTo.MSSqlServer(
                     connectionString: Configuration.GetConnectionString("RemoteDb"),
                     sinkOptions: sinkOptions,

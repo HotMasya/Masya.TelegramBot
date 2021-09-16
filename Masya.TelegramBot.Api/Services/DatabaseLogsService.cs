@@ -41,7 +41,7 @@ namespace Masya.TelegramBot.Api.Services
         public async Task<IEnumerable<LogDto>> GetBotLogsAsync(int? agencyId = null)
         {
             using SqlConnection conn = GetConnection();
-            string query = "SELECT * FROM Serilogs WHERE AgencyId = " + (agencyId.HasValue ? "@agencyId" : "NULL");
+            string query = "SELECT * FROM Serilogs WHERE AgencyId " + (agencyId.HasValue ? "= @agencyId" : "IS NULL");
             var command = new SqlCommand(query, conn);
             if (agencyId.HasValue)
             {
