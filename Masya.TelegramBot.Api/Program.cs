@@ -70,8 +70,8 @@ namespace Masya.TelegramBot.Api
                     logger
                         .MinimumLevel.Information()
                         .WriteTo.Console()
-                        // .Filter.ByExcluding(Matching.FromSource("Microsoft"))
-                        // .Filter.ByExcluding(Matching.FromSource("System"))
+                        .Filter.ByExcluding(Matching.FromSource("Microsoft"))
+                        .Filter.ByExcluding(Matching.FromSource("System"))
                         .WriteTo.MSSqlServer(
                             connectionString: context.Configuration.GetConnectionString("RemoteDb"),
                             sinkOptions: sinkOptions,
