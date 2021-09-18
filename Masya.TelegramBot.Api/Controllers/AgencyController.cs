@@ -48,7 +48,7 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpGet("import/logs")]
-        public async Task<IActionResult> GetImportLogsAsync([FromBody] int agencyId)
+        public async Task<IActionResult> GetImportLogsAsync([FromQuery] int agencyId)
         {
             return Ok(await _logs.GetBotLogsAsync(agencyId));
         }
