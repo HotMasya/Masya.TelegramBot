@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Masya.TelegramBot.Api.Dtos;
+using Masya.TelegramBot.Api.Services.Abstractions;
 using Masya.TelegramBot.DataAccess;
 using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -18,11 +19,17 @@ namespace Masya.TelegramBot.Api.Controllers
     {
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _dbContext;
+        private readonly IDatabaseLogsService _logs;
 
-        public AgencyController(ApplicationDbContext dbContext, IMapper mapper)
+        public AgencyController(
+            ApplicationDbContext dbContext,
+            IMapper mapper,
+            IDatabaseLogsService logs
+        )
         {
             _mapper = mapper;
             _dbContext = dbContext;
+            _logs = logs;
         }
 
         private async Task<Agency> GetUserAgencyAsync()
@@ -40,6 +47,12 @@ namespace Masya.TelegramBot.Api.Controllers
             return null;
         }
 
+        [HttpGet("import/logs")]
+        public async Task<IActionResult> GetImportLogsAsync([FromBody] int agencyId)
+        {
+            return Ok(await _logs.GetBotLogsAsync(agencyId));
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAgencyAsync()
         {
@@ -55,7 +68,7 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateAgencyAsync(AgencyDto dto)
+        public async Task<IActionResult> CreateAgencyAsync([FromBody] AgencyDto dto)
         {
             if (!User.HasPermission(Permission.SuperAdmin)) return Forbid();
 
@@ -68,7 +81,7 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpPost("save")]
-        public async Task<IActionResult> SaveAgencyAsync(AgencyDto dto)
+        public async Task<IActionResult> SaveAgencyAsync([FromBody] AgencyDto dto)
         {
             var userAgency = await GetUserAgencyAsync();
             if (userAgency == null)

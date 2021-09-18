@@ -56,7 +56,7 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpPost("bot/update")]
-        public async Task<IActionResult> UpdateBotSettingsAsync(BotSettingsDto dto)
+        public async Task<IActionResult> UpdateBotSettingsAsync([FromBody] BotSettingsDto dto)
         {
             if (!User.HasPermission(Permission.SuperAdmin)) return Forbid();
 

@@ -51,7 +51,7 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpPost("refresh")]
-        public IActionResult RefreshToken(TokenDto dto)
+        public IActionResult RefreshToken([FromBody] TokenDto dto)
         {
             var principal = _jwtService.Validate(dto.RefreshToken);
             if (principal == null)
@@ -81,7 +81,7 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpPost("phone")]
-        public async Task<IActionResult> AuthPhoneAsync(PhoneDto dto)
+        public async Task<IActionResult> AuthPhoneAsync([FromBody] PhoneDto dto)
         {
             var user = _dbContext.Users
                 .FirstOrDefault(u => u.TelegramPhoneNumber.Equals(dto.PhoneNumber));
@@ -116,7 +116,7 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpPost("code")]
-        public async Task<IActionResult> AuthCodeAsync(CodeDto dto)
+        public async Task<IActionResult> AuthCodeAsync([FromBody] CodeDto dto)
         {
             string recordId = AuthCodePrefix + dto.Code;
             var userPhoneNumber = await _cache.GetRecordAsync<string>(recordId);

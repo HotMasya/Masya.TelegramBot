@@ -54,7 +54,7 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpPut("save")]
-        public async Task<IActionResult> SaveCommandsAsync(Command[] commands)
+        public async Task<IActionResult> SaveCommandsAsync([FromBody] Command[] commands)
         {
             if (!User.HasPermission(Permission.SuperAdmin)) return Forbid();
 
