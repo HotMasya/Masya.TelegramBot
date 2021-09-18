@@ -22,8 +22,16 @@ namespace Masya.TelegramBot.Api.Services
             return new SqlConnection(Configuration.GetConnectionString("RemoteDb"));
         }
 
-        private static IEnumerable<LogDto> MapLogsAsync(SqlDataReader reader)
+        private async Task<IEnumerable<LogDto>> MapLogsToDtoAsync(string query, int? agencyId = null)
         {
+            using SqlConnection conn = GetConnection();
+            var command = new SqlCommand(query, conn);
+            if (agencyId.HasValue)
+            {
+                command.Parameters.AddWithValue("@agencyId", agencyId);
+            }
+            await conn.OpenAsync();
+            using var reader = await command.ExecuteReaderAsync();
             var result = new List<LogDto>();
             while (reader.Read())
             {
@@ -41,20 +49,20 @@ namespace Masya.TelegramBot.Api.Services
 
         public async Task<IEnumerable<LogDto>> GetBotLogsAsync(int? agencyId = null)
         {
-            using SqlConnection conn = GetConnection();
             string query = string.Format(
                 "SELECT * FROM Serilogs WHERE AgencyId {0}",
                 agencyId.HasValue ? "= @agencyId" : "IS NULL"
             );
-            var command = new SqlCommand(query, conn);
-            if (agencyId.HasValue)
-            {
-                command.Parameters.AddWithValue("@agencyId", agencyId);
-            }
-            await conn.OpenAsync();
-            using var reader = await command.ExecuteReaderAsync();
+            return await MapLogsToDtoAsync(query, agencyId);
+        }
 
-            return MapLogsAsync(reader);
+        public async Task<IEnumerable<LogDto>> GetBotLogsForLastHourAsync(int? agencyId = null)
+        {
+            string query = string.Format(
+                "SELECT * FROM Serilogs WHERE Timestamp >= DATEADD(hour, -1, GETDATE()) AgencyId {0}",
+                agencyId.HasValue ? "= @agencyId" : "IS NULL"
+            );
+            return await MapLogsToDtoAsync(query, agencyId);
         }
     }
 }

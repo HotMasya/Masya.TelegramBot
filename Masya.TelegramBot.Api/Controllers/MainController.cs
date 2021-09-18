@@ -36,7 +36,7 @@ namespace Masya.TelegramBot.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetBotLogs()
         {
-            return Ok(await _logs.GetBotLogsAsync());
+            return Ok(await _logs.GetBotLogsForLastHourAsync());
         }
 
         [HttpGet("bot")]

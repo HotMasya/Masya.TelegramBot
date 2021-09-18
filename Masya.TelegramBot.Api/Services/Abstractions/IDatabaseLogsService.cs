@@ -10,5 +10,6 @@ namespace Masya.TelegramBot.Api.Services.Abstractions
         IConfiguration Configuration { get; }
 
         Task<IEnumerable<LogDto>> GetBotLogsAsync(int? agencyId = null);
+        Task<IEnumerable<LogDto>> GetBotLogsForLastHourAsync(int? agencyId = null);
     }
 }
