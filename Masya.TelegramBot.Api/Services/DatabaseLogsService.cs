@@ -29,7 +29,7 @@ namespace Masya.TelegramBot.Api.Services
             {
                 var dto = new LogDto
                 {
-                    Id = long.Parse(reader["Id"].ToString()),
+                    Id = int.Parse(reader["Id"].ToString()),
                     Message = reader["Message"].ToString(),
                     Level = reader["Level"].ToString(),
                     TimeStamp = DateTime.Parse(reader["TimeStamp"].ToString())
