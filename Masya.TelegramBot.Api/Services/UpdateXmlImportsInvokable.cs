@@ -33,21 +33,26 @@ namespace Masya.TelegramBot.Api.Services
             using var scope = _services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var xmlService = scope.ServiceProvider.GetRequiredService<IXmlService>();
-            var xmlUrls = dbContext.Agencies.Select(a => a.ImportUrl).ToList();
+            var agenciesData = dbContext.Agencies.Select(a => new { a.ImportUrl, a.Id }).ToList();
             var httpClient = new HttpClient();
 
-            foreach (var url in xmlUrls)
+            foreach (var agencyData in agenciesData)
             {
-                if (!string.IsNullOrEmpty(url))
+                if (!string.IsNullOrEmpty(agencyData.ImportUrl))
                 {
-                    var response = await httpClient.GetAsync(url);
+                    var response = await httpClient.GetAsync(agencyData.ImportUrl);
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
                         var realtyFeed = await xmlService.GetRealtyFeed(response.Content);
-                        await xmlService.UpdateObjectsAsync(realtyFeed);
+                        await xmlService.UpdateObjectsAsync(realtyFeed, agencyData.Id);
                     }
 
-                    _logger.LogInformation("{0} - Finished with status code: {1}", url, (int)response.StatusCode);
+                    _logger.LogInformation(
+                        "Agency import from url \"{@url}\" finished with status code {@statusCode}. {@AgencyId}",
+                        agencyData.ImportUrl,
+                        (int)response.StatusCode,
+                        agencyData.Id
+                    );
                 }
             }
         }
