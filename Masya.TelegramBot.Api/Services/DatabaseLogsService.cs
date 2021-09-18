@@ -59,7 +59,7 @@ namespace Masya.TelegramBot.Api.Services
         public async Task<IEnumerable<LogDto>> GetBotLogsForLastHourAsync(int? agencyId = null)
         {
             string query = string.Format(
-                "SELECT * FROM Serilogs WHERE Timestamp >= DATEADD(hour, -1, GETDATE()) AgencyId {0}",
+                "SELECT * FROM Serilogs WHERE TimeStamp >= DATEADD(hour, -1, GETDATE()) AgencyId {0}",
                 agencyId.HasValue ? "= @agencyId" : "IS NULL"
             );
             return await MapLogsToDtoAsync(query, agencyId);
