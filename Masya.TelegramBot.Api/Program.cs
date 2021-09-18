@@ -13,6 +13,7 @@ using Serilog.Sinks.MSSqlServer;
 using System.Collections.ObjectModel;
 using System.Data;
 using Serilog.Filters;
+using Serilog.Events;
 
 namespace Masya.TelegramBot.Api
 {
@@ -69,9 +70,9 @@ namespace Masya.TelegramBot.Api
 
                     logger
                         .MinimumLevel.Information()
+                        .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                        .MinimumLevel.Override("System", LogEventLevel.Warning)
                         .WriteTo.Console()
-                        .Filter.ByExcluding(Matching.FromSource("Microsoft"))
-                        .Filter.ByExcluding(Matching.FromSource("System"))
                         .WriteTo.MSSqlServer(
                             connectionString: context.Configuration.GetConnectionString("RemoteDb"),
                             sinkOptions: sinkOptions,

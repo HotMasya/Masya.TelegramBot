@@ -8,13 +8,15 @@ using Masya.TelegramBot.DataAccess;
 using Masya.TelegramBot.DataAccess.Models;
 using Masya.TelegramBot.DataAccess.Types;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Masya.TelegramBot.Api.Services
 {
     public sealed class XmlService : IXmlService
     {
         public ApplicationDbContext DbContext { get; }
-        public List<string> ErrorsList { get; }
+
+        private readonly ILogger<IXmlService> _logger;
 
         private readonly IEnumerable<DirectoryItem> _streets;
         private readonly IEnumerable<DirectoryItem> _districts;
@@ -24,10 +26,10 @@ namespace Masya.TelegramBot.Api.Services
         private readonly IEnumerable<DirectoryItem> _misc;
         private readonly IEnumerable<Category> _categories;
 
-        public XmlService(ApplicationDbContext dbContext)
+        public XmlService(ApplicationDbContext dbContext, ILogger<IXmlService> logger)
         {
             DbContext = dbContext;
-            ErrorsList = new List<string>();
+            _logger = logger;
 
             _categories = DbContext.Categories.ToList();
 
@@ -52,7 +54,7 @@ namespace Masya.TelegramBot.Api.Services
             return reference?.ReferenceId;
         }
 
-        private void MapObjects(RealtyObject offerFromDb, Offer offer)
+        private void MapObjects(RealtyObject offerFromDb, Offer offer, int agencyId)
         {
             offerFromDb.Floor = offer.Floor;
             offerFromDb.TotalFloors = offer.FloorsTotal;
@@ -76,7 +78,12 @@ namespace Masya.TelegramBot.Api.Services
                 }
                 else
                 {
-                    ErrorsList.Add("Unable to find district with name: " + offer.Location.District);
+                    _logger.LogError(
+                        "Unable to resove district \"{@district}\" in object with internal id {@internalId}. {@AgencyId}",
+                        offer.Location.District,
+                        offer.InternalId,
+                        agencyId
+                    );
                 }
             }
 
@@ -92,7 +99,12 @@ namespace Masya.TelegramBot.Api.Services
                 }
                 else
                 {
-                    ErrorsList.Add("Unable to find address with name: " + offer.Location.Address);
+                    _logger.LogError(
+                        "Unable to resove address \"{@address}\" in object with internal id {@internalId}. {@AgencyId}",
+                        offer.Location.Address,
+                        offer.InternalId,
+                        agencyId
+                    );
                 }
             }
 
@@ -108,7 +120,12 @@ namespace Masya.TelegramBot.Api.Services
                 }
                 else
                 {
-                    ErrorsList.Add("Unable to find renovation with name: " + offer.Renovation);
+                    _logger.LogError(
+                        "Unable to resove renovation \"{@renovation}\" in object with internal id {@internalId}. {@AgencyId}",
+                        offer.Renovation,
+                        offer.InternalId,
+                        agencyId
+                    );
                 }
             }
 
@@ -124,7 +141,12 @@ namespace Masya.TelegramBot.Api.Services
                 }
                 else
                 {
-                    ErrorsList.Add("Unable to find building type with name: " + offer.BuildingType);
+                    _logger.LogError(
+                        "Unable to resove building type \"{@buildingType}\" in object with internal id {@internalId}. {@AgencyId}",
+                        offer.BuildingType,
+                        offer.InternalId,
+                        agencyId
+                    );
                 }
             }
 
@@ -140,7 +162,12 @@ namespace Masya.TelegramBot.Api.Services
                 }
                 else
                 {
-                    ErrorsList.Add("Unable to find type with name: " + offer.Type);
+                    _logger.LogError(
+                        "Unable to resove type \"{@type}\" in object with internal id {@internalId}. {@AgencyId}",
+                        offer.Type,
+                        offer.InternalId,
+                        agencyId
+                    );
                 }
             }
 
@@ -156,12 +183,17 @@ namespace Masya.TelegramBot.Api.Services
                 }
                 else
                 {
-                    ErrorsList.Add("Unable to find category with name: " + offer.Category);
+                    _logger.LogError(
+                        "Unable to resove category \"{@category}\" in object with internal id {@internalId}. {@AgencyId}",
+                        offer.Category,
+                        offer.InternalId,
+                        agencyId
+                    );
                 }
             }
         }
 
-        public async Task UpdateObjectsAsync(RealtyFeed feed)
+        public async Task UpdateObjectsAsync(RealtyFeed feed, int agencyId)
         {
             var realtyObjects = await DbContext.RealtyObjects
                 .ToListAsync();
@@ -176,12 +208,12 @@ namespace Masya.TelegramBot.Api.Services
                 if (offerFromDb is null)
                 {
                     var newOffer = new RealtyObject();
-                    MapObjects(newOffer, offer);
+                    MapObjects(newOffer, offer, agencyId);
                     DbContext.RealtyObjects.Add(newOffer);
                     continue;
                 }
 
-                MapObjects(offerFromDb, offer);
+                MapObjects(offerFromDb, offer, agencyId);
             }
 
             await DbContext.SaveChangesAsync();

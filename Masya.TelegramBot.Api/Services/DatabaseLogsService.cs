@@ -47,21 +47,15 @@ namespace Masya.TelegramBot.Api.Services
             return result;
         }
 
-        public async Task<IEnumerable<LogDto>> GetBotLogsAsync(int? agencyId = null)
+        public async Task<IEnumerable<LogDto>> GetBotLogsForLastHourAsync()
         {
-            string query = string.Format(
-                "SELECT * FROM Serilogs WHERE AgencyId {0}",
-                agencyId.HasValue ? "= @agencyId" : "IS NULL"
-            );
-            return await MapLogsToDtoAsync(query, agencyId);
+            string query = "SELECT * FROM Serilogs WHERE TimeStamp >= DATEADD(hour, -1, GETDATE()) AND AgencyId IS NULL";
+            return await MapLogsToDtoAsync(query);
         }
 
-        public async Task<IEnumerable<LogDto>> GetBotLogsForLastHourAsync(int? agencyId = null)
+        public async Task<IEnumerable<LogDto>> GetAgencyLogsForLastDay(int agencyId)
         {
-            string query = string.Format(
-                "SELECT * FROM Serilogs WHERE TimeStamp >= DATEADD(hour, -1, GETDATE()) AND AgencyId {0}",
-                agencyId.HasValue ? "= @agencyId" : "IS NULL"
-            );
+            string query = "SELECT * FROM Serilogs WHERE TimeStamp >= DATEADD(day, -1, GETDATE()) AND AgencyId = @agencyId";
             return await MapLogsToDtoAsync(query, agencyId);
         }
     }
