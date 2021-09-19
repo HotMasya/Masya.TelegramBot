@@ -25,6 +25,8 @@ using Serilog.Sinks.MSSqlServer;
 using System.Data;
 using System.Collections.ObjectModel;
 using Serilog.Filters;
+using Microsoft.Extensions.Logging;
+using Coravel.Queuing.Interfaces;
 
 namespace Masya.TelegramBot.Api
 {
@@ -116,6 +118,9 @@ namespace Masya.TelegramBot.Api
               .Schedule<UpdateXmlImportsInvokable>()
               .Daily();
             });
+            provider
+                .ConfigureQueue()
+                .LogQueuedTaskProgress(provider.GetService<ILogger<IQueue>>());
 
             app.UseRouting();
             app.UseCors(CorsPolicyName);
