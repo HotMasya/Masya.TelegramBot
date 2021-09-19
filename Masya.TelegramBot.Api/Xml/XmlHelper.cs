@@ -10,11 +10,11 @@ namespace Masya.TelegramBot.Api.Xml
         {
             var settings = new XmlReaderSettings
             {
-                DtdProcessing = DtdProcessing.Prohibit
+                DtdProcessing = DtdProcessing.Ignore
             };
-            using XmlReader reader = XmlReader.Create(stream, settings, "realty-feed");
+            using XmlReader reader = XmlReader.Create(stream, settings);
             var serializer = new XmlSerializer(typeof(T));
-            var result = (T)serializer.Deserialize(stream);
+            var result = (T)serializer.Deserialize(reader);
 
             return result ?? default;
         }
