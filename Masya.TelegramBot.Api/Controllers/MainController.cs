@@ -45,7 +45,7 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpPost("imports/start")]
-        public async Task<IActionResult> StartImportsAsync()
+        public IActionResult StartImportsAsync()
         {
             _queue.QueueInvocable<UpdateXmlImportsInvokable>();
             return Ok();
