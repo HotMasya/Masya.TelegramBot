@@ -34,16 +34,6 @@ namespace Masya.TelegramBot.Api.Services
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var xmlService = scope.ServiceProvider.GetRequiredService<IXmlService>();
             var agenciesData = dbContext.Agencies.Select(a => new { a.ImportUrl, a.Id }).ToList();
-            var botSettings = dbContext.BotSettings.First();
-
-            if (botSettings.IsImporting)
-            {
-                return;
-            }
-
-            botSettings.IsImporting = true;
-
-            await dbContext.SaveChangesAsync();
 
             var httpClient = new HttpClient();
 
@@ -51,12 +41,24 @@ namespace Masya.TelegramBot.Api.Services
             {
                 if (!string.IsNullOrEmpty(agencyData.ImportUrl))
                 {
-                    _logger.LogInformation("Starting import from url \"{url}\". {AgencyId}");
-                    var response = await httpClient.GetAsync(agencyData.ImportUrl);
-                    if (response.StatusCode == HttpStatusCode.OK)
+                    _logger.LogInformation(
+                        "Starting import from url \"{url}\". {AgencyId}",
+                        agencyData.ImportUrl,
+                        agencyData.Id
+                    );
+
+                    try
                     {
-                        var realtyFeed = await xmlService.GetRealtyFeed(response.Content);
-                        await xmlService.UpdateObjectsAsync(realtyFeed, agencyData.Id);
+                        var response = await httpClient.GetAsync(agencyData.ImportUrl);
+                        if (response.StatusCode == HttpStatusCode.OK)
+                        {
+                            var realtyFeed = await xmlService.GetRealtyFeed(response.Content);
+                            await xmlService.UpdateObjectsAsync(realtyFeed, agencyData.Id);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError("Exception: " + e.Message);
                     }
 
                     _logger.LogInformation(
@@ -69,7 +71,7 @@ namespace Masya.TelegramBot.Api.Services
             }
 
             dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            botSettings = dbContext.BotSettings.First();
+            var botSettings = dbContext.BotSettings.First();
             botSettings.IsImporting = false;
             await dbContext.SaveChangesAsync();
         }

@@ -45,9 +45,17 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpGet("imports/start")]
-        public IActionResult StartImportsAsync()
+        public async Task<IActionResult> StartImportsAsync()
         {
+            var botSettings = _dbContext.BotSettings.First();
+
+            if (botSettings.IsImporting) return BadRequest();
+
+            botSettings.IsImporting = true;
+            await _dbContext.SaveChangesAsync();
+
             _queue.QueueInvocable<UpdateXmlImportsInvokable>();
+
             return Ok();
         }
 
