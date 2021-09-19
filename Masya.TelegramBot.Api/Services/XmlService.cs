@@ -173,8 +173,8 @@ namespace Masya.TelegramBot.Api.Services
 
             if (!string.IsNullOrEmpty(offer.Category))
             {
-                var categoryId = _types
-                    .FirstOrDefault(t => t.Value.ToLower().Equals(offer.Category.ToLower()))?.Id
+                var categoryId = _categories
+                    .FirstOrDefault(t => t.Name.ToLower().Equals(offer.Category.ToLower()))?.Id
                     ?? GetRefId(offer.Category);
 
                 if (categoryId.HasValue)
