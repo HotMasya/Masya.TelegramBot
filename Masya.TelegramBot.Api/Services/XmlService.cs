@@ -182,7 +182,10 @@ namespace Masya.TelegramBot.Api.Services
 
                 if (offerFromDb is null)
                 {
-                    var newOffer = new RealtyObject();
+                    var newOffer = new RealtyObject
+                    {
+                        InternalId = offer.InternalId
+                    };
                     MapObjects(newOffer, offer, agencyId);
                     DbContext.RealtyObjects.Add(newOffer);
                     continue;
