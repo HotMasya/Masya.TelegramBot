@@ -64,7 +64,7 @@ namespace Masya.TelegramBot.Api.Services
                     }
                     catch (Exception e)
                     {
-                        _logger.LogError("Exception: " + e.Message);
+                        _logger.LogError(e.ToString());
                     }
                 }
             }
