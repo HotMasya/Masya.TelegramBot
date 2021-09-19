@@ -44,7 +44,7 @@ namespace Masya.TelegramBot.Api.Controllers
             return Ok(await _logs.GetBotLogsForLastHourAsync());
         }
 
-        [HttpPost("imports/start")]
+        [HttpGet("imports/start")]
         public IActionResult StartImportsAsync()
         {
             _queue.QueueInvocable<UpdateXmlImportsInvokable>();
