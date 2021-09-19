@@ -45,7 +45,6 @@ namespace Masya.TelegramBot.DataAccess.Models
         public int? Floor { get; set; }
         public int? TotalFloors { get; set; }
 
-        [MaxLength(512)]
         public string Description { get; set; }
 
         public DateTime? MailingDate { get; set; }
