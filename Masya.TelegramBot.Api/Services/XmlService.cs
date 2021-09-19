@@ -22,8 +22,6 @@ namespace Masya.TelegramBot.Api.Services
         private readonly IEnumerable<DirectoryItem> _districts;
         private readonly IEnumerable<DirectoryItem> _wallMaterials;
         private readonly IEnumerable<DirectoryItem> _states;
-        private readonly IEnumerable<DirectoryItem> _types;
-        private readonly IEnumerable<DirectoryItem> _misc;
         private readonly IEnumerable<Category> _categories;
 
         public XmlService(ApplicationDbContext dbContext, ILogger<IXmlService> logger)
@@ -38,8 +36,6 @@ namespace Masya.TelegramBot.Api.Services
             _districts = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.District));
             _wallMaterials = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.WallsMaterial));
             _states = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.State));
-            _types = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.Type));
-            _misc = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.Misc));
         }
 
         public async Task<RealtyFeed> GetRealtyFeed(HttpContent content)
@@ -144,27 +140,6 @@ namespace Masya.TelegramBot.Api.Services
                     _logger.LogError(
                         "Unable to resove building type \"{buildingType}\" in object with internal id {internalId}. {AgencyId}",
                         offer.BuildingType,
-                        offer.InternalId,
-                        agencyId
-                    );
-                }
-            }
-
-            if (!string.IsNullOrEmpty(offer.Type))
-            {
-                var typeId = _types
-                    .FirstOrDefault(t => t.Value.ToLower().Equals(offer.Type.ToLower()))?.Id
-                    ?? GetRefId(offer.Type);
-
-                if (typeId.HasValue)
-                {
-                    offerFromDb.WallMaterialId = typeId.Value;
-                }
-                else
-                {
-                    _logger.LogError(
-                        "Unable to resove type \"{type}\" in object with internal id {internalId}. {AgencyId}",
-                        offer.Type,
                         offer.InternalId,
                         agencyId
                     );

@@ -11,10 +11,6 @@ namespace Masya.TelegramBot.DataAccess.Models
 
         public int? InternalId { get; set; }
 
-        [ForeignKey("Type")]
-        public int? TypeId { get; set; }
-        public DirectoryItem Type { get; set; }
-
         [ForeignKey("Street")]
         public int? StreetId { get; set; }
         public DirectoryItem Street { get; set; }
