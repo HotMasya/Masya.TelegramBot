@@ -44,10 +44,8 @@ namespace Masya.TelegramBot.Api.Services
 
         public async Task<RealtyFeed> GetRealtyFeed(HttpContent content)
         {
-            using (var stream = await content.ReadAsStreamAsync())
-            {
-                return XmlHelper.ParseFromXml<RealtyFeed>(stream);
-            }
+            var stream = await content.ReadAsStreamAsync();
+            return XmlHelper.ParseFromXml<RealtyFeed>(stream);
         }
 
         private int? GetRefId(string value)
