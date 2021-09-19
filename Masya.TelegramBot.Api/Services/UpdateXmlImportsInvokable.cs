@@ -55,18 +55,17 @@ namespace Masya.TelegramBot.Api.Services
                             var realtyFeed = await xmlService.GetRealtyFeed(response.Content);
                             await xmlService.UpdateObjectsAsync(realtyFeed, agencyData.Id);
                         }
+                        _logger.LogInformation(
+                            "Import from url \"{url}\" finished with status code {statusCode}. {AgencyId}",
+                            agencyData.ImportUrl,
+                            (int)response.StatusCode,
+                            agencyData.Id
+                        );
                     }
                     catch (Exception e)
                     {
                         _logger.LogError("Exception: " + e.Message);
                     }
-
-                    _logger.LogInformation(
-                        "Import from url \"{url}\" finished with status code {statusCode}. {AgencyId}",
-                        agencyData.ImportUrl,
-                        (int)response.StatusCode,
-                        agencyData.Id
-                    );
                 }
             }
 
