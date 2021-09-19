@@ -37,10 +37,10 @@ namespace Masya.TelegramBot.DataAccess.Models
         public int CategoryId { get; set; }
         public Category Category { get; set; }
 
-        public float TotalArea { get; set; }
-        public float LivingSpace { get; set; }
-        public float KitchenSpace { get; set; }
-        public float LotArea { get; set; }
+        public float? TotalArea { get; set; }
+        public float? LivingSpace { get; set; }
+        public float? KitchenSpace { get; set; }
+        public float? LotArea { get; set; }
 
         public int? Floor { get; set; }
         public int? TotalFloors { get; set; }
