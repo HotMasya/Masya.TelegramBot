@@ -1,0 +1,509 @@
+<realty-feed xmlns="http://webmaster.yandex.ru/schemas/feed/realty/2010-06">
+  <generation-date>2021-09-18T10:09:38+03:00</generation-date>
+  <offer internal-id="2155496">
+    <type>Продажа</type>
+    <property-type>жилая</property-type>
+    <category>квартира</category>
+    <url>https://kvartal.ua/kvartira/1-komnatnaya-kvartira-kazachya-lopan-teatralnaya-sovhoznaya-harkovskaya-oblast</url>
+    <creation-date>2018-08-15T11:08:34+03:00</creation-date>
+    <last-update-date>2021-02-07T04:02:58+03:00</last-update-date>
+    <location>
+      <country>Украина</country>
+      <region>Харьковская</region>
+      <locality-name>Казачья Лопань</locality-name>
+      <district>Дергачевский район</district>
+      <direction>Дергачевское направление</direction>
+      <address>Театральная (Совхозная)</address>
+    </location>
+    <rooms>1</rooms>
+    <floor>1</floor>
+    <floors-total>2</floors-total>
+    <area>
+      <value>39</value>
+      <unit>кв.м</unit>
+    </area>
+    <living-space>
+      <value>25</value>
+      <unit>кв.м</unit>
+    </living-space>
+    <kitchen-space>
+      <value>9</value>
+      <unit>кв.м</unit>
+    </kitchen-space>
+    <quality>жилое</quality>
+    <renovation>жилое</renovation>
+    <building-type>кирп</building-type>
+    <balcony>1 балкон(а/ов) (1 застекленный(ых))</balcony>
+    <phone>-</phone>
+    <price>
+      <value>6500</value>
+      <currency>USD</currency>
+    </price>
+    <sales-agent>
+      <phone>0954909641</phone>
+      <phone>380984687440</phone>
+    </sales-agent>
+    <image>https://kvartal.ua/ekr/img/upload/apart/536615/images/536615_1.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/536615/images/536615_2.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/536615/images/536615_3.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/536615/images/536615_4.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/536615/images/536615_5.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/536615/plan/536615_1.jpg</image>
+    <description>Просторная светлая квартира, очень теплая,индивидуальное газавое отопление,новые окна, балкон застеклен, бронированная дверь, тихое место близко к ж/д станции, рядом садик</description>
+  </offer>
+  <offer internal-id="2155496">
+    <type>Продажа</type>
+    <property-type>жилая</property-type>
+    <category>квартира</category>
+    <url>https://kvartal.ua/kvartira/1-komnatnaya-kvartira-kazachya-lopan-teatralnaya-sovhoznaya-harkovskaya-oblast</url>
+    <creation-date>2018-08-15T11:08:34+03:00</creation-date>
+    <last-update-date>2021-02-07T04:02:58+03:00</last-update-date>
+    <location>
+      <country>Украина</country>
+      <region>Харьковская</region>
+      <locality-name>Казачья Лопань</locality-name>
+      <district>Дергачевский район</district>
+      <direction>Дергачевское направление</direction>
+      <address>Театральная (Совхозная)</address>
+    </location>
+    <rooms>1</rooms>
+    <floor>1</floor>
+    <floors-total>2</floors-total>
+    <area>
+      <value>39</value>
+      <unit>кв.м</unit>
+    </area>
+    <living-space>
+      <value>25</value>
+      <unit>кв.м</unit>
+    </living-space>
+    <kitchen-space>
+      <value>9</value>
+      <unit>кв.м</unit>
+    </kitchen-space>
+    <quality>жилое</quality>
+    <renovation>жилое</renovation>
+    <building-type>кирп</building-type>
+    <balcony>1 балкон(а/ов) (1 застекленный(ых))</balcony>
+    <phone>-</phone>
+    <price>
+      <value>6500</value>
+      <currency>USD</currency>
+    </price>
+    <sales-agent>
+      <phone>0954909641</phone>
+      <phone>380984687440</phone>
+    </sales-agent>
+    <image>https://kvartal.ua/ekr/img/upload/apart/536615/images/536615_1.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/536615/images/536615_2.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/536615/images/536615_3.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/536615/images/536615_4.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/536615/images/536615_5.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/536615/plan/536615_1.jpg</image>
+    <description>Просторная светлая квартира, очень теплая,индивидуальное газавое отопление,новые окна, балкон застеклен, бронированная дверь, тихое место близко к ж/д станции, рядом садик</description>
+  </offer>
+  <offer internal-id="2489673">
+    <type>Продажа</type>
+    <property-type>жилая</property-type>
+    <category>квартира</category>
+    <url>https://kvartal.ua/kvartira/1-komnatnaya-kvartira-liptsyi-selyanskiy-per-kolhoznyiy-per-harkovskaya-oblast-2</url>
+    <creation-date>2019-06-27T02:06:31+03:00</creation-date>
+    <last-update-date>2021-04-19T12:04:57+03:00</last-update-date>
+    <location>
+      <country>Украина</country>
+      <region>Харьковская</region>
+      <locality-name>Липцы</locality-name>
+      <district>Харьковский район</district>
+      <direction>Липецкое направление</direction>
+      <address>Селянский пер (Колхозный пер.)</address>
+    </location>
+    <rooms>1</rooms>
+    <floor>2</floor>
+    <floors-total>2</floors-total>
+    <area>
+      <value>37</value>
+      <unit>кв.м</unit>
+    </area>
+    <living-space>
+      <value>16</value>
+      <unit>кв.м</unit>
+    </living-space>
+    <kitchen-space>
+      <value>5</value>
+      <unit>кв.м</unit>
+    </kitchen-space>
+    <quality>жилое</quality>
+    <renovation>жилое</renovation>
+    <building-type>кирп</building-type>
+    <phone>-</phone>
+    <price>
+      <value>14000</value>
+      <currency>USD</currency>
+    </price>
+    <sales-agent>
+      <phone>0505258857</phone>
+      <phone>380689687822</phone>
+    </sales-agent>
+    <image>https://kvartal.ua/ekr/img/upload/apart/596588/images/596588_1.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/596588/images/596588_1.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/596588/images/596588_2.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/596588/images/596588_2.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/596588/images/596588_3.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/596588/plan/596588_1.jpg</image>
+    <description>Продам квартиру 1комната.Индивидуальное отопление. Почти в центре с. Липцы,больница,школа,детский садик рядом.</description>
+  </offer>
+  <offer internal-id="2489673">
+    <type>Продажа</type>
+    <property-type>жилая</property-type>
+    <category>квартира</category>
+    <url>https://kvartal.ua/kvartira/1-komnatnaya-kvartira-liptsyi-selyanskiy-per-kolhoznyiy-per-harkovskaya-oblast-2</url>
+    <creation-date>2019-06-27T02:06:31+03:00</creation-date>
+    <last-update-date>2021-04-19T12:04:57+03:00</last-update-date>
+    <location>
+      <country>Украина</country>
+      <region>Харьковская</region>
+      <locality-name>Липцы</locality-name>
+      <district>Харьковский район</district>
+      <direction>Липецкое направление</direction>
+      <address>Селянский пер (Колхозный пер.)</address>
+    </location>
+    <rooms>1</rooms>
+    <floor>2</floor>
+    <floors-total>2</floors-total>
+    <area>
+      <value>37</value>
+      <unit>кв.м</unit>
+    </area>
+    <living-space>
+      <value>16</value>
+      <unit>кв.м</unit>
+    </living-space>
+    <kitchen-space>
+      <value>5</value>
+      <unit>кв.м</unit>
+    </kitchen-space>
+    <quality>жилое</quality>
+    <renovation>жилое</renovation>
+    <building-type>кирп</building-type>
+    <phone>-</phone>
+    <price>
+      <value>14000</value>
+      <currency>USD</currency>
+    </price>
+    <sales-agent>
+      <phone>0505258857</phone>
+      <phone>380689687822</phone>
+    </sales-agent>
+    <image>https://kvartal.ua/ekr/img/upload/apart/596588/images/596588_1.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/596588/images/596588_1.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/596588/images/596588_2.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/596588/images/596588_2.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/596588/images/596588_3.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/596588/plan/596588_1.jpg</image>
+    <description>Продам квартиру 1комната.Индивидуальное отопление. Почти в центре с. Липцы,больница,школа,детский садик рядом.</description>
+  </offer>
+  <offer internal-id="2509041">
+    <type>Продажа</type>
+    <property-type>жилая</property-type>
+    <category>квартира</category>
+    <url>https://kvartal.ua/kvartira/1-komnatnaya-kvartira-harkov-holodnaya-gora-yuriya-parashhuka-minaylenko-3</url>
+    <creation-date>2019-07-16T06:07:21+03:00</creation-date>
+    <last-update-date>2021-07-09T04:07:21+03:00</last-update-date>
+    <location>
+      <country>Украина</country>
+      <region>Харьковская</region>
+      <locality-name>Харьков</locality-name>
+      <sub-locality-name>Новобаварский (Октябрьский)</sub-locality-name>
+      <non-admin-sub-locality>Холодная Гора</non-admin-sub-locality>
+      <address>Юрия Паращука (Минайленко)</address>
+    </location>
+    <rooms>1</rooms>
+    <floor>3</floor>
+    <floors-total>9</floors-total>
+    <area>
+      <value>38</value>
+      <unit>кв.м</unit>
+    </area>
+    <living-space>
+      <value>20</value>
+      <unit>кв.м</unit>
+    </living-space>
+    <kitchen-space>
+      <value>8</value>
+      <unit>кв.м</unit>
+    </kitchen-space>
+    <quality>хорошее</quality>
+    <renovation>хорошее</renovation>
+    <building-type>кирп</building-type>
+    <balcony>1 балкон(а/ов) (1 застекленный(ых))</balcony>
+    <phone>-</phone>
+    <price>
+      <value>37000</value>
+      <currency>USD</currency>
+    </price>
+    <sales-agent>
+      <phone>0634257223</phone>
+      <phone>380679142954</phone>
+    </sales-agent>
+    <image>https://kvartal.ua/ekr/img/upload/apart/617854/images/617854_1.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/617854/images/617854_2.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/617854/images/617854_3.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/617854/images/617854_4.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/617854/images/617854_5.jpg</image>
+    <description>Продам 1 ком. квартиру р-н Х.Горы, кирпичный дом, средний этаж, квартира улучшенной планировки, жилая комната - 20м.кв.( в комнате имеется альков),,большая уютная кухня,, балкон утеплен, обшит пластиком, на балконе МПО, отличное расположение. Метро в пешей доступности, торг уместен</description>
+  </offer>
+  <offer internal-id="2509041">
+    <type>Продажа</type>
+    <property-type>жилая</property-type>
+    <category>квартира</category>
+    <url>https://kvartal.ua/kvartira/1-komnatnaya-kvartira-harkov-holodnaya-gora-yuriya-parashhuka-minaylenko-3</url>
+    <creation-date>2019-07-16T06:07:21+03:00</creation-date>
+    <last-update-date>2021-07-09T04:07:21+03:00</last-update-date>
+    <location>
+      <country>Украина</country>
+      <region>Харьковская</region>
+      <locality-name>Харьков</locality-name>
+      <sub-locality-name>Новобаварский (Октябрьский)</sub-locality-name>
+      <non-admin-sub-locality>Холодная Гора</non-admin-sub-locality>
+      <address>Юрия Паращука (Минайленко)</address>
+    </location>
+    <rooms>1</rooms>
+    <floor>3</floor>
+    <floors-total>9</floors-total>
+    <area>
+      <value>38</value>
+      <unit>кв.м</unit>
+    </area>
+    <living-space>
+      <value>20</value>
+      <unit>кв.м</unit>
+    </living-space>
+    <kitchen-space>
+      <value>8</value>
+      <unit>кв.м</unit>
+    </kitchen-space>
+    <quality>хорошее</quality>
+    <renovation>хорошее</renovation>
+    <building-type>кирп</building-type>
+    <balcony>1 балкон(а/ов) (1 застекленный(ых))</balcony>
+    <phone>-</phone>
+    <price>
+      <value>37000</value>
+      <currency>USD</currency>
+    </price>
+    <sales-agent>
+      <phone>0634257223</phone>
+      <phone>380679142954</phone>
+    </sales-agent>
+    <image>https://kvartal.ua/ekr/img/upload/apart/617854/images/617854_1.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/617854/images/617854_2.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/617854/images/617854_3.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/617854/images/617854_4.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/617854/images/617854_5.jpg</image>
+    <description>Продам 1 ком. квартиру р-н Х.Горы, кирпичный дом, средний этаж, квартира улучшенной планировки, жилая комната - 20м.кв.( в комнате имеется альков),,большая уютная кухня,, балкон утеплен, обшит пластиком, на балконе МПО, отличное расположение. Метро в пешей доступности, торг уместен</description>
+  </offer>
+  <offer internal-id="2730442">
+    <type>Продажа</type>
+    <property-type>жилая</property-type>
+    <category>квартира</category>
+    <url>https://kvartal.ua/kvartira/1-komnatnaya-kvartira-dergachi-sadovaya-chubarya-sovetskaya-sverdlova-harkovskaya-oblast-14</url>
+    <creation-date>2020-02-02T04:02:49+03:00</creation-date>
+    <last-update-date>2021-07-29T11:07:22+03:00</last-update-date>
+    <location>
+      <country>Украина</country>
+      <region>Харьковская</region>
+      <locality-name>Дергачи</locality-name>
+      <district>Дергачевский район</district>
+      <direction>Дергачевское направление</direction>
+      <address>Садовая (Чубаря, Советская, Свердлова)</address>
+    </location>
+    <rooms>1</rooms>
+    <floor>8</floor>
+    <floors-total>9</floors-total>
+    <area>
+      <value>33</value>
+      <unit>кв.м</unit>
+    </area>
+    <living-space>
+      <value>17</value>
+      <unit>кв.м</unit>
+    </living-space>
+    <kitchen-space>
+      <value>7</value>
+      <unit>кв.м</unit>
+    </kitchen-space>
+    <quality>хорошее</quality>
+    <renovation>хорошее</renovation>
+    <building-type>ж/б</building-type>
+    <balcony>1 балкон(а/ов) (1 застекленный(ых))</balcony>
+    <phone>-</phone>
+    <price>
+      <value>19000</value>
+      <currency>USD</currency>
+    </price>
+    <sales-agent>
+      <phone>0669912240</phone>
+      <phone>380975279608</phone>
+    </sales-agent>
+    <image>https://kvartal.ua/ekr/img/upload/apart/666360/images/666360_1.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/666360/images/666360_2.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/666360/images/666360_4.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/666360/images/666360_3.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/666360/images/666360_5.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/666360/plan/666360_1.jpg</image>
+    <description>Продам однокомнатную квартиру в Дергачах по ул Садовой с ремонтом,торг(возможен обмен с доплатой на 3 квартиру или дом)</description>
+  </offer>
+  <offer internal-id="2730442">
+    <type>Продажа</type>
+    <property-type>жилая</property-type>
+    <category>квартира</category>
+    <url>https://kvartal.ua/kvartira/1-komnatnaya-kvartira-dergachi-sadovaya-chubarya-sovetskaya-sverdlova-harkovskaya-oblast-14</url>
+    <creation-date>2020-02-02T04:02:49+03:00</creation-date>
+    <last-update-date>2021-07-29T11:07:22+03:00</last-update-date>
+    <location>
+      <country>Украина</country>
+      <region>Харьковская</region>
+      <locality-name>Дергачи</locality-name>
+      <district>Дергачевский район</district>
+      <direction>Дергачевское направление</direction>
+      <address>Садовая (Чубаря, Советская, Свердлова)</address>
+    </location>
+    <rooms>1</rooms>
+    <floor>8</floor>
+    <floors-total>9</floors-total>
+    <area>
+      <value>33</value>
+      <unit>кв.м</unit>
+    </area>
+    <living-space>
+      <value>17</value>
+      <unit>кв.м</unit>
+    </living-space>
+    <kitchen-space>
+      <value>7</value>
+      <unit>кв.м</unit>
+    </kitchen-space>
+    <quality>хорошее</quality>
+    <renovation>хорошее</renovation>
+    <building-type>ж/б</building-type>
+    <balcony>1 балкон(а/ов) (1 застекленный(ых))</balcony>
+    <phone>-</phone>
+    <price>
+      <value>19000</value>
+      <currency>USD</currency>
+    </price>
+    <sales-agent>
+      <phone>0669912240</phone>
+      <phone>380975279608</phone>
+    </sales-agent>
+    <image>https://kvartal.ua/ekr/img/upload/apart/666360/images/666360_1.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/666360/images/666360_2.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/666360/images/666360_4.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/666360/images/666360_3.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/666360/images/666360_5.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/666360/plan/666360_1.jpg</image>
+    <description>Продам однокомнатную квартиру в Дергачах по ул Садовой с ремонтом,торг(возможен обмен с доплатой на 3 квартиру или дом)</description>
+  </offer>
+  <offer internal-id="2788677">
+    <type>Продажа</type>
+    <property-type>жилая</property-type>
+    <category>квартира</category>
+    <url>https://kvartal.ua/kvartira/1-komnatnaya-kvartira-harkov-vostochnyiy-mira-3</url>
+    <creation-date>2020-03-27T12:03:05+03:00</creation-date>
+    <last-update-date>2021-08-17T12:08:33+03:00</last-update-date>
+    <location>
+      <country>Украина</country>
+      <region>Харьковская</region>
+      <locality-name>Харьков</locality-name>
+      <sub-locality-name>Индустриальный (Орджоникидзевский)</sub-locality-name>
+      <non-admin-sub-locality>Восточный</non-admin-sub-locality>
+      <address>Мира</address>
+    </location>
+    <rooms>1</rooms>
+    <floor>1</floor>
+    <floors-total>2</floors-total>
+    <area>
+      <value>33</value>
+      <unit>кв.м</unit>
+    </area>
+    <living-space>
+      <value>18</value>
+      <unit>кв.м</unit>
+    </living-space>
+    <kitchen-space>
+      <value>4</value>
+      <unit>кв.м</unit>
+    </kitchen-space>
+    <quality>хорошее</quality>
+    <renovation>хорошее</renovation>
+    <building-type>кирп</building-type>
+    <balcony>1 балкон(а/ов) (1 застекленный(ых))</balcony>
+    <phone>-</phone>
+    <price>
+      <value>25000</value>
+      <currency>USD</currency>
+    </price>
+    <sales-agent>
+      <phone>0505666237</phone>
+      <phone>380974945465</phone>
+    </sales-agent>
+    <image>https://kvartal.ua/ekr/img/upload/apart/679918/images/679918_1.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/679918/images/679918_2.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/679918/images/679918_3.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/679918/images/679918_4.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/679918/images/679918_5.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/679918/plan/679918_1.jpg</image>
+    <description>Срочно продам 1 комнатную изолированную квартиру с ремонтом в пешей доступности к метро Индустриальная. До метро 3 минуты пешком. Хороший кирпичный дом с ж/б перекрытиями. Брежневка. 1/2. Чистый подъезд и спокойные соседи. Рядом с домом есть парковка. Квартира теплая и уютная. Потолки 3, 24. Полы полностью заменены. Большая комната 18м2 оформлена в стиле лофт. Венецианская штукатурка. Новая проводка, линолеум, отличная столярка. Кухонька со встроенной кухней. Новые трубы. Санузел совмещен. Душ. Новая сантехника.Счетчики на воду. Пристройка узаконена. Обшита деревом. Отапливаемая, вполне может использоваться, как кабинет или спальня. Сухой погреб в подарок. Школа и детский сад в 5 минутах ходьбы дворами. Очень хороший вариант для людей, которые любят жить возле метро или под сдачу. </description>
+  </offer>
+  <offer internal-id="2788677">
+    <type>Продажа</type>
+    <property-type>жилая</property-type>
+    <category>квартира</category>
+    <url>https://kvartal.ua/kvartira/1-komnatnaya-kvartira-harkov-vostochnyiy-mira-3</url>
+    <creation-date>2020-03-27T12:03:05+03:00</creation-date>
+    <last-update-date>2021-08-17T12:08:33+03:00</last-update-date>
+    <location>
+      <country>Украина</country>
+      <region>Харьковская</region>
+      <locality-name>Харьков</locality-name>
+      <sub-locality-name>Индустриальный (Орджоникидзевский)</sub-locality-name>
+      <non-admin-sub-locality>Восточный</non-admin-sub-locality>
+      <address>Мира</address>
+    </location>
+    <rooms>1</rooms>
+    <floor>1</floor>
+    <floors-total>2</floors-total>
+    <area>
+      <value>33</value>
+      <unit>кв.м</unit>
+    </area>
+    <living-space>
+      <value>18</value>
+      <unit>кв.м</unit>
+    </living-space>
+    <kitchen-space>
+      <value>4</value>
+      <unit>кв.м</unit>
+    </kitchen-space>
+    <quality>хорошее</quality>
+    <renovation>хорошее</renovation>
+    <building-type>кирп</building-type>
+    <balcony>1 балкон(а/ов) (1 застекленный(ых))</balcony>
+    <phone>-</phone>
+    <price>
+      <value>25000</value>
+      <currency>USD</currency>
+    </price>
+    <sales-agent>
+      <phone>0505666237</phone>
+      <phone>380974945465</phone>
+    </sales-agent>
+    <image>https://kvartal.ua/ekr/img/upload/apart/679918/images/679918_1.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/679918/images/679918_2.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/679918/images/679918_3.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/679918/images/679918_4.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/679918/images/679918_5.jpg</image>
+    <image>https://kvartal.ua/ekr/img/upload/apart/679918/plan/679918_1.jpg</image>
+    <description>Срочно продам 1 комнатную изолированную квартиру с ремонтом в пешей доступности к метро Индустриальная. До метро 3 минуты пешком. Хороший кирпичный дом с ж/б перекрытиями. Брежневка. 1/2. Чистый подъезд и спокойные соседи. Рядом с домом есть парковка. Квартира теплая и уютная. Потолки 3, 24. Полы полностью заменены. Большая комната 18м2 оформлена в стиле лофт. Венецианская штукатурка. Новая проводка, линолеум, отличная столярка. Кухонька со встроенной кухней. Новые трубы. Санузел совмещен. Душ. Новая сантехника.Счетчики на воду. Пристройка узаконена. Обшита деревом. Отапливаемая, вполне может использоваться, как кабинет или спальня. Сухой погреб в подарок. Школа и детский сад в 5 минутах ходьбы дворами. Очень хороший вариант для людей, которые любят жить возле метро или под сдачу. </description>
+  </offer>
+</realty-feed>
