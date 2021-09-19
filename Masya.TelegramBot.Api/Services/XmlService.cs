@@ -79,7 +79,7 @@ namespace Masya.TelegramBot.Api.Services
                 else
                 {
                     _logger.LogError(
-                        "Unable to resove district \"{@district}\" in object with internal id {@internalId}. {@AgencyId}",
+                        "Unable to resove district \"{district}\" in object with internal id {internalId}. {AgencyId}",
                         offer.Location.District,
                         offer.InternalId,
                         agencyId
@@ -100,7 +100,7 @@ namespace Masya.TelegramBot.Api.Services
                 else
                 {
                     _logger.LogError(
-                        "Unable to resove address \"{@address}\" in object with internal id {@internalId}. {@AgencyId}",
+                        "Unable to resove address \"{address}\" in object with internal id {internalId}. {AgencyId}",
                         offer.Location.Address,
                         offer.InternalId,
                         agencyId
@@ -121,7 +121,7 @@ namespace Masya.TelegramBot.Api.Services
                 else
                 {
                     _logger.LogError(
-                        "Unable to resove renovation \"{@renovation}\" in object with internal id {@internalId}. {@AgencyId}",
+                        "Unable to resove renovation \"{renovation}\" in object with internal id {internalId}. {AgencyId}",
                         offer.Renovation,
                         offer.InternalId,
                         agencyId
@@ -142,7 +142,7 @@ namespace Masya.TelegramBot.Api.Services
                 else
                 {
                     _logger.LogError(
-                        "Unable to resove building type \"{@buildingType}\" in object with internal id {@internalId}. {@AgencyId}",
+                        "Unable to resove building type \"{buildingType}\" in object with internal id {internalId}. {AgencyId}",
                         offer.BuildingType,
                         offer.InternalId,
                         agencyId
@@ -163,7 +163,7 @@ namespace Masya.TelegramBot.Api.Services
                 else
                 {
                     _logger.LogError(
-                        "Unable to resove type \"{@type}\" in object with internal id {@internalId}. {@AgencyId}",
+                        "Unable to resove type \"{type}\" in object with internal id {internalId}. {AgencyId}",
                         offer.Type,
                         offer.InternalId,
                         agencyId
@@ -184,7 +184,7 @@ namespace Masya.TelegramBot.Api.Services
                 else
                 {
                     _logger.LogError(
-                        "Unable to resove category \"{@category}\" in object with internal id {@internalId}. {@AgencyId}",
+                        "Unable to resove category \"{category}\" in object with internal id {internalId}. {AgencyId}",
                         offer.Category,
                         offer.InternalId,
                         agencyId

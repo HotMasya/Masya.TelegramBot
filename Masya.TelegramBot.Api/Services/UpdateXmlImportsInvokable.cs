@@ -51,7 +51,7 @@ namespace Masya.TelegramBot.Api.Services
             {
                 if (!string.IsNullOrEmpty(agencyData.ImportUrl))
                 {
-                    _logger.LogInformation("Starting import from url \"{@url}\". {@AgencyId}");
+                    _logger.LogInformation("Starting import from url \"{url}\". {AgencyId}");
                     var response = await httpClient.GetAsync(agencyData.ImportUrl);
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
@@ -60,7 +60,7 @@ namespace Masya.TelegramBot.Api.Services
                     }
 
                     _logger.LogInformation(
-                        "Import from url \"{@url}\" finished with status code {@statusCode}. {@AgencyId}",
+                        "Import from url \"{url}\" finished with status code {statusCode}. {AgencyId}",
                         agencyData.ImportUrl,
                         (int)response.StatusCode,
                         agencyData.Id
