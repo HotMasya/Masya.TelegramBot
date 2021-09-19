@@ -106,6 +106,8 @@ namespace Masya.TelegramBot.Api
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles();
+
             var provider = app.ApplicationServices;
             provider.UseScheduler(scheduler =>
             {
