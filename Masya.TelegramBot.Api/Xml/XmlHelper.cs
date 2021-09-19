@@ -8,13 +8,15 @@ namespace Masya.TelegramBot.Api.Xml
     {
         public static T ParseFromXml<T>(Stream stream)
         {
-            var settings = new XmlReaderSettings();
-            settings.DtdProcessing = DtdProcessing.Ignore;
+            var settings = new XmlReaderSettings
+            {
+                DtdProcessing = DtdProcessing.Ignore
+            };
             using XmlReader reader = XmlReader.Create(stream, settings);
             var serializer = new XmlSerializer(typeof(T));
             var result = (T)serializer.Deserialize(stream);
 
-            return result ?? default(T);
+            return result ?? default;
         }
     }
 }
