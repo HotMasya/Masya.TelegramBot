@@ -35,7 +35,7 @@ namespace Masya.TelegramBot.Api.Xml
         public string Description { get; set; }
 
         [XmlElement(ElementName = "built-year", IsNullable = true)]
-        public int BuiltYear { get; set; }
+        public int? BuiltYear { get; set; }
 
         [XmlElement(ElementName = "building-type", IsNullable = true)]
         public string BuildingType { get; set; }
