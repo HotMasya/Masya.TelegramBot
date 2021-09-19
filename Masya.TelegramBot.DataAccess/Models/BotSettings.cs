@@ -16,5 +16,7 @@ namespace Masya.TelegramBot.DataAccess.Models
         public string WebhookHost { get; set; }
 
         public bool IsEnabled { get; set; }
+
+        public bool IsImporting { get; set; }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Coravel.Queuing.Interfaces;
 using Masya.TelegramBot.Api.Dtos;
+using Masya.TelegramBot.Api.Services;
 using Masya.TelegramBot.Api.Services.Abstractions;
 using Masya.TelegramBot.Commands.Abstractions;
 using Masya.TelegramBot.DataAccess;
@@ -20,23 +22,33 @@ namespace Masya.TelegramBot.Api.Controllers
         private readonly ApplicationDbContext _dbContext;
         private readonly IBotService<DatabaseCommandInfo, DatabaseAliasInfo> _botService;
         private readonly IDatabaseLogsService _logs;
+        private readonly IQueue _queue;
+
 
         public MainController(
             IBotService<DatabaseCommandInfo, DatabaseAliasInfo> botService,
             ApplicationDbContext dbContext,
-            IDatabaseLogsService logs
+            IDatabaseLogsService logs,
+            IQueue queue
         )
         {
             _botService = botService;
             _dbContext = dbContext;
             _logs = logs;
+            _queue = queue;
         }
 
         [HttpGet("logs")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetBotLogs()
         {
             return Ok(await _logs.GetBotLogsForLastHourAsync());
+        }
+
+        [HttpPost("imports/start")]
+        public async Task<IActionResult> StartImportsAsync()
+        {
+            _queue.QueueInvocable<UpdateXmlImportsInvokable>();
+            return Ok();
         }
 
         [HttpGet("bot")]
@@ -50,7 +62,8 @@ namespace Masya.TelegramBot.Api.Controllers
                 Token = User.HasPermission(Permission.SuperAdmin) ? settings.BotToken : null,
                 WebhookHost = User.HasPermission(Permission.SuperAdmin) ? settings.WebhookHost : null,
                 IsEnabled = settings.IsEnabled,
-                BotUser = me
+                BotUser = me,
+                IsImporting = settings.IsImporting,
             };
             return Ok(dto);
         }

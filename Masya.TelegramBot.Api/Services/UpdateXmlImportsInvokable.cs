@@ -34,6 +34,17 @@ namespace Masya.TelegramBot.Api.Services
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var xmlService = scope.ServiceProvider.GetRequiredService<IXmlService>();
             var agenciesData = dbContext.Agencies.Select(a => new { a.ImportUrl, a.Id }).ToList();
+            var botSettings = dbContext.BotSettings.First();
+
+            if (botSettings.IsImporting)
+            {
+                return;
+            }
+
+            botSettings.IsImporting = true;
+
+            await dbContext.SaveChangesAsync();
+
             var httpClient = new HttpClient();
 
             foreach (var agencyData in agenciesData)
@@ -55,6 +66,11 @@ namespace Masya.TelegramBot.Api.Services
                     );
                 }
             }
+
+            dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            botSettings = dbContext.BotSettings.First();
+            botSettings.IsImporting = false;
+            await dbContext.SaveChangesAsync();
         }
     }
 }

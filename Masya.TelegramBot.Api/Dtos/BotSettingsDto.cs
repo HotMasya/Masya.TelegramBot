@@ -9,6 +9,7 @@ namespace Masya.TelegramBot.Api.Dtos
         public string Token { get; set; }
         public string WebhookHost { get; set; }
         public bool? IsEnabled { get; set; }
+        public bool? IsImporting { get; set; }
         public User BotUser { get; set; }
     }
 }
