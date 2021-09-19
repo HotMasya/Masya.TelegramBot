@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 
 namespace Masya.TelegramBot.Api.Xml
 {
-    [Serializable, XmlRoot(ElementName = "realty-feed", Namespace = "http://webmaster.yandex.ru/schemas/feed/realty/2010-06", IsNullable = true, DataType = "string")]
+    [Serializable, XmlRoot(ElementName = "realty-feed", Namespace = "http://webmaster.yandex.ru/schemas/feed/realty/2010-06")]
     public sealed class RealtyFeed
     {
         [XmlElement(ElementName = "generation-date")]
