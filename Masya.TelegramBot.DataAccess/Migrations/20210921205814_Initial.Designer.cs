@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Masya.TelegramBot.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210919141416_Set as nullable")]
-    partial class Setasnullable
+    [Migration("20210921205814_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -210,10 +210,7 @@ namespace Masya.TelegramBot.DataAccess.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AgentId")
-                        .HasColumnType("int");
-
-                    b.Property<long?>("AgentId1")
+                    b.Property<long?>("AgentId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("CategoryId")
@@ -223,8 +220,7 @@ namespace Masya.TelegramBot.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("DistrictId")
                         .HasColumnType("int");
@@ -262,15 +258,12 @@ namespace Masya.TelegramBot.DataAccess.Migrations
                     b.Property<int?>("TotalFloors")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TypeId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("WallMaterialId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AgentId1");
+                    b.HasIndex("AgentId");
 
                     b.HasIndex("CategoryId");
 
@@ -279,8 +272,6 @@ namespace Masya.TelegramBot.DataAccess.Migrations
                     b.HasIndex("StateId");
 
                     b.HasIndex("StreetId");
-
-                    b.HasIndex("TypeId");
 
                     b.HasIndex("WallMaterialId");
 
@@ -443,7 +434,7 @@ namespace Masya.TelegramBot.DataAccess.Migrations
                 {
                     b.HasOne("Masya.TelegramBot.DataAccess.Models.User", "Agent")
                         .WithMany("PropertyObjects")
-                        .HasForeignKey("AgentId1");
+                        .HasForeignKey("AgentId");
 
                     b.HasOne("Masya.TelegramBot.DataAccess.Models.Category", "Category")
                         .WithMany()
@@ -463,10 +454,6 @@ namespace Masya.TelegramBot.DataAccess.Migrations
                         .WithMany()
                         .HasForeignKey("StreetId");
 
-                    b.HasOne("Masya.TelegramBot.DataAccess.Models.DirectoryItem", "Type")
-                        .WithMany()
-                        .HasForeignKey("TypeId");
-
                     b.HasOne("Masya.TelegramBot.DataAccess.Models.DirectoryItem", "WallMaterial")
                         .WithMany()
                         .HasForeignKey("WallMaterialId");
@@ -480,8 +467,6 @@ namespace Masya.TelegramBot.DataAccess.Migrations
                     b.Navigation("State");
 
                     b.Navigation("Street");
-
-                    b.Navigation("Type");
 
                     b.Navigation("WallMaterial");
                 });
