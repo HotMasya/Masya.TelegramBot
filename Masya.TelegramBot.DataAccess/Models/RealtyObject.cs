@@ -27,7 +27,8 @@ namespace Masya.TelegramBot.DataAccess.Models
         public int? StateId { get; set; }
         public DirectoryItem State { get; set; }
 
-        public int AgentId { get; set; }
+        [ForeignKey("Agent")]
+        public long? AgentId { get; set; }
         public User Agent { get; set; }
 
         public int CategoryId { get; set; }

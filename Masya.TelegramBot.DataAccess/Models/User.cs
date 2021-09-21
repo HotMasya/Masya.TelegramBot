@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Masya.TelegramBot.DataAccess.Models
 {
@@ -45,6 +46,7 @@ namespace Masya.TelegramBot.DataAccess.Models
         [MaxLength(255)]
         public string Note { get; set; }
 
+        [ForeignKey("AgentId")]
         public List<RealtyObject> PropertyObjects { get; set; }
 
         public override string ToString()
