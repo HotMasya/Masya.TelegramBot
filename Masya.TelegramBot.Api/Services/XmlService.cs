@@ -57,10 +57,10 @@ namespace Masya.TelegramBot.Api.Services
             offerFromDb.Description = offer.Description;
             offerFromDb.CreatedAt = offer.CreationDate;
             offerFromDb.EditedAt = offer.CreationDate;
-            offerFromDb.KitchenSpace = offer.KitchenSpace?.Value == 0 ? null : offer.KitchenSpace.Value;
-            offerFromDb.TotalArea = offer.Area?.Value == 0 ? null : offer.Area.Value;
-            offerFromDb.LivingSpace = offer.LivingSpace?.Value == 0 ? null : offer.LivingSpace.Value;
-            offerFromDb.LotArea = offer.LotArea?.Value == 0 ? null : offer.LotArea.Value;
+            offerFromDb.KitchenSpace = offer.KitchenSpace?.Value == 0 ? null : offer.KitchenSpace?.Value;
+            offerFromDb.TotalArea = offer.Area?.Value == 0 ? null : offer.Area?.Value;
+            offerFromDb.LivingSpace = offer.LivingSpace?.Value == 0 ? null : offer.LivingSpace?.Value;
+            offerFromDb.LotArea = offer.LotArea?.Value == 0 ? null : offer.LotArea?.Value;
 
             if (!string.IsNullOrEmpty(offer.Location.District))
             {
