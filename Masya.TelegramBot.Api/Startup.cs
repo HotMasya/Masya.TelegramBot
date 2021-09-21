@@ -20,11 +20,6 @@ using Coravel;
 using Masya.TelegramBot.DatabaseExtensions.Metadata;
 using Masya.TelegramBot.DatabaseExtensions.Abstractions;
 using Masya.TelegramBot.Api.Services.Abstractions;
-using Serilog;
-using Serilog.Sinks.MSSqlServer;
-using System.Data;
-using System.Collections.ObjectModel;
-using Serilog.Filters;
 using Microsoft.Extensions.Logging;
 using Coravel.Queuing.Interfaces;
 

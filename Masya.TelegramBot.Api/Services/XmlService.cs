@@ -52,20 +52,22 @@ namespace Masya.TelegramBot.Api.Services
 
         private void MapObjects(RealtyObject offerFromDb, Offer offer, int agencyId)
         {
-            offerFromDb.Floor = offer.Floor;
-            offerFromDb.TotalFloors = offer.FloorsTotal;
+            offerFromDb.Floor = offer.Floor == 0 ? null : offer.Floor;
+            offerFromDb.TotalFloors = offer.FloorsTotal == 0 ? null : offer.FloorsTotal;
             offerFromDb.Description = offer.Description;
             offerFromDb.CreatedAt = offer.CreationDate;
-            offerFromDb.EditedAt = offer.LastUpdateDate;
-            offerFromDb.KitchenSpace = offer.KitchenSpace?.Value;
-            offerFromDb.TotalArea = offer.Area?.Value;
-            offerFromDb.LivingSpace = offer.LivingSpace?.Value;
-            offerFromDb.LotArea = offer.LotArea?.Value;
+            offerFromDb.EditedAt = offer.CreationDate;
+            offerFromDb.KitchenSpace = offer.KitchenSpace?.Value == 0 ? null : offer.KitchenSpace.Value;
+            offerFromDb.TotalArea = offer.Area?.Value == 0 ? null : offer.Area.Value;
+            offerFromDb.LivingSpace = offer.LivingSpace?.Value == 0 ? null : offer.LivingSpace.Value;
+            offerFromDb.LotArea = offer.LotArea?.Value == 0 ? null : offer.LotArea.Value;
 
             if (!string.IsNullOrEmpty(offer.Location.District))
             {
                 var districtId = _districts
-                    .FirstOrDefault(d => d.Value.ToLower().Equals(offer.Location.District.ToLower()))?.Id
+                    .FirstOrDefault(
+                        d => d.Value.ToLower().Equals(offer.Location.District.Trim().ToLower())
+                    )?.Id
                     ?? GetRefId(offer.Location.District);
 
                 if (districtId.HasValue)
@@ -86,7 +88,9 @@ namespace Masya.TelegramBot.Api.Services
             if (!string.IsNullOrEmpty(offer.Location.Address))
             {
                 var streetId = _streets
-                    .FirstOrDefault(s => s.Value.ToLower().Equals(offer.Location.Address.ToLower()))?.Id
+                    .FirstOrDefault(
+                        s => s.Value.ToLower().Equals(offer.Location.Address.Trim().ToLower())
+                    )?.Id
                     ?? GetRefId(offer.Location.Address);
 
                 if (streetId.HasValue)
@@ -107,7 +111,9 @@ namespace Masya.TelegramBot.Api.Services
             if (!string.IsNullOrEmpty(offer.Renovation))
             {
                 var stateId = _states
-                    .FirstOrDefault(s => s.Value.ToLower().Equals(offer.Renovation.ToLower()))?.Id
+                    .FirstOrDefault(
+                        s => s.Value.ToLower().Equals(offer.Renovation.Trim().ToLower())
+                    )?.Id
                     ?? GetRefId(offer.Renovation);
 
                 if (stateId.HasValue)
@@ -128,7 +134,9 @@ namespace Masya.TelegramBot.Api.Services
             if (!string.IsNullOrEmpty(offer.BuildingType))
             {
                 var wallMaterialId = _wallMaterials
-                    .FirstOrDefault(w => w.Value.ToLower().Equals(offer.BuildingType.ToLower()))?.Id
+                    .FirstOrDefault(
+                        w => w.Value.ToLower().Equals(offer.BuildingType.Trim().ToLower())
+                    )?.Id
                     ?? GetRefId(offer.BuildingType);
 
                 if (wallMaterialId.HasValue)
@@ -149,7 +157,9 @@ namespace Masya.TelegramBot.Api.Services
             if (!string.IsNullOrEmpty(offer.Category))
             {
                 var categoryId = _categories
-                    .FirstOrDefault(t => t.Name.ToLower().Equals(offer.Category.ToLower()))?.Id
+                    .FirstOrDefault(
+                        t => t.Name.ToLower().Equals(offer.Category.Trim().ToLower())
+                    )?.Id
                     ?? GetRefId(offer.Category);
 
                 if (categoryId.HasValue)
