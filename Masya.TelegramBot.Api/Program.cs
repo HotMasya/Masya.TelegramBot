@@ -28,9 +28,9 @@ namespace Masya.TelegramBot.Api
 
         public static async Task StartRequiredServices(IServiceProvider services)
         {
-            using var scope = services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            await ApplicationDbContext.SeedDatabase(dbContext);
+            // using var scope = services.CreateScope();
+            // var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            // await ApplicationDbContext.SeedDatabase(dbContext);
             var commandService = services.GetRequiredService<ICommandService<DatabaseCommandInfo, DatabaseAliasInfo>>();
             var botService = services.GetRequiredService<IBotService<DatabaseCommandInfo, DatabaseAliasInfo>>();
             await commandService.LoadCommandsAsync(typeof(BasicModule).Assembly);
