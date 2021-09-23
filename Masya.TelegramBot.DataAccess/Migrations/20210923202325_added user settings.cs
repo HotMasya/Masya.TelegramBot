@@ -2,7 +2,7 @@
 
 namespace Masya.TelegramBot.DataAccess.Migrations
 {
-    public partial class Addedusersettings : Migration
+    public partial class addedusersettings : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -10,8 +10,7 @@ namespace Masya.TelegramBot.DataAccess.Migrations
                 name: "UserSettingsId",
                 table: "Users",
                 type: "bigint",
-                nullable: false,
-                defaultValue: 0L);
+                nullable: true);
 
             migrationBuilder.AddColumn<long>(
                 name: "UserSettingsId",
@@ -31,11 +30,11 @@ namespace Masya.TelegramBot.DataAccess.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MinPrice = table.Column<int>(type: "int", nullable: false),
-                    MaxPrice = table.Column<int>(type: "int", nullable: false),
-                    MinFloor = table.Column<int>(type: "int", nullable: false),
-                    MaxFloor = table.Column<int>(type: "int", nullable: false),
-                    MaxRoomsCount = table.Column<int>(type: "int", nullable: false)
+                    MinPrice = table.Column<int>(type: "int", nullable: true),
+                    MaxPrice = table.Column<int>(type: "int", nullable: true),
+                    MinFloor = table.Column<int>(type: "int", nullable: true),
+                    MaxFloor = table.Column<int>(type: "int", nullable: true),
+                    MaxRoomsCount = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -79,7 +78,7 @@ namespace Masya.TelegramBot.DataAccess.Migrations
                 column: "UserSettingsId",
                 principalTable: "UserSettings",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

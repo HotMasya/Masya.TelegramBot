@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Masya.TelegramBot.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210923192301_made user settings id optional")]
-    partial class madeusersettingsidoptional
+    [Migration("20210923202325_added user settings")]
+    partial class addedusersettings
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -409,19 +409,19 @@ namespace Masya.TelegramBot.DataAccess.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("MaxFloor")
+                    b.Property<int?>("MaxFloor")
                         .HasColumnType("int");
 
-                    b.Property<int>("MaxPrice")
+                    b.Property<int?>("MaxPrice")
                         .HasColumnType("int");
 
-                    b.Property<int>("MaxRoomsCount")
+                    b.Property<int?>("MaxRoomsCount")
                         .HasColumnType("int");
 
-                    b.Property<int>("MinFloor")
+                    b.Property<int?>("MinFloor")
                         .HasColumnType("int");
 
-                    b.Property<int>("MinPrice")
+                    b.Property<int?>("MinPrice")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

@@ -12,7 +12,6 @@ using Masya.TelegramBot.DatabaseExtensions.Metadata;
 using Serilog.Sinks.MSSqlServer;
 using System.Collections.ObjectModel;
 using System.Data;
-using Serilog.Filters;
 using Serilog.Events;
 
 namespace Masya.TelegramBot.Api
