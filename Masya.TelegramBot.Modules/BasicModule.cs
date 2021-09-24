@@ -95,7 +95,7 @@ namespace Masya.TelegramBot.Modules
                 : string.Empty;
 
             return string.Format(
-                "Your search settings:\nSelected categories: *{0}*;\nSelected regions: *{1}*;\nFloors: *{2} {3}*\nRooms: *{4}*\nPrice: *{5} {6}*",
+                "Your search settings:\n\n🏡Selected categories: *{0}*;\n🔍Selected regions: *{1}*;\n🏢Floors: *{2} {3}*;\n🚪Rooms: *{4}*;\n💵Price: *{5} {6}*;",
                 selCategories,
                 selRegions,
                 minFloor,
