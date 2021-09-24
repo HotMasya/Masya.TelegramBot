@@ -82,6 +82,8 @@ namespace Masya.TelegramBot.Modules
                 parseMode: ParseMode.Markdown,
                 replyMarkup: await _keyboards.InlineSearch()
             );
+
+            await Context.BotService.Client.AnswerCallbackQueryAsync(CallbackDataTypes.ExecuteSearch, "Ебать ты лох");
         }
 
         [RegisterUser]
