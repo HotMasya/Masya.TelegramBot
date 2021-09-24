@@ -64,12 +64,12 @@ namespace Masya.TelegramBot.Commands.Services
             }
         }
 
-        private void HandleCallback(CallbackQuery callback)
+        private async Task HandleCallbackAsync(CallbackQuery callback)
         {
             var commandService = services.GetRequiredService<ICommandService<TCommandInfo, TAliasInfo>>();
             try
             {
-                commandService.HandleCallback(callback);
+                await commandService.HandleCallbackAsync(callback);
             }
             catch (Exception ex)
             {
@@ -138,7 +138,7 @@ namespace Masya.TelegramBot.Commands.Services
 
             if (update.CallbackQuery != null)
             {
-                HandleCallback(update.CallbackQuery);
+                await HandleCallbackAsync(update.CallbackQuery);
             }
         }
 
