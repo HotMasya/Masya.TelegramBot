@@ -118,13 +118,14 @@ namespace Masya.TelegramBot.Commands.Services
 
         public async Task HandleUpdateAsync(Update update)
         {
-            switch (update.Message)
+            if (update.Message != null)
             {
-                case Message message:
-                    await HandleMessageAsync(message);
-                    break;
+                await HandleMessageAsync(update.Message);
+            }
 
-                default: return;
+            if (update.CallbackQuery != null)
+            {
+
             }
         }
 

@@ -18,12 +18,15 @@ namespace Masya.TelegramBot.Commands
 
         public Message Message { get; }
 
+        public CallbackQuery Callback { get; }
+
         public DefaultCommandContext(
             IBotService<TCommandInfo, TAliasInfo> botService,
             ICommandService<TCommandInfo, TAliasInfo> commandService,
-            Chat chat,
-            User user,
-            Message message
+            Chat chat = null,
+            User user = null,
+            Message message = null,
+            CallbackQuery callback = null
         )
         {
             BotService = botService;
@@ -31,6 +34,7 @@ namespace Masya.TelegramBot.Commands
             Chat = chat;
             User = user;
             Message = message;
+            Callback = callback;
         }
     }
 }

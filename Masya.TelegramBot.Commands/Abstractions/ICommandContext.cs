@@ -12,5 +12,6 @@ namespace Masya.TelegramBot.Commands.Abstractions
         Chat Chat { get; }
         User User { get; }
         Message Message { get; }
+        CallbackQuery Callback { get; }
     }
 }

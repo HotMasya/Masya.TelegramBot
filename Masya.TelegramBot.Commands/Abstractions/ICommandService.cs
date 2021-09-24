@@ -17,5 +17,6 @@ namespace Masya.TelegramBot.Commands.Abstractions
         Task LoadCommandsAsync(Assembly assembly);
         Task ExecuteCommandAsync(Message message);
         bool CheckCommandCondition(TCommandInfo commandInfo, Message message);
+        void HandleCallback(CallbackQuery callback);
     }
 }
