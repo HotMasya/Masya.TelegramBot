@@ -68,23 +68,13 @@ namespace Masya.TelegramBot.DatabaseExtensions
                     return new InlineKeyboardMarkup(
                         new InlineKeyboardButton[][] {
                             new InlineKeyboardButton[] {
-                                new InlineKeyboardButton("🏡Categories") {
-                                    CallbackData = CallbackDataTypes.UpdateCategories
-                                },
-                                new InlineKeyboardButton("🔍Regions") {
-                                    CallbackData = CallbackDataTypes.UpdateRegions
-                                },
+                                InlineKeyboardButton.WithCallbackData("🏡Categories", CallbackDataTypes.UpdateCategories),
+                                InlineKeyboardButton.WithCallbackData("🔍Regions", CallbackDataTypes.UpdateRegions),
                             },
                             new InlineKeyboardButton[] {
-                                new InlineKeyboardButton("🚪Rooms") {
-                                    CallbackData = CallbackDataTypes.UpdateRooms
-                                },
-                                new InlineKeyboardButton("💵Price") {
-                                    CallbackData = CallbackDataTypes.UpdatePrice
-                                },
-                                new InlineKeyboardButton("🏢Floors") {
-                                    CallbackData = CallbackDataTypes.UpdateFloors
-                                }
+                                InlineKeyboardButton.WithCallbackData("🚪Rooms", CallbackDataTypes.UpdateFloors),
+                                InlineKeyboardButton.WithCallbackData("💵Price", CallbackDataTypes.UpdatePrice),
+                                InlineKeyboardButton.WithCallbackData("🏢Floors", CallbackDataTypes.UpdateFloors)
                             }
                         }
                     );
@@ -92,12 +82,8 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 default:
                     return new InlineKeyboardMarkup(
                         new InlineKeyboardButton[]{
-                            new InlineKeyboardButton("Search") {
-                                CallbackData = CallbackDataTypes.ExecuteSearch,
-                            },
-                            new InlineKeyboardButton("Settings") {
-                                CallbackData = CallbackDataTypes.ChangeSettings
-                            }
+                            InlineKeyboardButton.WithCallbackData("🔍Search", CallbackDataTypes.ExecuteSearch),
+                            InlineKeyboardButton.WithCallbackData("⚙Settings", CallbackDataTypes.ChangeSettings)
                         }
                     );
             }
