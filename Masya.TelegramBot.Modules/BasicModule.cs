@@ -14,6 +14,8 @@ using Telegram.Bot.Types.Enums;
 using Masya.TelegramBot.DatabaseExtensions;
 using Masya.TelegramBot.DatabaseExtensions.Abstractions;
 using Telegram.Bot;
+using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -53,6 +55,57 @@ namespace Masya.TelegramBot.Modules
             );
         }
 
+        private string GenerateSearchSettingsMessage(UserSettings userSettings)
+        {
+            var selCategories = string.Empty;
+            foreach (var cat in userSettings.SelectedCategories)
+            {
+                selCategories += cat.Name + " ";
+            }
+
+            selCategories = string.IsNullOrEmpty(selCategories) ? "any" : selCategories.TrimEnd();
+
+            var selRegionsBuilder = new StringBuilder();
+            foreach (var reg in userSettings.SelectedRegions)
+            {
+                selRegionsBuilder.Append(reg.Value + " ");
+            }
+
+            var selRegions = selRegionsBuilder.ToString();
+            selRegions = string.IsNullOrEmpty(selRegions) ? "any" : selRegions.TrimEnd();
+
+            var maxRooms = userSettings.MaxRoomsCount.HasValue
+                ? userSettings.MaxRoomsCount.Value.ToString()
+                : "any";
+
+            var minFloor = userSettings.MinFloor.HasValue
+                ? userSettings.MinFloor.Value.ToString()
+                : "any";
+
+            var maxFloor = userSettings.MaxFloor.HasValue
+                ? "to " + userSettings.MaxFloor.Value.ToString()
+                : string.Empty;
+
+            var minPrice = userSettings.MinPrice.HasValue
+                ? userSettings.MinPrice.Value.ToString()
+                : "any";
+
+            var maxPrice = userSettings.MaxPrice.HasValue
+                ? "to " + userSettings.MaxPrice.Value.ToString()
+                : string.Empty;
+
+            return string.Format(
+                "Your search settings:\nSelected categories: *{0}*;\nSelected regions: *{1}*;\nFloors: *{2} {3}*\nRooms: *{4}*\nPrice: *{5} {6}*",
+                selCategories,
+                selRegions,
+                minFloor,
+                maxFloor,
+                maxRooms,
+                minPrice,
+                maxPrice
+            );
+        }
+
         [Command("/start")]
         public async Task StartCommandAsync()
         {
@@ -79,7 +132,23 @@ namespace Masya.TelegramBot.Modules
         [Command("/search")]
         public async Task SearchAsync()
         {
-            await ReplyAsync("Search command comming soon");
+            var user = _dbContext.Users
+                .Include(u => u.UserSettings)
+                    .ThenInclude(us => us.SelectedCategories)
+                .Include(u => u.UserSettings)
+                    .ThenInclude(us => us.SelectedRegions)
+                .First(u => u.TelegramAccountId == Context.Message.From.Id);
+
+            if (user.UserSettings == null)
+            {
+                user.UserSettings = new UserSettings();
+                await _dbContext.SaveChangesAsync();
+            }
+
+            await ReplyAsync(
+                content: GenerateSearchSettingsMessage(user.UserSettings),
+                parseMode: ParseMode.Markdown
+            );
         }
 
         [RegisterUser]
