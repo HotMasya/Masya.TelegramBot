@@ -64,6 +64,19 @@ namespace Masya.TelegramBot.Commands.Services
             }
         }
 
+        private void HandleCallback(CallbackQuery callback)
+        {
+            var commandService = services.GetRequiredService<ICommandService<TCommandInfo, TAliasInfo>>();
+            try
+            {
+                commandService.HandleCallback(callback);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed to handle callback: " + ex.ToString());
+            }
+        }
+
         private async Task HandleMessageAsync(Message message)
         {
             if (!Options.IsEnabled)
@@ -125,7 +138,7 @@ namespace Masya.TelegramBot.Commands.Services
 
             if (update.CallbackQuery != null)
             {
-
+                HandleCallback(update.CallbackQuery);
             }
         }
 
