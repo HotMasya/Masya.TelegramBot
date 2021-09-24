@@ -5,5 +5,6 @@ namespace Masya.TelegramBot.Commands.Options
         public char ArgsSeparator { get; set; } = ' ';
         public int StepCommandTimeout { get; set; } = 30;
         public int MaxMenuColumns { get; set; } = 3;
+        public int MaxSearchColumns { get; set; } = 4;
     }
 }

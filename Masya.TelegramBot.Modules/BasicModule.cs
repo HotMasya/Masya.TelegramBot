@@ -5,17 +5,16 @@ using Masya.TelegramBot.Commands.Attributes;
 using Masya.TelegramBot.Commands.Options;
 using Masya.TelegramBot.DataAccess;
 using Masya.TelegramBot.DataAccess.Types;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Telegram.Bot.Types;
 using Masya.TelegramBot.DataAccess.Models;
-using Telegram.Bot.Types.ReplyMarkups;
-using Telegram.Bot.Types.Enums;
 using Masya.TelegramBot.DatabaseExtensions;
 using Masya.TelegramBot.DatabaseExtensions.Abstractions;
-using Telegram.Bot;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -39,73 +38,6 @@ namespace Masya.TelegramBot.Modules
             _keyboards = keyboards;
         }
 
-        private static string GenerateMenuMessage(Message message, ApplicationDbContext dbContext)
-        {
-            var user = dbContext.Users.First(u => u.TelegramAccountId == message.From.Id);
-            var fullName = user.TelegramFirstName + (
-                string.IsNullOrEmpty(user.TelegramLastName)
-                    ? ""
-                    : " " + user.TelegramLastName
-            );
-
-            return string.Format(
-                "Welcome back, *{0}*!\nYour status: *{1}*.\nYour are in main menu now.",
-                fullName,
-                user.Permission.ToString()
-            );
-        }
-
-        private string GenerateSearchSettingsMessage(UserSettings userSettings)
-        {
-            var selCategories = string.Empty;
-            foreach (var cat in userSettings.SelectedCategories)
-            {
-                selCategories += cat.Name + " ";
-            }
-
-            selCategories = string.IsNullOrEmpty(selCategories) ? "any" : selCategories.TrimEnd();
-
-            var selRegionsBuilder = new StringBuilder();
-            foreach (var reg in userSettings.SelectedRegions)
-            {
-                selRegionsBuilder.Append(reg.Value + " ");
-            }
-
-            var selRegions = selRegionsBuilder.ToString();
-            selRegions = string.IsNullOrEmpty(selRegions) ? "any" : selRegions.TrimEnd();
-
-            var maxRooms = userSettings.MaxRoomsCount.HasValue
-                ? userSettings.MaxRoomsCount.Value.ToString()
-                : "any";
-
-            var minFloor = userSettings.MinFloor.HasValue
-                ? userSettings.MinFloor.Value.ToString()
-                : "any";
-
-            var maxFloor = userSettings.MaxFloor.HasValue
-                ? "to " + userSettings.MaxFloor.Value.ToString()
-                : string.Empty;
-
-            var minPrice = userSettings.MinPrice.HasValue
-                ? userSettings.MinPrice.Value.ToString()
-                : "any";
-
-            var maxPrice = userSettings.MaxPrice.HasValue
-                ? "to " + userSettings.MaxPrice.Value.ToString()
-                : string.Empty;
-
-            return string.Format(
-                "Your search settings:\n\n🏡Selected categories: *{0}*;\n🔍Selected regions: *{1}*;\n🏢Floors: *{2} {3}*;\n🚪Rooms: *{4}*;\n💵Price: *{5} {6}*;",
-                selCategories,
-                selRegions,
-                minFloor,
-                maxFloor,
-                maxRooms,
-                minPrice,
-                maxPrice
-            );
-        }
-
         [Command("/start")]
         public async Task StartCommandAsync()
         {
@@ -123,7 +55,7 @@ namespace Masya.TelegramBot.Modules
             }
 
             await ReplyAsync(
-                content: GenerateMenuMessage(Context.Message, _dbContext),
+                content: MessageGenerators.GenerateMenuMessage(user),
                 replyMarkup: _keyboards.Menu(user.Permission),
                 parseMode: ParseMode.Markdown
                 );
@@ -146,8 +78,9 @@ namespace Masya.TelegramBot.Modules
             }
 
             await ReplyAsync(
-                content: GenerateSearchSettingsMessage(user.UserSettings),
-                parseMode: ParseMode.Markdown
+                content: MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings),
+                parseMode: ParseMode.Markdown,
+                replyMarkup: await _keyboards.InlineSearch()
             );
         }
 
@@ -254,7 +187,7 @@ namespace Masya.TelegramBot.Modules
                 ctx.SaveChanges();
                 Context.BotService.Client.SendTextMessageAsync(
                     chatId: Context.Message.Chat.Id,
-                    text: GenerateMenuMessage(Context.Message, ctx),
+                    text: MessageGenerators.GenerateMenuMessage(dbUser),
                     parseMode: ParseMode.Markdown,
                     replyMarkup: _keyboards.Menu(dbUser.Permission)
                     ).Wait();

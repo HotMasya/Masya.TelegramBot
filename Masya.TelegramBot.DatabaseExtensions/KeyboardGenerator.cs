@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Masya.TelegramBot.Commands.Options;
 using Masya.TelegramBot.DataAccess;
 using Masya.TelegramBot.DataAccess.Models;
@@ -33,6 +34,72 @@ namespace Masya.TelegramBot.DatabaseExtensions
             {
                 currentRowIndex++;
                 buttons.Add(new List<KeyboardButton>());
+            }
+        }
+
+        public async Task<IReplyMarkup> InlineSearch(string callbackDataType = null)
+        {
+            using var scope = Services.CreateScope();
+            switch (callbackDataType)
+            {
+                case CallbackDataTypes.UpdateCategories:
+                    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    var categories = await dbContext.Categories.ToListAsync();
+                    var rows = (int)Math.Ceiling(categories.Count / (double)Options.MaxSearchColumns);
+                    InlineKeyboardButton[][] buttons = new InlineKeyboardButton[rows][];
+                    var categoriesIndex = 0;
+                    for (int i = 0; i < rows; i++)
+                    {
+                        for (int j = 0; j < Options.MaxSearchColumns; j++)
+                        {
+                            if (categoriesIndex == categories.Count) break;
+                            buttons[i] = new InlineKeyboardButton[Options.MaxSearchColumns];
+                            buttons[i][j] = new InlineKeyboardButton(categories[categoriesIndex].Name)
+                            {
+                                CallbackData = CallbackDataTypes.UpdateCategories + categories[categoriesIndex].Id
+                            };
+                            categoriesIndex++;
+                        }
+                        if (categoriesIndex == categories.Count) break;
+                    }
+                    return new InlineKeyboardMarkup(buttons);
+
+                case CallbackDataTypes.ChangeSettings:
+                    return new InlineKeyboardMarkup(
+                        new InlineKeyboardButton[][] {
+                            new InlineKeyboardButton[] {
+                                new InlineKeyboardButton("🏡Categories") {
+                                    CallbackData = CallbackDataTypes.UpdateCategories
+                                },
+                                new InlineKeyboardButton("🔍Regions") {
+                                    CallbackData = CallbackDataTypes.UpdateRegions
+                                },
+                            },
+                            new InlineKeyboardButton[] {
+                                new InlineKeyboardButton("🚪Rooms") {
+                                    CallbackData = CallbackDataTypes.UpdateRooms
+                                },
+                                new InlineKeyboardButton("💵Price") {
+                                    CallbackData = CallbackDataTypes.UpdatePrice
+                                },
+                                new InlineKeyboardButton("🏢Floors") {
+                                    CallbackData = CallbackDataTypes.UpdateFloors
+                                }
+                            }
+                        }
+                    );
+
+                default:
+                    return new InlineKeyboardMarkup(
+                        new InlineKeyboardButton[]{
+                            new InlineKeyboardButton("Search") {
+                                CallbackData = CallbackDataTypes.ExecuteSearch,
+                            },
+                            new InlineKeyboardButton("Settings") {
+                                CallbackData = CallbackDataTypes.ChangeSettings
+                            }
+                        }
+                    );
             }
         }
 
