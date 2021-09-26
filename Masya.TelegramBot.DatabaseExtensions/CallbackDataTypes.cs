@@ -2,6 +2,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
 {
     public static class CallbackDataTypes
     {
+        public const string SearchMenu = "__SEARCH_MENU__";
         public const string ExecuteSearch = "__SEARCH_EXECUTE__";
         public const string ChangeSettings = "__SEARCH_SETTINGS__";
 

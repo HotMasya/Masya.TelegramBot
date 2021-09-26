@@ -1,12 +1,9 @@
 using Masya.TelegramBot.Commands.Attributes;
 using Masya.TelegramBot.DatabaseExtensions;
 using Masya.TelegramBot.DatabaseExtensions.Abstractions;
-using Masya.TelegramBot.DataAccess;
-using Masya.TelegramBot.DataAccess.Types;
 using Telegram.Bot;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -22,19 +19,33 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.ChangeSettings)]
         public async Task HandleChangeSettingsAsync()
         {
-            await Context.BotService.Client.EditMessageReplyMarkupAsync(
-                chatId: Context.Message.Chat.Id,
-                messageId: Context.Message.MessageId,
-                replyMarkup: await _keyboards.InlineSearchAsync(Context.Callback.Data)
+            await EditMessageAsync(
+                replyMarkup: await _keyboards.InlineSearchAsync(CallbackDataTypes.ChangeSettings)
             );
+        }
+
+        [Callback(CallbackDataTypes.UpdateCategories)]
+        public async Task HandleUpdateCategoriesAsync()
+        {
+            var categories = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdateCategories);
+            if (!categories.InlineKeyboard.Any())
+            {
+                await Context.BotService.Client.AnswerCallbackQueryAsync(
+                    callbackQueryId: Context.Callback.Id,
+                    text: "There are no categories yet."
+                );
+                return;
+            }
+
+            await EditMessageAsync(replyMarkup: categories);
         }
 
         [Callback(CallbackDataTypes.UpdateRegions)]
         public async Task HandleUpdateRegionsAsync()
         {
-            var regions = await _keyboards.InlineSearchAsync(Context.Callback.Data);
+            var regions = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdateRegions);
 
-            if (regions == null)
+            if (!regions.InlineKeyboard.Any())
             {
                 await Context.BotService.Client.AnswerCallbackQueryAsync(
                     callbackQueryId: Context.Callback.Id,
@@ -42,6 +53,8 @@ namespace Masya.TelegramBot.Modules
                 );
                 return;
             }
+
+            await EditMessageAsync(replyMarkup: regions);
         }
     }
 }

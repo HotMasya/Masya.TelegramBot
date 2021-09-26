@@ -43,10 +43,10 @@ namespace Masya.TelegramBot.DatabaseExtensions
             using var scope = Services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var categories = await dbContext.Categories.ToListAsync();
-            var rows = (int)Math.Ceiling(categories.Count / (double)Options.MaxSearchColumns);
+            var rows = (int)Math.Ceiling(categories.Count / (double)Options.MaxSearchColumns) + 1;
             InlineKeyboardButton[][] buttons = new InlineKeyboardButton[rows][];
             var categoriesIndex = 0;
-            for (int i = 0; i < rows; i++)
+            for (int i = 0; i < rows - 1; i++)
             {
                 for (int j = 0; j < Options.MaxSearchColumns; j++)
                 {
@@ -60,6 +60,9 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 }
                 if (categoriesIndex == categories.Count) break;
             }
+
+            buttons[rows - 1] = new InlineKeyboardButton[1];
+            buttons[rows - 1][0] = InlineKeyboardButton.WithCallbackData("⬅ Go back", CallbackDataTypes.SearchMenu);
             return new InlineKeyboardMarkup(buttons);
         }
 
@@ -75,10 +78,10 @@ namespace Masya.TelegramBot.DatabaseExtensions
             {
                 return null;
             }
-            var rows = (int)Math.Ceiling(regions.Count / (double)Options.MaxSearchColumns);
+            var rows = (int)Math.Ceiling(regions.Count / (double)Options.MaxSearchColumns) + 1;
             InlineKeyboardButton[][] buttons = new InlineKeyboardButton[rows][];
             var regionsIndex = 0;
-            for (int i = 0; i < rows; i++)
+            for (int i = 0; i < rows - 1; i++)
             {
                 for (int j = 0; j < Options.MaxSearchColumns; j++)
                 {
@@ -92,6 +95,8 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 }
                 if (regionsIndex == regions.Count) break;
             }
+            buttons[rows - 1] = new InlineKeyboardButton[1];
+            buttons[rows - 1][0] = InlineKeyboardButton.WithCallbackData("⬅ Go back", CallbackDataTypes.SearchMenu);
             return new InlineKeyboardMarkup(buttons);
         }
 
@@ -114,12 +119,13 @@ namespace Masya.TelegramBot.DatabaseExtensions
                         }
                     }
                 ),
-                _ => new InlineKeyboardMarkup(
+                CallbackDataTypes.SearchMenu => new InlineKeyboardMarkup(
                     new InlineKeyboardButton[]{
                         InlineKeyboardButton.WithCallbackData("🔍Search", CallbackDataTypes.ExecuteSearch),
                         InlineKeyboardButton.WithCallbackData("⚙Settings", CallbackDataTypes.ChangeSettings)
                     }
                 ),
+                _ => null
             };
         }
 
