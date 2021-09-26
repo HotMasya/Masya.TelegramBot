@@ -1,12 +1,12 @@
 namespace Masya.TelegramBot.DataAccess.Types
 {
-    public static class DirectoryType
+    public enum DirectoryType
     {
-        public const string Type = "Тип";
-        public const string District = "Район";
-        public const string Street = "Улица";
-        public const string State = "Состояние";
-        public const string WallsMaterial = "Материал стен";
-        public const string Misc = "Разное";
+        Type = 1,
+        District = 2,
+        Street = 3,
+        State = 4,
+        Material = 5,
+        Misc = 6
     }
 }

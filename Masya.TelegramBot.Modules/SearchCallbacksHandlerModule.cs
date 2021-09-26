@@ -1,8 +1,12 @@
-using Masya.TelegramBot.DatabaseExtensions;
 using Masya.TelegramBot.Commands.Attributes;
-using System.Threading.Tasks;
+using Masya.TelegramBot.DatabaseExtensions;
 using Masya.TelegramBot.DatabaseExtensions.Abstractions;
+using Masya.TelegramBot.DataAccess;
+using Masya.TelegramBot.DataAccess.Types;
 using Telegram.Bot;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -16,13 +20,28 @@ namespace Masya.TelegramBot.Modules
         }
 
         [Callback(CallbackDataTypes.ChangeSettings)]
-        public async Task HandleUpdateSettingsAsync()
+        public async Task HandleChangeSettingsAsync()
         {
             await Context.BotService.Client.EditMessageReplyMarkupAsync(
                 chatId: Context.Message.Chat.Id,
                 messageId: Context.Message.MessageId,
-                replyMarkup: await _keyboards.InlineSearch(Context.Callback.Data)
+                replyMarkup: await _keyboards.InlineSearchAsync(Context.Callback.Data)
             );
+        }
+
+        [Callback(CallbackDataTypes.UpdateRegions)]
+        public async Task HandleUpdateRegionsAsync()
+        {
+            var regions = await _keyboards.InlineSearchAsync(Context.Callback.Data);
+
+            if (regions == null)
+            {
+                await Context.BotService.Client.AnswerCallbackQueryAsync(
+                    callbackQueryId: Context.Callback.Id,
+                    text: "There are no regions yet."
+                );
+                return;
+            }
         }
     }
 }

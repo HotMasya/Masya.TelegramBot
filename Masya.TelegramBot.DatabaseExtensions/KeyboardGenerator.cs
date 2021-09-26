@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Masya.TelegramBot.Commands.Options;
 using Masya.TelegramBot.DataAccess;
 using Masya.TelegramBot.DataAccess.Models;
+using Masya.TelegramBot.DataAccess.Types;
 using Masya.TelegramBot.DatabaseExtensions.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,56 +38,89 @@ namespace Masya.TelegramBot.DatabaseExtensions
             }
         }
 
-        public async Task<InlineKeyboardMarkup> InlineSearch(string callbackDataType = null)
+        private async Task<InlineKeyboardMarkup> ChangeCategoriesAsync()
         {
             using var scope = Services.CreateScope();
-            switch (callbackDataType)
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var categories = await dbContext.Categories.ToListAsync();
+            var rows = (int)Math.Ceiling(categories.Count / (double)Options.MaxSearchColumns);
+            InlineKeyboardButton[][] buttons = new InlineKeyboardButton[rows][];
+            var categoriesIndex = 0;
+            for (int i = 0; i < rows; i++)
             {
-                case CallbackDataTypes.UpdateCategories:
-                    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                    var categories = await dbContext.Categories.ToListAsync();
-                    var rows = (int)Math.Ceiling(categories.Count / (double)Options.MaxSearchColumns);
-                    InlineKeyboardButton[][] buttons = new InlineKeyboardButton[rows][];
-                    var categoriesIndex = 0;
-                    for (int i = 0; i < rows; i++)
+                for (int j = 0; j < Options.MaxSearchColumns; j++)
+                {
+                    if (categoriesIndex == categories.Count) break;
+                    buttons[i] = new InlineKeyboardButton[Options.MaxSearchColumns];
+                    buttons[i][j] = new InlineKeyboardButton(categories[categoriesIndex].Name)
                     {
-                        for (int j = 0; j < Options.MaxSearchColumns; j++)
-                        {
-                            if (categoriesIndex == categories.Count) break;
-                            buttons[i] = new InlineKeyboardButton[Options.MaxSearchColumns];
-                            buttons[i][j] = new InlineKeyboardButton(categories[categoriesIndex].Name)
-                            {
-                                CallbackData = CallbackDataTypes.UpdateCategories + categories[categoriesIndex].Id
-                            };
-                            categoriesIndex++;
-                        }
-                        if (categoriesIndex == categories.Count) break;
-                    }
-                    return new InlineKeyboardMarkup(buttons);
-
-                case CallbackDataTypes.ChangeSettings:
-                    return new InlineKeyboardMarkup(
-                        new InlineKeyboardButton[][] {
-                            new InlineKeyboardButton[] {
-                                InlineKeyboardButton.WithCallbackData("🏡Categories", CallbackDataTypes.UpdateCategories),
-                                InlineKeyboardButton.WithCallbackData("🔍Regions", CallbackDataTypes.UpdateRegions),
-                            },
-                            new InlineKeyboardButton[] {
-                                InlineKeyboardButton.WithCallbackData("🚪Rooms", CallbackDataTypes.UpdateFloors),
-                                InlineKeyboardButton.WithCallbackData("💵Price", CallbackDataTypes.UpdatePrice),
-                                InlineKeyboardButton.WithCallbackData("🏢Floors", CallbackDataTypes.UpdateFloors)
-                            }
-                        }
-                    );
-
-                default:
-                    return new InlineKeyboardMarkup(
-                        new InlineKeyboardButton[]{
-                            InlineKeyboardButton.WithCallbackData("🔍Search", CallbackDataTypes.ExecuteSearch),
-                            InlineKeyboardButton.WithCallbackData("⚙Settings", CallbackDataTypes.ChangeSettings)
-                        }
-                    );
+                        CallbackData = CallbackDataTypes.UpdateCategories + categories[categoriesIndex].Id
+                    };
+                    categoriesIndex++;
+                }
+                if (categoriesIndex == categories.Count) break;
             }
+            return new InlineKeyboardMarkup(buttons);
+        }
+
+        private async Task<InlineKeyboardMarkup> ChangeSettingByTypeAsync(DirectoryType type)
+        {
+            using var scope = Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var regions = await dbContext.DirectoryItems
+                .Where(di => di.DirectoryId == (int)type)
+                .ToListAsync();
+
+            if (regions.Count == 0)
+            {
+                return null;
+            }
+            var rows = (int)Math.Ceiling(regions.Count / (double)Options.MaxSearchColumns);
+            InlineKeyboardButton[][] buttons = new InlineKeyboardButton[rows][];
+            var regionsIndex = 0;
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < Options.MaxSearchColumns; j++)
+                {
+                    if (regionsIndex == regions.Count) break;
+                    buttons[i] = new InlineKeyboardButton[Options.MaxSearchColumns];
+                    buttons[i][j] = new InlineKeyboardButton(regions[regionsIndex].Value)
+                    {
+                        CallbackData = CallbackDataTypes.UpdateRegions + regions[regionsIndex].Id
+                    };
+                    regionsIndex++;
+                }
+                if (regionsIndex == regions.Count) break;
+            }
+            return new InlineKeyboardMarkup(buttons);
+        }
+
+        public async Task<InlineKeyboardMarkup> InlineSearchAsync(string callbackDataType = null)
+        {
+            return callbackDataType switch
+            {
+                CallbackDataTypes.UpdateRegions => await ChangeSettingByTypeAsync(DirectoryType.District),
+                CallbackDataTypes.UpdateCategories => await ChangeCategoriesAsync(),
+                CallbackDataTypes.ChangeSettings => new InlineKeyboardMarkup(
+                    new InlineKeyboardButton[][] {
+                        new InlineKeyboardButton[] {
+                            InlineKeyboardButton.WithCallbackData("🏡Categories", CallbackDataTypes.UpdateCategories),
+                            InlineKeyboardButton.WithCallbackData("🔍Regions", CallbackDataTypes.UpdateRegions),
+                        },
+                        new InlineKeyboardButton[] {
+                            InlineKeyboardButton.WithCallbackData("🚪Rooms", CallbackDataTypes.UpdateFloors),
+                            InlineKeyboardButton.WithCallbackData("💵Price", CallbackDataTypes.UpdatePrice),
+                            InlineKeyboardButton.WithCallbackData("🏢Floors", CallbackDataTypes.UpdateFloors)
+                        }
+                    }
+                ),
+                _ => new InlineKeyboardMarkup(
+                    new InlineKeyboardButton[]{
+                        InlineKeyboardButton.WithCallbackData("🔍Search", CallbackDataTypes.ExecuteSearch),
+                        InlineKeyboardButton.WithCallbackData("⚙Settings", CallbackDataTypes.ChangeSettings)
+                    }
+                ),
+            };
         }
 
         public IReplyMarkup Menu(Permission userPermission)

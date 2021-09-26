@@ -15,6 +15,35 @@ namespace Masya.TelegramBot.Commands
     {
         public ICommandContext<TCommandInfo, TAliasInfo> Context { get; init; }
 
+        public Task<Message> EditMessageAsync(
+            string text = null,
+            ParseMode? parseMode = null,
+            InlineKeyboardMarkup replyMarkup = null
+        )
+        {
+            if (!string.IsNullOrEmpty(text))
+            {
+                return Context.BotService.Client.EditMessageTextAsync(
+                    chatId: Context.Chat.Id,
+                    messageId: Context.Message.MessageId,
+                    text: text,
+                    parseMode: parseMode,
+                    replyMarkup: replyMarkup,
+                    cancellationToken: default
+                    );
+            }
+            else if (replyMarkup != null)
+            {
+                return Context.BotService.Client.EditMessageReplyMarkupAsync(
+                    chatId: Context.Chat.Id,
+                    messageId: Context.Message.MessageId,
+                    replyMarkup: replyMarkup
+                );
+            }
+
+            throw new InvalidOperationException("You should provide at least text or reply markup.");
+        }
+
         public Task<Message> ReplyAsync(
             string content,
             ParseMode? parseMode = null,
@@ -30,10 +59,9 @@ namespace Masya.TelegramBot.Commands
             }
 
             return Context?.BotService.Client.SendTextMessageAsync(
-                chatId: Context?.Chat?.Id,
+                chatId: Context.Chat.Id,
                 text: content,
                 parseMode: parseMode,
-                entities: null,
                 disableWebPagePreview: disableWebPagePreview,
                 disableNotification: disableNotification,
                 replyToMessageId: replyToMessageId,

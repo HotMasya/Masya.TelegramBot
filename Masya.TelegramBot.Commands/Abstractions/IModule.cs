@@ -12,12 +12,18 @@ namespace Masya.TelegramBot.Commands.Abstractions
     {
         ICommandContext<TCommandInfo, TAliasInfo> Context { get; }
         Task<Message> ReplyAsync(
-            string content,
+            string text,
             ParseMode? parseMode = null,
             bool disableWebPagePreview = false,
             bool disableNotification = false,
             int replyToMessageId = 0,
             IReplyMarkup replyMarkup = null
             );
+
+        Task<Message> EditMessageAsync(
+            string text = null,
+            ParseMode? parseMode = null,
+            InlineKeyboardMarkup replyMarkup = null
+        );
     }
 }

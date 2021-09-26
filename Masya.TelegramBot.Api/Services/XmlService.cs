@@ -32,10 +32,10 @@ namespace Masya.TelegramBot.Api.Services
             _categories = DbContext.Categories.ToList();
 
             var diretoryItems = DbContext.DirectoryItems.Include(i => i.Directory).ToList();
-            _streets = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.Street));
-            _districts = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.District));
-            _wallMaterials = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.WallsMaterial));
-            _states = diretoryItems.Where(s => s.Directory.Name.Equals(DirectoryType.State));
+            _streets = diretoryItems.Where(s => s.Directory.Id == (int)DirectoryType.Street);
+            _districts = diretoryItems.Where(s => s.Directory.Id == (int)DirectoryType.District);
+            _wallMaterials = diretoryItems.Where(s => s.Directory.Id == (int)DirectoryType.Material);
+            _states = diretoryItems.Where(s => s.Directory.Id == (int)DirectoryType.State);
         }
 
         public async Task<RealtyFeed> GetRealtyFeed(HttpContent content)
