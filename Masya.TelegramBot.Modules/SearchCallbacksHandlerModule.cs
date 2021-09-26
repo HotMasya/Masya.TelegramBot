@@ -62,7 +62,7 @@ namespace Masya.TelegramBot.Modules
         }
 
         [Callback(CallbackDataTypes.UpdateCategories)]
-        public async Task HandleUpdateCategoriesAsync(int categoryId)
+        public async Task HandleUpdateCategoriesAsync(int? categoryId = null)
         {
             _logger.LogInformation("Selected category id: {0}", categoryId);
 
