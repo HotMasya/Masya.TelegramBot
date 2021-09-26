@@ -57,7 +57,14 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.SearchMenu)]
         public async Task HandleSearchMenuAsync()
         {
-            await SearchAsync();
+            try
+            {
+                await SearchAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.ToString());
+            }
         }
 
         [Callback(CallbackDataTypes.ChangeSettings)]
@@ -87,24 +94,17 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.UpdateRegions)]
         public async Task HandleUpdateRegionsAsync()
         {
-            try
+            var regions = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdateRegions);
+            if (!regions.InlineKeyboard.Any())
             {
-                var regions = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdateRegions);
-                if (!regions.InlineKeyboard.Any())
-                {
-                    await Context.BotService.Client.AnswerCallbackQueryAsync(
-                        callbackQueryId: Context.Callback.Id,
-                        text: "There are no regions yet."
-                    );
-                    return;
-                }
+                await Context.BotService.Client.AnswerCallbackQueryAsync(
+                    callbackQueryId: Context.Callback.Id,
+                    text: "There are no regions yet."
+                );
+                return;
+            }
 
-                await EditMessageAsync(replyMarkup: regions);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.ToString());
-            }
+            await EditMessageAsync(replyMarkup: regions);
         }
     }
 }

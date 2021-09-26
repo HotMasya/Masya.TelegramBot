@@ -56,7 +56,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                             categories[categoriesIndex].Name,
                             string.Join(
                                 Options.CallbackDataSeparator,
-                                CallbackDataTypes.UpdateRegions,
+                                CallbackDataTypes.UpdateCategories,
                                 categories[categoriesIndex].Id.ToString()
                             )
                         )
