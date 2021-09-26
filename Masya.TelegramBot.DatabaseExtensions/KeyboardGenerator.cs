@@ -83,14 +83,14 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 return null;
             }
             var rows = (int)Math.Ceiling(regions.Count / (double)Options.MaxSearchColumns) + 1;
-            InlineKeyboardButton[][] buttons = new InlineKeyboardButton[rows][];
+            var buttons = new List<List<InlineKeyboardButton>>(rows);
             var regionsIndex = 0;
             for (int i = 0; i < rows - 1; i++)
             {
                 for (int j = 0; j < Options.MaxSearchColumns; j++)
                 {
                     if (regionsIndex == regions.Count) break;
-                    buttons[i] = new InlineKeyboardButton[Options.MaxSearchColumns];
+                    buttons.Add(new List<InlineKeyboardButton>(Options.MaxSearchColumns));
                     buttons[i][j] = InlineKeyboardButton.WithCallbackData(
                         regions[regionsIndex].Value,
                         string.Join(
@@ -103,7 +103,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 }
                 if (regionsIndex == regions.Count) break;
             }
-            buttons[rows - 1] = new InlineKeyboardButton[1];
+            buttons.Add(new List<InlineKeyboardButton>(1));
             buttons[rows - 1][0] = InlineKeyboardButton.WithCallbackData("⬅ Go back", CallbackDataTypes.SearchMenu);
             return new InlineKeyboardMarkup(buttons);
         }
