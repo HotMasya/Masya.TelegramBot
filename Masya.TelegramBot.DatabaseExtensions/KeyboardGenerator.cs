@@ -37,7 +37,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
             }
         }
 
-        public async Task<IReplyMarkup> InlineSearch(string callbackDataType = null)
+        public async Task<InlineKeyboardMarkup> InlineSearch(string callbackDataType = null)
         {
             using var scope = Services.CreateScope();
             switch (callbackDataType)

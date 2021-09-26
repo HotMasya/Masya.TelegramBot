@@ -2,15 +2,12 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot;
-
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
-
 using Masya.TelegramBot.Api.Options;
 using Masya.TelegramBot.Api.Services.Abstractions;
 using Masya.TelegramBot.Api.Dtos;
