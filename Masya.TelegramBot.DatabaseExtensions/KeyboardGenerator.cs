@@ -90,21 +90,25 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 for (int j = 0; j < Options.MaxSearchColumns; j++)
                 {
                     if (regionsIndex == regions.Count) break;
-                    buttons.Add(new List<InlineKeyboardButton>(Options.MaxSearchColumns));
-                    buttons[i][j] = InlineKeyboardButton.WithCallbackData(
+                    buttons[i] = new List<InlineKeyboardButton>(Options.MaxSearchColumns)
+                    {
+                        [j] = InlineKeyboardButton.WithCallbackData(
                         regions[regionsIndex].Value,
                         string.Join(
                             Options.CallbackDataSeparator,
                             CallbackDataTypes.UpdateRegions,
                             regions[regionsIndex].Id.ToString()
                         )
-                    );
+                    )
+                    };
                     regionsIndex++;
                 }
                 if (regionsIndex == regions.Count) break;
             }
-            buttons.Add(new List<InlineKeyboardButton>(1));
-            buttons[rows - 1][0] = InlineKeyboardButton.WithCallbackData("⬅ Go back", CallbackDataTypes.SearchMenu);
+            buttons[rows - 1] = new List<InlineKeyboardButton>(1)
+            {
+                [0] = InlineKeyboardButton.WithCallbackData("⬅ Go back", CallbackDataTypes.SearchMenu)
+            };
             return new InlineKeyboardMarkup(buttons);
         }
 
