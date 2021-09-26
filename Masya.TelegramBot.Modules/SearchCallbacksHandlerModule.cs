@@ -4,8 +4,6 @@ using Masya.TelegramBot.DatabaseExtensions.Abstractions;
 using Telegram.Bot;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
-using Microsoft.Extensions.Logging;
 using Masya.TelegramBot.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types.Enums;
@@ -16,17 +14,14 @@ namespace Masya.TelegramBot.Modules
     public sealed class SearchCallbacksHandlerModule : DatabaseModule
     {
         private readonly IKeyboardGenerator _keyboards;
-        private readonly ILogger<SearchCallbacksHandlerModule> _logger;
         private readonly ApplicationDbContext _dbContext;
 
         public SearchCallbacksHandlerModule(
             IKeyboardGenerator keyboards,
-            ILogger<SearchCallbacksHandlerModule> logger,
             ApplicationDbContext dbContext
         )
         {
             _dbContext = dbContext;
-            _logger = logger;
             _keyboards = keyboards;
         }
 
@@ -62,9 +57,12 @@ namespace Masya.TelegramBot.Modules
         }
 
         [Callback(CallbackDataTypes.UpdateCategories)]
-        public async Task HandleUpdateCategoriesAsync(int? categoryId = null)
+        public async Task HandleUpdateCategoriesAsync(int categoryId = -1)
         {
-            _logger.LogInformation("Selected category id: {0}", categoryId);
+            if (categoryId != -1)
+            {
+                // do something...
+            }
 
             var categories = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdateCategories);
             if (!categories.InlineKeyboard.Any())
