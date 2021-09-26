@@ -4,15 +4,22 @@ using Masya.TelegramBot.DatabaseExtensions.Abstractions;
 using Telegram.Bot;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
+using Microsoft.Extensions.Logging;
 
 namespace Masya.TelegramBot.Modules
 {
     public sealed class SearchCallbacksHandlerModule : DatabaseModule
     {
         private readonly IKeyboardGenerator _keyboards;
+        private readonly ILogger<SearchCallbacksHandlerModule> _logger;
 
-        public SearchCallbacksHandlerModule(IKeyboardGenerator keyboards)
+        public SearchCallbacksHandlerModule(
+            IKeyboardGenerator keyboards,
+            ILogger<SearchCallbacksHandlerModule> logger
+        )
         {
+            _logger = logger;
             _keyboards = keyboards;
         }
 
@@ -43,18 +50,24 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.UpdateRegions)]
         public async Task HandleUpdateRegionsAsync()
         {
-            var regions = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdateRegions);
-
-            if (!regions.InlineKeyboard.Any())
+            try
             {
-                await Context.BotService.Client.AnswerCallbackQueryAsync(
-                    callbackQueryId: Context.Callback.Id,
-                    text: "There are no regions yet."
-                );
-                return;
-            }
+                var regions = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdateRegions);
+                if (!regions.InlineKeyboard.Any())
+                {
+                    await Context.BotService.Client.AnswerCallbackQueryAsync(
+                        callbackQueryId: Context.Callback.Id,
+                        text: "There are no regions yet."
+                    );
+                    return;
+                }
 
-            await EditMessageAsync(replyMarkup: regions);
+                await EditMessageAsync(replyMarkup: regions);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.ToString());
+            }
         }
     }
 }
