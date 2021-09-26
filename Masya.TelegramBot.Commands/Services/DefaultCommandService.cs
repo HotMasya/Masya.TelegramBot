@@ -60,7 +60,14 @@ namespace Masya.TelegramBot.Commands.Services
             var callbackDataParams = callbackSplittedData.Skip(1).ToArray();
             var callbackInfo = callbacks.FirstOrDefault(c => c.CallbackData.Equals(callbackDataType));
             var callbackParams = new CommandParts(callbackDataParams, Options);
-            logger.LogInformation("Callback data: " + callback.Data);
+
+            logger.LogInformation(
+                "callbackSplittedData: {0}\ncallbackDataType: {1}\ncallbackDataParams: {2}",
+                string.Join(",", callbackSplittedData),
+                callbackDataType,
+                string.Join(",", callbackDataParams)
+            );
+
             if (callbackInfo == null)
             {
                 return;
