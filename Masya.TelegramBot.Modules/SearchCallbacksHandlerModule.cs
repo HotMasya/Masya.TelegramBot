@@ -6,6 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 using Microsoft.Extensions.Logging;
+using Masya.TelegramBot.DataAccess;
+using Microsoft.EntityFrameworkCore;
+using Telegram.Bot.Types.Enums;
+using Masya.TelegramBot.DataAccess.Models;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -13,14 +17,47 @@ namespace Masya.TelegramBot.Modules
     {
         private readonly IKeyboardGenerator _keyboards;
         private readonly ILogger<SearchCallbacksHandlerModule> _logger;
+        private readonly ApplicationDbContext _dbContext;
 
         public SearchCallbacksHandlerModule(
             IKeyboardGenerator keyboards,
-            ILogger<SearchCallbacksHandlerModule> logger
+            ILogger<SearchCallbacksHandlerModule> logger,
+            ApplicationDbContext dbContext
         )
         {
+            _dbContext = dbContext;
             _logger = logger;
             _keyboards = keyboards;
+        }
+
+        [Command("/search")]
+        public async Task SearchAsync()
+        {
+            var user = _dbContext.Users
+                .Include(u => u.UserSettings)
+                    .ThenInclude(us => us.SelectedCategories)
+                .Include(u => u.UserSettings)
+                    .ThenInclude(us => us.SelectedRegions)
+                .First(u => u.TelegramAccountId == Context.Message.From.Id);
+
+            if (user.UserSettings == null)
+            {
+                user.UserSettings = new UserSettings();
+                await _dbContext.SaveChangesAsync();
+            }
+
+            await ReplyAsync(
+                content: MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings),
+                parseMode: ParseMode.Markdown,
+                replyMarkup: await _keyboards.InlineSearchAsync(CallbackDataTypes.SearchMenu)
+            );
+        }
+
+
+        [Callback(CallbackDataTypes.SearchMenu)]
+        public async Task HandleSearchMenuAsync()
+        {
+            await SearchAsync();
         }
 
         [Callback(CallbackDataTypes.ChangeSettings)]

@@ -10,7 +10,6 @@ using Masya.TelegramBot.DatabaseExtensions;
 using Masya.TelegramBot.DatabaseExtensions.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
@@ -59,29 +58,6 @@ namespace Masya.TelegramBot.Modules
                 replyMarkup: _keyboards.Menu(user.Permission),
                 parseMode: ParseMode.Markdown
                 );
-        }
-
-        [Command("/search")]
-        public async Task SearchAsync()
-        {
-            var user = _dbContext.Users
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.SelectedCategories)
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.SelectedRegions)
-                .First(u => u.TelegramAccountId == Context.Message.From.Id);
-
-            if (user.UserSettings == null)
-            {
-                user.UserSettings = new UserSettings();
-                await _dbContext.SaveChangesAsync();
-            }
-
-            await ReplyAsync(
-                content: MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings),
-                parseMode: ParseMode.Markdown,
-                replyMarkup: await _keyboards.InlineSearchAsync(CallbackDataTypes.SearchMenu)
-            );
         }
 
         [RegisterUser]

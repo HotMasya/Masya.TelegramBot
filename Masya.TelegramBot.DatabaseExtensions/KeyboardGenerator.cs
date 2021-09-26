@@ -44,29 +44,29 @@ namespace Masya.TelegramBot.DatabaseExtensions
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var categories = await dbContext.Categories.ToListAsync();
             var rows = (int)Math.Ceiling(categories.Count / (double)Options.MaxSearchColumns) + 1;
-            InlineKeyboardButton[][] buttons = new InlineKeyboardButton[rows][];
+            var buttons = new List<List<InlineKeyboardButton>>();
             var categoriesIndex = 0;
             for (int i = 0; i < rows - 1; i++)
             {
-                for (int j = 0; j < Options.MaxSearchColumns; j++)
+                buttons.Add(new List<InlineKeyboardButton>());
+                for (int j = 0; j < Options.MaxSearchColumns && categoriesIndex < categories.Count; j++, categoriesIndex++)
                 {
-                    if (categoriesIndex == categories.Count) break;
-                    buttons[i] = new InlineKeyboardButton[Options.MaxSearchColumns];
-                    buttons[i][j] = InlineKeyboardButton.WithCallbackData(
-                        categories[categoriesIndex].Name,
-                        string.Join(
-                            Options.CallbackDataSeparator,
-                            CallbackDataTypes.UpdateCategories,
-                            categories[categoriesIndex].Id.ToString()
+                    buttons[^1].Add(
+                        InlineKeyboardButton.WithCallbackData(
+                            categories[categoriesIndex].Name,
+                            string.Join(
+                                Options.CallbackDataSeparator,
+                                CallbackDataTypes.UpdateRegions,
+                                categories[categoriesIndex].Id.ToString()
+                            )
                         )
                     );
-                    categoriesIndex++;
                 }
                 if (categoriesIndex == categories.Count) break;
             }
-
-            buttons[rows - 1] = new InlineKeyboardButton[1];
-            buttons[rows - 1][0] = InlineKeyboardButton.WithCallbackData("⬅ Go back", CallbackDataTypes.SearchMenu);
+            buttons.Add(new List<InlineKeyboardButton>(){
+                InlineKeyboardButton.WithCallbackData("⬅ Go back", CallbackDataTypes.SearchMenu)
+            });
             return new InlineKeyboardMarkup(buttons);
         }
 
@@ -88,9 +88,8 @@ namespace Masya.TelegramBot.DatabaseExtensions
             for (int i = 0; i < rows - 1; i++)
             {
                 buttons.Add(new List<InlineKeyboardButton>());
-                for (int j = 0; j < Options.MaxSearchColumns; j++)
+                for (int j = 0; j < Options.MaxSearchColumns && regionsIndex < regions.Count; j++, regionsIndex++)
                 {
-                    if (regionsIndex == regions.Count) break;
                     buttons[^1].Add(
                         InlineKeyboardButton.WithCallbackData(
                             regions[regionsIndex].Value,
@@ -101,7 +100,6 @@ namespace Masya.TelegramBot.DatabaseExtensions
                             )
                         )
                     );
-                    regionsIndex++;
                 }
                 if (regionsIndex == regions.Count) break;
             }
