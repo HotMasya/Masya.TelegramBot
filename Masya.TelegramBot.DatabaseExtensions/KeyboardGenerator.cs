@@ -65,7 +65,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 if (categoriesIndex == categories.Count) break;
             }
             buttons.Add(new List<InlineKeyboardButton>(){
-                InlineKeyboardButton.WithCallbackData("⬅ Go back", CallbackDataTypes.SearchMenu)
+                InlineKeyboardButton.WithCallbackData("⬅ Go back", CallbackDataTypes.ChangeSettings)
             });
             return new InlineKeyboardMarkup(buttons);
         }
@@ -104,7 +104,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 if (regionsIndex == regions.Count) break;
             }
             buttons.Add(new List<InlineKeyboardButton>(){
-                InlineKeyboardButton.WithCallbackData("⬅ Go back", CallbackDataTypes.SearchMenu)
+                InlineKeyboardButton.WithCallbackData("⬅ Go back", CallbackDataTypes.ChangeSettings)
             });
             return new InlineKeyboardMarkup(buttons);
         }
@@ -128,13 +128,12 @@ namespace Masya.TelegramBot.DatabaseExtensions
                         }
                     }
                 ),
-                CallbackDataTypes.SearchMenu => new InlineKeyboardMarkup(
+                _ => new InlineKeyboardMarkup(
                     new InlineKeyboardButton[]{
                         InlineKeyboardButton.WithCallbackData("🔍Search", CallbackDataTypes.ExecuteSearch),
                         InlineKeyboardButton.WithCallbackData("⚙Settings", CallbackDataTypes.ChangeSettings)
                     }
-                ),
-                _ => null
+                )
             };
         }
 

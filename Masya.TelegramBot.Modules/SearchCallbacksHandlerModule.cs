@@ -49,16 +49,7 @@ namespace Masya.TelegramBot.Modules
             await ReplyAsync(
                 content: MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings),
                 parseMode: ParseMode.Markdown,
-                replyMarkup: await _keyboards.InlineSearchAsync(CallbackDataTypes.SearchMenu)
-            );
-        }
-
-
-        [Callback(CallbackDataTypes.SearchMenu)]
-        public async Task HandleSearchMenuAsync()
-        {
-            await EditMessageAsync(
-                replyMarkup: await _keyboards.InlineSearchAsync(CallbackDataTypes.SearchMenu)
+                replyMarkup: await _keyboards.InlineSearchAsync()
             );
         }
 
@@ -71,8 +62,10 @@ namespace Masya.TelegramBot.Modules
         }
 
         [Callback(CallbackDataTypes.UpdateCategories)]
-        public async Task HandleUpdateCategoriesAsync()
+        public async Task HandleUpdateCategoriesAsync(int categoryId)
         {
+            _logger.LogInformation("Selected category id: {0}", categoryId);
+
             var categories = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdateCategories);
             if (!categories.InlineKeyboard.Any())
             {
