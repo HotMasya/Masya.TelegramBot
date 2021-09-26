@@ -55,7 +55,11 @@ namespace Masya.TelegramBot.Commands.Services
 
         public virtual async Task HandleCallbackAsync(CallbackQuery callback)
         {
-            var callbackInfo = callbacks.FirstOrDefault(c => c.CallbackData.Equals(callback.Data));
+            var callbackSplittedData = callback.Data.Split(Options.CallbackDataSeparator);
+            var callbackDataType = callbackSplittedData.First();
+            var callbackDataParams = callbackSplittedData.Skip(1).ToArray();
+            var callbackInfo = callbacks.FirstOrDefault(c => c.CallbackData.Equals(callbackDataType));
+            var callbackParams = new CommandParts(callbackDataParams, Options);
             if (callbackInfo == null)
             {
                 return;
@@ -77,7 +81,7 @@ namespace Masya.TelegramBot.Commands.Services
                 callback: callback
             );
             propInfo.SetValue(moduleInstance, context);
-            callbackInfo?.Handler.Invoke(moduleInstance, Array.Empty<object>());
+            callbackInfo?.Handler.Invoke(moduleInstance, callbackParams.MatchParamTypes(callbackInfo.Handler));
             await BotService.Client.AnswerCallbackQueryAsync(callback.Id);
         }
 

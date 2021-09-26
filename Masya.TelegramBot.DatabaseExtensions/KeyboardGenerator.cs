@@ -52,10 +52,14 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 {
                     if (categoriesIndex == categories.Count) break;
                     buttons[i] = new InlineKeyboardButton[Options.MaxSearchColumns];
-                    buttons[i][j] = new InlineKeyboardButton(categories[categoriesIndex].Name)
-                    {
-                        CallbackData = CallbackDataTypes.UpdateCategories + categories[categoriesIndex].Id
-                    };
+                    buttons[i][j] = InlineKeyboardButton.WithCallbackData(
+                        categories[categoriesIndex].Name,
+                        string.Join(
+                            Options.CallbackDataSeparator,
+                            CallbackDataTypes.UpdateCategories,
+                            categories[categoriesIndex].Id.ToString()
+                        )
+                    );
                     categoriesIndex++;
                 }
                 if (categoriesIndex == categories.Count) break;
@@ -87,10 +91,14 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 {
                     if (regionsIndex == regions.Count) break;
                     buttons[i] = new InlineKeyboardButton[Options.MaxSearchColumns];
-                    buttons[i][j] = new InlineKeyboardButton(regions[regionsIndex].Value)
-                    {
-                        CallbackData = CallbackDataTypes.UpdateRegions + regions[regionsIndex].Id
-                    };
+                    buttons[i][j] = InlineKeyboardButton.WithCallbackData(
+                        regions[regionsIndex].Value,
+                        string.Join(
+                            Options.CallbackDataSeparator,
+                            CallbackDataTypes.UpdateRegions,
+                            regions[regionsIndex].Id.ToString()
+                        )
+                    );
                     regionsIndex++;
                 }
                 if (regionsIndex == regions.Count) break;

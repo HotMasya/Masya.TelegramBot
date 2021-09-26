@@ -24,6 +24,12 @@ namespace Masya.TelegramBot.Commands
             ExtractContent(content);
         }
 
+        public CommandParts(string[] args, CommandServiceOptions options)
+        {
+            ArgsStr = args;
+            _options = options;
+        }
+
         private void ExtractContent(string content)
         {
             if (string.IsNullOrEmpty(content))
