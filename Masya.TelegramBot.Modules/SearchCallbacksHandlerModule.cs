@@ -38,7 +38,7 @@ namespace Masya.TelegramBot.Modules
                     .ThenInclude(us => us.SelectedCategories)
                 .Include(u => u.UserSettings)
                     .ThenInclude(us => us.SelectedRegions)
-                .First(u => u.TelegramAccountId == Context.Message.From.Id);
+                .First(u => u.TelegramAccountId == Context.Message.Chat.Id);
 
             if (user.UserSettings == null)
             {
@@ -57,14 +57,7 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.SearchMenu)]
         public async Task HandleSearchMenuAsync()
         {
-            try
-            {
-                await SearchAsync();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.ToString());
-            }
+            await SearchAsync();
         }
 
         [Callback(CallbackDataTypes.ChangeSettings)]
