@@ -38,7 +38,12 @@ namespace Masya.TelegramBot.Modules
                     .ThenInclude(us => us.SelectedCategories)
                 .Include(u => u.UserSettings)
                     .ThenInclude(us => us.SelectedRegions)
-                .First(u => u.TelegramAccountId == Context.User.Id);
+                .FirstOrDefault(u => u.TelegramAccountId == Context.User.Id);
+
+            if (user == null)
+            {
+                return;
+            }
 
             if (user.UserSettings == null)
             {
@@ -69,15 +74,15 @@ namespace Masya.TelegramBot.Modules
                             .ThenInclude(us => us.SelectedCategories)
                         .Include(u => u.UserSettings)
                             .ThenInclude(us => us.SelectedRegions)
-                        .First(u => u.TelegramAccountId == Context.User.Id);
+                        .FirstOrDefault(u => u.TelegramAccountId == Context.User.Id);
+
+            if (user == null)
+            {
+                return;
+            }
 
             if (categoryId != -1)
             {
-                if (user == null)
-                {
-                    return;
-                }
-
                 var selectedCategory = user.UserSettings.SelectedCategories.FirstOrDefault(c => c.Id == categoryId);
 
                 if (selectedCategory == null)
@@ -90,6 +95,7 @@ namespace Masya.TelegramBot.Modules
                 {
                     user.UserSettings.SelectedCategories.Remove(selectedCategory);
                 }
+                await _dbContext.SaveChangesAsync();
             }
 
             var categories = await _keyboards.InlineSearchAsync(
