@@ -113,7 +113,8 @@ namespace Masya.TelegramBot.Modules
 
             await EditMessageAsync(
                 text: categoryId != -1 ? MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings) : null,
-                replyMarkup: categories
+                replyMarkup: categories,
+                parseMode: ParseMode.Markdown
             );
         }
 
