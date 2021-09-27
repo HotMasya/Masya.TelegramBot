@@ -119,9 +119,41 @@ namespace Masya.TelegramBot.Modules
         }
 
         [Callback(CallbackDataTypes.UpdateRegions)]
-        public async Task HandleUpdateRegionsAsync()
+        public async Task HandleUpdateRegionsAsync(int regionId = -1)
         {
-            var regions = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdateRegions);
+            var user = _dbContext.Users
+                        .Include(u => u.UserSettings)
+                            .ThenInclude(us => us.SelectedCategories)
+                        .Include(u => u.UserSettings)
+                            .ThenInclude(us => us.SelectedRegions)
+                        .FirstOrDefault(u => u.TelegramAccountId == Context.User.Id);
+
+            if (user == null)
+            {
+                return;
+            }
+
+            if (regionId != -1)
+            {
+                var selectedRegion = user.UserSettings.SelectedRegions.FirstOrDefault(c => c.Id == regionId);
+
+                if (selectedRegion == null)
+                {
+                    user.UserSettings.SelectedRegions.Add(
+                        _dbContext.DirectoryItems.First(c => c.Id == regionId)
+                    );
+                }
+                else
+                {
+                    user.UserSettings.SelectedRegions.Remove(selectedRegion);
+                }
+                await _dbContext.SaveChangesAsync();
+            }
+
+            var regions = await _keyboards.InlineSearchAsync(
+                CallbackDataTypes.UpdateRegions, user.UserSettings
+            );
+
             if (!regions.InlineKeyboard.Any())
             {
                 await Context.BotService.Client.AnswerCallbackQueryAsync(
@@ -131,7 +163,11 @@ namespace Masya.TelegramBot.Modules
                 return;
             }
 
-            await EditMessageAsync(replyMarkup: regions);
+            await EditMessageAsync(
+                text: regionId != -1 ? MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings) : null,
+                replyMarkup: regions,
+                parseMode: ParseMode.Markdown
+            );
         }
     }
 }

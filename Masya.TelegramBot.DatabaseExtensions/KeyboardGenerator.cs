@@ -74,12 +74,14 @@ namespace Masya.TelegramBot.DatabaseExtensions
             return new InlineKeyboardMarkup(buttons);
         }
 
-        private async Task<InlineKeyboardMarkup> ChangeSettingByTypeAsync(DirectoryType type)
+        private async Task<InlineKeyboardMarkup> ChangeSettingByTypeAsync(DirectoryType type, IEnumerable<DirectoryItem> selectedRegions)
         {
             using var scope = Services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var regions = await dbContext.DirectoryItems
+                .AsQueryable()
                 .Where(di => di.DirectoryId == (int)type)
+                .OrderBy(di => di.Value)
                 .ToListAsync();
 
             if (regions.Count == 0)
@@ -96,7 +98,11 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 {
                     buttons[^1].Add(
                         InlineKeyboardButton.WithCallbackData(
-                            regions[regionsIndex].Value,
+                            string.Format(
+                                "{0} {1}",
+                                selectedRegions.Any(sc => sc.Id == regions[regionsIndex].Id) ? "✅" : "",
+                                regions[regionsIndex].Value
+                            ),
                             string.Join(
                                 Options.CallbackDataSeparator,
                                 CallbackDataTypes.UpdateRegions,
@@ -117,7 +123,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
         {
             return callbackDataType switch
             {
-                CallbackDataTypes.UpdateRegions => await ChangeSettingByTypeAsync(DirectoryType.District),
+                CallbackDataTypes.UpdateRegions => await ChangeSettingByTypeAsync(DirectoryType.District, userSettings.SelectedRegions),
                 CallbackDataTypes.UpdateCategories => await ChangeCategoriesAsync(userSettings.SelectedCategories),
                 CallbackDataTypes.ChangeSettings => new InlineKeyboardMarkup(
                     new InlineKeyboardButton[][] {
