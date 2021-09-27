@@ -64,57 +64,51 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.UpdateCategories)]
         public async Task HandleUpdateCategoriesAsync(int categoryId = -1)
         {
-            try
+            _logger.LogInformation("CategoryId: " + categoryId);
+            var user = _dbContext.Users
+                        .Include(u => u.UserSettings)
+                            .ThenInclude(us => us.SelectedCategories)
+                        .Include(u => u.UserSettings)
+                            .ThenInclude(us => us.SelectedRegions)
+                        .First(u => u.TelegramAccountId == Context.User.Id);
+
+            if (categoryId != -1)
             {
-                var user = _dbContext.Users
-                            .Include(u => u.UserSettings)
-                                .ThenInclude(us => us.SelectedCategories)
-                            .Include(u => u.UserSettings)
-                                .ThenInclude(us => us.SelectedRegions)
-                            .First(u => u.TelegramAccountId == Context.User.Id);
-
-                if (categoryId != -1)
+                if (user == null)
                 {
-                    if (user == null)
-                    {
-                        return;
-                    }
-
-                    var selectedCategory = user.UserSettings.SelectedCategories.FirstOrDefault(c => c.Id == categoryId);
-
-                    if (selectedCategory == null)
-                    {
-                        user.UserSettings.SelectedCategories.Add(
-                            _dbContext.Categories.First(c => c.Id == categoryId)
-                        );
-                        return;
-                    }
-
-                    user.UserSettings.SelectedCategories.Remove(selectedCategory);
+                    return;
                 }
 
-                var categories = await _keyboards.InlineSearchAsync(
-                    CallbackDataTypes.UpdateCategories, user.UserSettings
-                );
+                var selectedCategory = user.UserSettings.SelectedCategories.FirstOrDefault(c => c.Id == categoryId);
 
-                if (!categories.InlineKeyboard.Any())
+                if (selectedCategory == null)
                 {
-                    await Context.BotService.Client.AnswerCallbackQueryAsync(
-                        callbackQueryId: Context.Callback.Id,
-                        text: "There are no categories yet."
+                    user.UserSettings.SelectedCategories.Add(
+                        _dbContext.Categories.First(c => c.Id == categoryId)
                     );
                     return;
                 }
 
-                await EditMessageAsync(
-                    text: categoryId != -1 ? MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings) : null,
-                    replyMarkup: categories
-                );
+                user.UserSettings.SelectedCategories.Remove(selectedCategory);
             }
-            catch (Exception ex)
+
+            var categories = await _keyboards.InlineSearchAsync(
+                CallbackDataTypes.UpdateCategories, user.UserSettings
+            );
+
+            if (!categories.InlineKeyboard.Any())
             {
-                _logger.LogError(ex.ToString());
+                await Context.BotService.Client.AnswerCallbackQueryAsync(
+                    callbackQueryId: Context.Callback.Id,
+                    text: "There are no categories yet."
+                );
+                return;
             }
+
+            await EditMessageAsync(
+                text: categoryId != -1 ? MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings) : null,
+                replyMarkup: categories
+            );
         }
 
         [Callback(CallbackDataTypes.UpdateRegions)]
