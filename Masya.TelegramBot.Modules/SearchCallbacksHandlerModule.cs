@@ -64,7 +64,6 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.UpdateCategories)]
         public async Task HandleUpdateCategoriesAsync(int categoryId = -1)
         {
-            _logger.LogInformation("CategoryId: " + categoryId);
             var user = _dbContext.Users
                         .Include(u => u.UserSettings)
                             .ThenInclude(us => us.SelectedCategories)
@@ -86,10 +85,11 @@ namespace Masya.TelegramBot.Modules
                     user.UserSettings.SelectedCategories.Add(
                         _dbContext.Categories.First(c => c.Id == categoryId)
                     );
-                    return;
                 }
-
-                user.UserSettings.SelectedCategories.Remove(selectedCategory);
+                else
+                {
+                    user.UserSettings.SelectedCategories.Remove(selectedCategory);
+                }
             }
 
             var categories = await _keyboards.InlineSearchAsync(
