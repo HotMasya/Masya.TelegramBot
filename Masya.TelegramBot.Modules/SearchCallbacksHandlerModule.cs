@@ -8,6 +8,8 @@ using Masya.TelegramBot.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types.Enums;
 using Masya.TelegramBot.DataAccess.Models;
+using Microsoft.Extensions.Logging;
+using System;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -15,14 +17,17 @@ namespace Masya.TelegramBot.Modules
     {
         private readonly IKeyboardGenerator _keyboards;
         private readonly ApplicationDbContext _dbContext;
+        private readonly ILogger<SearchCallbacksHandlerModule> _logger;
 
         public SearchCallbacksHandlerModule(
             IKeyboardGenerator keyboards,
-            ApplicationDbContext dbContext
+            ApplicationDbContext dbContext,
+            ILogger<SearchCallbacksHandlerModule> logger
         )
         {
             _dbContext = dbContext;
             _keyboards = keyboards;
+            _logger = logger;
         }
 
         [Command("/search")]
@@ -59,50 +64,57 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.UpdateCategories)]
         public async Task HandleUpdateCategoriesAsync(int categoryId = -1)
         {
-            var user = _dbContext.Users
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.SelectedCategories)
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.SelectedRegions)
-                .First(u => u.TelegramAccountId == Context.User.Id);
-
-            if (categoryId != -1)
+            try
             {
-                if (user == null)
+                var user = _dbContext.Users
+                            .Include(u => u.UserSettings)
+                                .ThenInclude(us => us.SelectedCategories)
+                            .Include(u => u.UserSettings)
+                                .ThenInclude(us => us.SelectedRegions)
+                            .First(u => u.TelegramAccountId == Context.User.Id);
+
+                if (categoryId != -1)
                 {
-                    return;
+                    if (user == null)
+                    {
+                        return;
+                    }
+
+                    var selectedCategory = user.UserSettings.SelectedCategories.FirstOrDefault(c => c.Id == categoryId);
+
+                    if (selectedCategory == null)
+                    {
+                        user.UserSettings.SelectedCategories.Add(
+                            _dbContext.Categories.First(c => c.Id == categoryId)
+                        );
+                        return;
+                    }
+
+                    user.UserSettings.SelectedCategories.Remove(selectedCategory);
                 }
 
-                var selectedCategory = user.UserSettings.SelectedCategories.FirstOrDefault(c => c.Id == categoryId);
+                var categories = await _keyboards.InlineSearchAsync(
+                    CallbackDataTypes.UpdateCategories, user.UserSettings
+                );
 
-                if (selectedCategory == null)
+                if (!categories.InlineKeyboard.Any())
                 {
-                    user.UserSettings.SelectedCategories.Add(
-                        _dbContext.Categories.First(c => c.Id == categoryId)
+                    await Context.BotService.Client.AnswerCallbackQueryAsync(
+                        callbackQueryId: Context.Callback.Id,
+                        text: "There are no categories yet."
                     );
                     return;
                 }
 
-                user.UserSettings.SelectedCategories.Remove(selectedCategory);
-            }
-
-            var categories = await _keyboards.InlineSearchAsync(
-                CallbackDataTypes.UpdateCategories, user.UserSettings
-            );
-
-            if (!categories.InlineKeyboard.Any())
-            {
-                await Context.BotService.Client.AnswerCallbackQueryAsync(
-                    callbackQueryId: Context.Callback.Id,
-                    text: "There are no categories yet."
+                await EditMessageAsync(
+                    text: categoryId != -1 ? MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings) : null,
+                    replyMarkup: categories
                 );
-                return;
             }
-
-            await EditMessageAsync(
-                text: categoryId != -1 ? MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings) : null,
-                replyMarkup: categories
-            );
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+            }
         }
 
         [Callback(CallbackDataTypes.UpdateRegions)]
