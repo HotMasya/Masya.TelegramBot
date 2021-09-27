@@ -11,7 +11,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Abstractions
         IServiceProvider Services { get; }
         CommandServiceOptions Options { get; }
         IReplyMarkup Menu(Permission userPermission);
-        Task<InlineKeyboardMarkup> InlineSearchAsync(string callbackDataType = null);
+        Task<InlineKeyboardMarkup> InlineSearchAsync(string callbackDataType = null, UserSettings userSettings = null);
         IReplyMarkup Roles();
     }
 }
