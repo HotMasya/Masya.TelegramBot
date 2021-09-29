@@ -65,7 +65,7 @@ namespace Masya.TelegramBot.Api.Controllers
 
             var users = await _dbContext.Users.ToListAsync();
             var usersToDeleteIds = users.Select(u => u.Id).Except(dtos.Select(d => d.Id));
-            var usersToDelete = users.Where(u => usersToDeleteIds.FirstOrDefault(id => u.Id == id) != default(long));
+            var usersToDelete = users.Where(u => usersToDeleteIds.FirstOrDefault(id => u.Id == id) != default);
 
             foreach (var dto in dtos)
             {

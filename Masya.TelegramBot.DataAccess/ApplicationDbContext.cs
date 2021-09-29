@@ -20,6 +20,8 @@ namespace Masya.TelegramBot.DataAccess
         public DbSet<Command> Commands { get; set; }
         public DbSet<BotSettings> BotSettings { get; set; }
         public DbSet<UserSettings> UserSettings { get; set; }
+        public DbSet<Floor> Floors { get; set; }
+        public DbSet<Price> Prices { get; set; }
 
         public List<User> GetAgents() => Users
             .AsQueryable()
