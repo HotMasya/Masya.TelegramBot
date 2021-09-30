@@ -59,7 +59,7 @@ namespace Masya.TelegramBot.Api.Controllers
         }
 
         [HttpPost("save")]
-        public async Task<IActionResult> SaveUsersAsync([FromBody] UserDto[] dtos)
+        public async Task<IActionResult> SaveUsersAsync(UserDto[] dtos)
         {
             if (!User.HasPermission(Permission.SuperAdmin)) return Forbid();
 
