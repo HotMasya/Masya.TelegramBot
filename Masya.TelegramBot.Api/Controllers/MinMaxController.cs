@@ -18,17 +18,14 @@ namespace Masya.TelegramBot.Api.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
-        private readonly ILogger<MinMaxController> _logger;
 
         public MinMaxController(
             ApplicationDbContext dbContext,
-            IMapper mapper,
-            ILogger<MinMaxController> logger
+            IMapper mapper
         )
         {
             _dbContext = dbContext;
             _mapper = mapper;
-            _logger = logger;
         }
 
         [HttpGet]
@@ -57,8 +54,6 @@ namespace Masya.TelegramBot.Api.Controllers
             var prices = await _dbContext.Prices.ToListAsync();
             var floors = await _dbContext.Floors.ToListAsync();
 
-            _logger.LogInformation("Prices: {0}, Floors: {1}", dto.Prices?.Length, dto.Floors?.Length);
-
             if (dto.Prices != null)
             {
                 var pricesIdsToDelete = prices
@@ -77,15 +72,15 @@ namespace Masya.TelegramBot.Api.Controllers
 
                 foreach (var priceDto in dto.Prices)
                 {
-                    if (!priceDto.Id.HasValue) continue;
-
-                    var price = prices.FirstOrDefault(p => p.Id == priceDto.Id.Value);
-
-                    if (price is null)
+                    if (!priceDto.Id.HasValue)
                     {
                         _dbContext.Prices.Add(_mapper.Map<Price>(priceDto));
                         continue;
                     }
+
+                    var price = prices.FirstOrDefault(p => p.Id == priceDto.Id.Value);
+
+                    if (price is null) continue;
 
                     _mapper.Map(price, priceDto);
                 }
@@ -109,15 +104,15 @@ namespace Masya.TelegramBot.Api.Controllers
 
                 foreach (var floorDto in dto.Floors)
                 {
-                    if (!floorDto.Id.HasValue) continue;
-
-                    var floor = floors.FirstOrDefault(f => f.Id == floorDto.Id.Value);
-
-                    if (floor is null)
+                    if (floorDto.Id.HasValue)
                     {
                         _dbContext.Floors.Add(_mapper.Map<Floor>(floorDto));
                         continue;
                     }
+
+                    var floor = floors.FirstOrDefault(f => f.Id == floorDto.Id.Value);
+
+                    if (floor is null) continue;
 
                     _mapper.Map(floor, floorDto);
                 }
