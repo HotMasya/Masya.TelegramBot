@@ -7,24 +7,28 @@ using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
-    [Authorize]
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public sealed class MinMaxController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ILogger<MinMaxController> _logger;
 
         public MinMaxController(
             ApplicationDbContext dbContext,
-            IMapper mapper
+            IMapper mapper,
+            ILogger<MinMaxController> logger
         )
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -52,6 +56,8 @@ namespace Masya.TelegramBot.Api.Controllers
 
             var prices = await _dbContext.Prices.ToListAsync();
             var floors = await _dbContext.Floors.ToListAsync();
+
+            _logger.LogInformation("Prices: {0}, Floors: {1}", dto.Prices?.Length, dto.Floors?.Length);
 
             if (dto.Prices != null)
             {
