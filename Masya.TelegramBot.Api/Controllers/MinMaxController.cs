@@ -53,26 +53,32 @@ namespace Masya.TelegramBot.Api.Controllers
                 return Forbid();
             }
 
-            _logger.LogInformation("Received:\nFloors: {0}\nPrices: {1}", dto.Floors.Length, dto.Prices.Length);
-
             var prices = await _dbContext.Prices.ToListAsync();
             var floors = await _dbContext.Floors.ToListAsync();
 
             var pricesIdsToDelete = prices
                 .Select(p => p.Id)
                 .Except(
-                    dto.Prices.Where(dp => dp.Id.HasValue).Select(dp => dp.Id.Value)
+                    dto.Prices
+                        ?.Where(dp => dp.Id.HasValue)
+                        ?.Select(dp => dp.Id.Value)
                 );
 
-            var pricesToDelete = prices.Where(p => pricesIdsToDelete.FirstOrDefault(id => p.Id == id) != default);
+            var pricesToDelete = prices.Where(
+                p => pricesIdsToDelete.FirstOrDefault(id => p.Id == id) != default
+            );
 
             var floorsIdsToDelete = floors
                 .Select(f => f.Id)
                 .Except(
-                    dto.Floors.Where(df => df.Id.HasValue).Select(df => df.Id.Value)
+                    dto.Floors
+                        ?.Where(df => df.Id.HasValue)
+                        ?.Select(df => df.Id.Value)
                 );
 
-            var floorsToDelete = floors.Where(f => floorsIdsToDelete.FirstOrDefault(id => f.Id == id) != default);
+            var floorsToDelete = floors.Where(
+                f => floorsIdsToDelete.FirstOrDefault(id => f.Id == id) != default
+            );
 
             foreach (var priceDto in dto.Prices)
             {
