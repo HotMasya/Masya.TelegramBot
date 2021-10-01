@@ -71,6 +71,21 @@ namespace Masya.TelegramBot.Api.Controllers
                 );
 
                 _dbContext.Prices.RemoveRange(pricesToDelete);
+
+                foreach (var priceDto in dto.Prices)
+                {
+                    if (!priceDto.Id.HasValue) continue;
+
+                    var price = prices.FirstOrDefault(p => p.Id == priceDto.Id.Value);
+
+                    if (price is null)
+                    {
+                        _dbContext.Prices.Add(_mapper.Map<Price>(priceDto));
+                        continue;
+                    }
+
+                    _mapper.Map(price, priceDto);
+                }
             }
 
             if (dto.Floors != null)
@@ -88,36 +103,21 @@ namespace Masya.TelegramBot.Api.Controllers
                 );
 
                 _dbContext.Floors.RemoveRange(floorsToDelete);
-            }
 
-            foreach (var priceDto in dto.Prices)
-            {
-                if (!priceDto.Id.HasValue) continue;
-
-                var price = prices.FirstOrDefault(p => p.Id == priceDto.Id.Value);
-
-                if (price is null)
+                foreach (var floorDto in dto.Floors)
                 {
-                    _dbContext.Prices.Add(_mapper.Map<Price>(priceDto));
-                    continue;
+                    if (!floorDto.Id.HasValue) continue;
+
+                    var floor = floors.FirstOrDefault(f => f.Id == floorDto.Id.Value);
+
+                    if (floor is null)
+                    {
+                        _dbContext.Floors.Add(_mapper.Map<Floor>(floorDto));
+                        continue;
+                    }
+
+                    _mapper.Map(floor, floorDto);
                 }
-
-                _mapper.Map(price, priceDto);
-            }
-
-            foreach (var floorDto in dto.Floors)
-            {
-                if (!floorDto.Id.HasValue) continue;
-
-                var floor = floors.FirstOrDefault(f => f.Id == floorDto.Id.Value);
-
-                if (floor is null)
-                {
-                    _dbContext.Floors.Add(_mapper.Map<Floor>(floorDto));
-                    continue;
-                }
-
-                _mapper.Map(floor, floorDto);
             }
 
             await _dbContext.SaveChangesAsync();
