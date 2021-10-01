@@ -56,29 +56,39 @@ namespace Masya.TelegramBot.Api.Controllers
             var prices = await _dbContext.Prices.ToListAsync();
             var floors = await _dbContext.Floors.ToListAsync();
 
-            var pricesIdsToDelete = prices
-                .Select(p => p.Id)
-                .Except(
-                    dto.Prices
-                        ?.Where(dp => dp.Id.HasValue)
-                        ?.Select(dp => dp.Id.Value)
+            if (dto.Prices != null)
+            {
+                var pricesIdsToDelete = prices
+                    .Select(p => p.Id)
+                    .Except(
+                        dto.Prices
+                            .Where(dp => dp.Id.HasValue)
+                            .Select(dp => dp.Id.Value)
+                    );
+
+                var pricesToDelete = prices.Where(
+                    p => pricesIdsToDelete.FirstOrDefault(id => p.Id == id) != default
                 );
 
-            var pricesToDelete = prices.Where(
-                p => pricesIdsToDelete.FirstOrDefault(id => p.Id == id) != default
-            );
+                _dbContext.Prices.RemoveRange(pricesToDelete);
+            }
 
-            var floorsIdsToDelete = floors
-                .Select(f => f.Id)
-                .Except(
-                    dto.Floors
-                        ?.Where(df => df.Id.HasValue)
-                        ?.Select(df => df.Id.Value)
+            if (dto.Floors != null)
+            {
+                var floorsIdsToDelete = floors
+                    .Select(f => f.Id)
+                    .Except(
+                        dto.Floors
+                            .Where(df => df.Id.HasValue)
+                            .Select(df => df.Id.Value)
+                    );
+
+                var floorsToDelete = floors.Where(
+                    f => floorsIdsToDelete.FirstOrDefault(id => f.Id == id) != default
                 );
 
-            var floorsToDelete = floors.Where(
-                f => floorsIdsToDelete.FirstOrDefault(id => f.Id == id) != default
-            );
+                _dbContext.Floors.RemoveRange(floorsToDelete);
+            }
 
             foreach (var priceDto in dto.Prices)
             {
@@ -110,10 +120,7 @@ namespace Masya.TelegramBot.Api.Controllers
                 _mapper.Map(floor, floorDto);
             }
 
-            _dbContext.Prices.RemoveRange(pricesToDelete);
-            _dbContext.Floors.RemoveRange(floorsToDelete);
             await _dbContext.SaveChangesAsync();
-
             return Ok();
         }
     }
