@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -35,10 +36,11 @@ namespace Masya.TelegramBot.Api.Controllers
                 return Forbid();
             }
 
-            return Ok(new
+            return Ok(new ValuesDto
             {
-                Prices = await _dbContext.Prices.ToListAsync(),
-                Floors = await _dbContext.Floors.ToListAsync(),
+                Prices = _mapper.Map<List<PriceDto>>(await _dbContext.Prices.ToListAsync()),
+                Floors = _mapper.Map<List<FloorDto>>(await _dbContext.Floors.ToListAsync()),
+                Rooms = _mapper.Map<List<RoomDto>>(await _dbContext.Rooms.ToListAsync()),
             });
         }
 
@@ -52,6 +54,39 @@ namespace Masya.TelegramBot.Api.Controllers
 
             var prices = await _dbContext.Prices.ToListAsync();
             var floors = await _dbContext.Floors.ToListAsync();
+            var rooms = await _dbContext.Rooms.ToListAsync();
+
+            if (dto.Rooms != null)
+            {
+                var roomsIdsToDelete = rooms
+                    .Select(r => r.Id)
+                    .Except(
+                        dto.Rooms
+                            .Where(dr => dr.Id.HasValue)
+                            .Select(dr => dr.Id.Value)
+                    );
+
+                var roomsToDelete = rooms.Where(
+                    r => roomsIdsToDelete.FirstOrDefault(id => r.Id == id) != default
+                );
+
+                _dbContext.Rooms.RemoveRange(roomsToDelete);
+
+                foreach (var roomDto in dto.Rooms)
+                {
+                    if (!roomDto.Id.HasValue)
+                    {
+                        _dbContext.Rooms.Add(_mapper.Map<Room>(roomDto));
+                        continue;
+                    }
+
+                    var room = rooms.FirstOrDefault(r => r.Id == roomDto.Id.Value);
+
+                    if (room is null) continue;
+
+                    _mapper.Map(room, roomDto);
+                }
+            }
 
             if (dto.Prices != null)
             {

@@ -1,8 +1,11 @@
+using System.Collections.Generic;
+
 namespace Masya.TelegramBot.Api.Dtos
 {
     public sealed class ValuesDto
     {
-        public PriceDto[] Prices { get; set; }
-        public FloorDto[] Floors { get; set; }
+        public List<PriceDto> Prices { get; set; }
+        public List<FloorDto> Floors { get; set; }
+        public List<RoomDto> Rooms { get; set; }
     }
 }

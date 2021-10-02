@@ -8,6 +8,13 @@ namespace Masya.TelegramBot.Api.Profiles
     {
         public MinMaxProfile()
         {
+            CreateMap<Room, RoomDto>();
+            CreateMap<RoomDto, Room>()
+                .ForMember(
+                    dest => dest.Id,
+                    opt => opt.Ignore()
+                );
+
             CreateMap<Price, PriceDto>();
             CreateMap<PriceDto, Price>()
                 .ForMember(
