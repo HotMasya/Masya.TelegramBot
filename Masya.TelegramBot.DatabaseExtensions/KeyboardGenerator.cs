@@ -280,12 +280,13 @@ namespace Masya.TelegramBot.DatabaseExtensions
                         }
                     }
                 ),
-                _ => new InlineKeyboardMarkup(
+                CallbackDataTypes.MainMenu => new InlineKeyboardMarkup(
                     new InlineKeyboardButton[]{
                         InlineKeyboardButton.WithCallbackData("🔍Search", CallbackDataTypes.ExecuteSearch),
                         InlineKeyboardButton.WithCallbackData("⚙Settings", CallbackDataTypes.ChangeSettings)
                     }
-                )
+                ),
+                _ => null,
             };
         }
 

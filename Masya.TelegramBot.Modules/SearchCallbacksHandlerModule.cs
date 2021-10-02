@@ -73,6 +73,14 @@ namespace Masya.TelegramBot.Modules
             );
         }
 
+        [Callback(CallbackDataTypes.MainMenu)]
+        public async Task HandleMenuAsync()
+        {
+            await EditMessageAsync(
+                replyMarkup: await _keyboards.InlineSearchAsync(CallbackDataTypes.MainMenu)
+            );
+        }
+
         [Callback(CallbackDataTypes.UpdateRooms)]
         public async Task HandleChangeRoomsAsync(int selectedRoomsId = -1)
         {
