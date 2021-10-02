@@ -111,8 +111,8 @@ namespace Masya.TelegramBot.Api
             provider.UseScheduler(scheduler =>
             {
                 scheduler
-              .Schedule<UpdateXmlImportsInvokable>()
-              .Daily();
+                    .Schedule<UpdateXmlImportsInvokable>()
+                    .Daily();
             });
             provider
                 .ConfigureQueue()
