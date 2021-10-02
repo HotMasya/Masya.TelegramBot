@@ -67,8 +67,14 @@ namespace Masya.TelegramBot.Api.Services
                 offerFromDb.Phone = string.Join(", ", offer.SalesAgent.Phones);
             }
 
+            if (offerFromDb.Images != null)
+            {
+                DbContext.Images.RemoveRange(offerFromDb.Images);
+            }
+
             if (offer.ImageUrls != null && offer.ImageUrls.Count > 0)
             {
+                offerFromDb.Images = new List<Image>();
                 foreach (string imageUrl in offer.ImageUrls)
                 {
                     if (!string.IsNullOrEmpty(imageUrl))
@@ -201,6 +207,12 @@ namespace Masya.TelegramBot.Api.Services
         public async Task UpdateObjectsAsync(RealtyFeed feed, int agencyId)
         {
             var realtyObjects = await DbContext.RealtyObjects
+                .Include(ro => ro.Images)
+                .Include(ro => ro.Category)
+                .Include(ro => ro.District)
+                .Include(ro => ro.State)
+                .Include(ro => ro.Street)
+                .Include(ro => ro.WallMaterial)
                 .ToListAsync();
 
             foreach (var offer in feed.Offers)
