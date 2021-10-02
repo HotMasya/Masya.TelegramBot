@@ -26,7 +26,7 @@ namespace Masya.TelegramBot.Modules
             var selCategories = string.Empty;
             foreach (var cat in userSettings.SelectedCategories)
             {
-                selCategories += cat.Name + " ";
+                selCategories += cat.Name + ", ";
             }
 
             selCategories = string.IsNullOrEmpty(selCategories) ? "any" : selCategories.TrimEnd();
@@ -34,7 +34,7 @@ namespace Masya.TelegramBot.Modules
             var selRegionsBuilder = new StringBuilder();
             foreach (var reg in userSettings.SelectedRegions)
             {
-                selRegionsBuilder.Append(reg.Value + " ");
+                selRegionsBuilder.Append(reg.Value + ", ");
             }
 
             var selRegions = selRegionsBuilder.ToString();
