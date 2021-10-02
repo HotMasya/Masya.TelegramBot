@@ -271,7 +271,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                             InlineKeyboardButton.WithCallbackData("🔍Regions", CallbackDataTypes.UpdateRegions),
                         },
                         new InlineKeyboardButton[] {
-                            InlineKeyboardButton.WithCallbackData("🚪Rooms", CallbackDataTypes.UpdateFloors),
+                            InlineKeyboardButton.WithCallbackData("🚪Rooms", CallbackDataTypes.UpdateRooms),
                             InlineKeyboardButton.WithCallbackData("💵Price", CallbackDataTypes.UpdatePrice),
                             InlineKeyboardButton.WithCallbackData("🏢Floors", CallbackDataTypes.UpdateFloors)
                         },
