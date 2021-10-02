@@ -88,8 +88,10 @@ namespace Masya.TelegramBot.Modules
                         user.UserSettings.MinPrice = user.UserSettings.MinPrice == selectedValue ? null : selectedValue;
                         break;
 
-                    default: break;
+                    default:
+                        break;
                 }
+                await _dbContext.SaveChangesAsync();
             }
 
             var prices = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdatePrice, user.UserSettings);
