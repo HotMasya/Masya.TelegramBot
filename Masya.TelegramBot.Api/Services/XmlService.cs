@@ -24,6 +24,8 @@ namespace Masya.TelegramBot.Api.Services
         private readonly IEnumerable<DirectoryItem> _states;
         private readonly IEnumerable<Category> _categories;
 
+        private const int MaxFloors = 24;
+
         public XmlService(ApplicationDbContext dbContext, ILogger<IXmlService> logger)
         {
             DbContext = dbContext;
@@ -53,7 +55,7 @@ namespace Masya.TelegramBot.Api.Services
         private void MapObjects(RealtyObject offerFromDb, Offer offer, int agencyId)
         {
             offerFromDb.Floor = offer.Floor == 0 ? null : offer.Floor;
-            offerFromDb.TotalFloors = offer.FloorsTotal == 0 ? null : offer.FloorsTotal;
+            offerFromDb.TotalFloors = offer.FloorsTotal == 0 || offer.FloorsTotal > MaxFloors ? null : offer.FloorsTotal;
             offerFromDb.Description = offer.Description;
             offerFromDb.CreatedAt = offer.CreationDate;
             offerFromDb.EditedAt = offer.CreationDate;
