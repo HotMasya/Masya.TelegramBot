@@ -276,7 +276,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                             InlineKeyboardButton.WithCallbackData("🏢Floors", CallbackDataTypes.UpdateFloors)
                         },
                         new InlineKeyboardButton[] {
-                            InlineKeyboardButton.WithCallbackData("⬅ Go back", "_go_back_")
+                            InlineKeyboardButton.WithCallbackData("⬅ Go back", CallbackDataTypes.MainMenu)
                         }
                     }
                 ),
