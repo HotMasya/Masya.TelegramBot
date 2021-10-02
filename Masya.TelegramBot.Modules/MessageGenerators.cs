@@ -41,7 +41,7 @@ namespace Masya.TelegramBot.Modules
             selRegions = string.IsNullOrEmpty(selRegions) ? "any" : selRegions.TrimEnd();
 
             var selRooms = userSettings.Rooms.Any()
-                ? string.Join(", ", userSettings.Rooms.Select(r => r.RoomsCount.ToString()))
+                ? string.Join(", ", userSettings.Rooms.Select(r => r.RoomsCount.ToString()).OrderBy(r => r))
                 : "any";
 
             var minFloor = userSettings.MinFloor.HasValue
