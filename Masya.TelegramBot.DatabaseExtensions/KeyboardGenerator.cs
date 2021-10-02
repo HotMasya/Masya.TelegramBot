@@ -142,7 +142,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                         string.Format(
                             "{0} {1}",
                             selectedMinPrice.HasValue && price.MinVal.Equals(selectedMinPrice.Value) ? "✅" : "",
-                            price.MinVal.ToString("#,0.00", nfi)
+                            price.MinVal.ToString("#,0", nfi)
                         ),
                         string.Join(
                             Options.CallbackDataSeparator,
@@ -155,7 +155,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                         string.Format(
                             "{0} {1}",
                             selectedMaxPrice.HasValue && price.MaxVal.Equals(selectedMaxPrice.Value) ? "✅" : "",
-                            price.MaxVal.ToString("#,0.00", nfi)
+                            price.MaxVal.ToString("#,0", nfi)
                         ),
                         string.Join(
                             Options.CallbackDataSeparator,
@@ -191,7 +191,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                         string.Format(
                             "{0} {1}",
                             selectedMinFloor.HasValue && floor.MinVal.Equals(selectedMinFloor.Value) ? "✅" : "",
-                            floor.MinVal.ToString("#,0.00", nfi)
+                            floor.MinVal.ToString("#,0", nfi)
                         ),
                         string.Join(
                             Options.CallbackDataSeparator,
@@ -204,7 +204,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                         string.Format(
                             "{0} {1}",
                             selectedMaxFloor.HasValue && floor.MaxVal.Equals(selectedMaxFloor.Value) ? "✅" : "",
-                            floor.MaxVal.ToString("#,0.00", nfi)
+                            floor.MaxVal.ToString("#,0", nfi)
                         ),
                         string.Join(
                             Options.CallbackDataSeparator,

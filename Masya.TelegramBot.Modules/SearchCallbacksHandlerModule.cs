@@ -81,11 +81,11 @@ namespace Masya.TelegramBot.Modules
                 switch (type)
                 {
                     case KeyboardGenerator.MaxOperation:
-                        user.UserSettings.MaxPrice = selectedValue;
+                        user.UserSettings.MaxPrice = user.UserSettings.MaxPrice == selectedValue ? null : selectedValue;
                         break;
 
                     case KeyboardGenerator.MinOperation:
-                        user.UserSettings.MinPrice = selectedValue;
+                        user.UserSettings.MinPrice = user.UserSettings.MinPrice == selectedValue ? null : selectedValue;
                         break;
 
                     default: break;
@@ -110,7 +110,7 @@ namespace Masya.TelegramBot.Modules
             );
         }
 
-        [Callback(CallbackDataTypes.UpdatePrice)]
+        [Callback(CallbackDataTypes.UpdateFloors)]
         public async Task HandleUpdateFloorsAsync(string type = null, int selectedValue = -1)
         {
             var user = GetUser();
@@ -120,11 +120,11 @@ namespace Masya.TelegramBot.Modules
                 switch (type)
                 {
                     case KeyboardGenerator.MaxOperation:
-                        user.UserSettings.MaxFloor = selectedValue;
+                        user.UserSettings.MaxFloor = user.UserSettings.MaxFloor == selectedValue ? null : selectedValue;
                         break;
 
                     case KeyboardGenerator.MinOperation:
-                        user.UserSettings.MinFloor = selectedValue;
+                        user.UserSettings.MinFloor = user.UserSettings.MinFloor == selectedValue ? null : selectedValue;
                         break;
 
                     default: break;
