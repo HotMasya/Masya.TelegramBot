@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 using Masya.TelegramBot.DataAccess.Models;
 
@@ -39,12 +40,12 @@ namespace Masya.TelegramBot.Modules
             var selRegions = selRegionsBuilder.ToString();
             selRegions = string.IsNullOrEmpty(selRegions) ? "any" : selRegions.TrimEnd();
 
-            var maxRooms = userSettings.MaxRoomsCount.HasValue
-                ? userSettings.MaxRoomsCount.Value.ToString()
+            var selRooms = userSettings.Rooms.Any()
+                ? string.Join(", ", userSettings.Rooms.Select(r => r.RoomsCount.ToString()))
                 : "any";
 
             var minFloor = userSettings.MinFloor.HasValue
-                ? userSettings.MinFloor.Value.ToString()
+                ? "from " + userSettings.MinFloor.Value.ToString()
                 : "any";
 
             var maxFloor = userSettings.MaxFloor.HasValue
@@ -52,7 +53,7 @@ namespace Masya.TelegramBot.Modules
                 : string.Empty;
 
             var minPrice = userSettings.MinPrice.HasValue
-                ? userSettings.MinPrice.Value.ToString()
+                ? "from " + userSettings.MinPrice.Value.ToString()
                 : "any";
 
             var maxPrice = userSettings.MaxPrice.HasValue
@@ -60,12 +61,12 @@ namespace Masya.TelegramBot.Modules
                 : string.Empty;
 
             return string.Format(
-                "Your search settings:\n\n🏡Selected categories: *{0}*;\n🔍Selected regions: *{1}*;\n🏢Floors: *{2} {3}*;\n🚪Rooms: *{4}*;\n💵Price: *{5} {6}*;",
+                "Your search settings:\n\n🏡 Selected categories: *{0}*\n🔍 Selected regions: *{1}*\n🏢 Floors: *{2} {3}*\n🚪 Rooms: *{4}*;\n💵 Price: *{5} {6}*",
                 selCategories,
                 selRegions,
                 minFloor,
                 maxFloor,
-                maxRooms,
+                selRooms,
                 minPrice,
                 maxPrice
             );

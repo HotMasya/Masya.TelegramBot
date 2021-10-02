@@ -78,6 +78,40 @@ namespace Masya.TelegramBot.DatabaseExtensions
             return new InlineKeyboardMarkup(buttons);
         }
 
+        private async Task<InlineKeyboardMarkup> ChangeRoomsAsync(IEnumerable<Room> selectedRooms)
+        {
+            using var scope = Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var rooms = await dbContext.Rooms.ToListAsync();
+
+            if (rooms.Count == 0)
+            {
+                return null;
+            }
+            var buttons = new List<List<InlineKeyboardButton>>();
+            foreach (var room in rooms)
+            {
+                buttons.Add(new List<InlineKeyboardButton>(){
+                    InlineKeyboardButton.WithCallbackData(
+                        string.Format(
+                            "{0} {1}",
+                            selectedRooms.Any(sr => sr.Id == room.Id) ? "✅" : "",
+                            room.RoomsCount
+                        ),
+                        string.Join(
+                            Options.CallbackDataSeparator,
+                            CallbackDataTypes.UpdateRooms,
+                            room.Id
+                        )
+                    )
+                });
+            }
+            buttons.Add(new List<InlineKeyboardButton>(){
+                InlineKeyboardButton.WithCallbackData("⬅ Go back", CallbackDataTypes.ChangeSettings)
+            });
+            return new InlineKeyboardMarkup(buttons);
+        }
+
         private async Task<InlineKeyboardMarkup> ChangeSettingByTypeAsync(DirectoryType type, IEnumerable<DirectoryItem> selectedRegions)
         {
             using var scope = Services.CreateScope();
@@ -229,6 +263,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 CallbackDataTypes.UpdateCategories => await ChangeCategoriesAsync(userSettings.SelectedCategories),
                 CallbackDataTypes.UpdatePrice => await ChangePriceAsync(userSettings.MinPrice, userSettings.MaxPrice),
                 CallbackDataTypes.UpdateFloors => await ChangeFloorsAsync(userSettings.MinFloor, userSettings.MaxFloor),
+                CallbackDataTypes.UpdateRooms => await ChangeRoomsAsync(userSettings.Rooms),
                 CallbackDataTypes.ChangeSettings => new InlineKeyboardMarkup(
                     new InlineKeyboardButton[][] {
                         new InlineKeyboardButton[] {
@@ -239,6 +274,9 @@ namespace Masya.TelegramBot.DatabaseExtensions
                             InlineKeyboardButton.WithCallbackData("🚪Rooms", CallbackDataTypes.UpdateFloors),
                             InlineKeyboardButton.WithCallbackData("💵Price", CallbackDataTypes.UpdatePrice),
                             InlineKeyboardButton.WithCallbackData("🏢Floors", CallbackDataTypes.UpdateFloors)
+                        },
+                        new InlineKeyboardButton[] {
+                            InlineKeyboardButton.WithCallbackData("⬅ Go back", "_go_back_")
                         }
                     }
                 ),

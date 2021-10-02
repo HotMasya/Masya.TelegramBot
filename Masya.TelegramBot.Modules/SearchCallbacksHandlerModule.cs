@@ -37,6 +37,8 @@ namespace Masya.TelegramBot.Modules
                     .ThenInclude(us => us.SelectedCategories)
                 .Include(u => u.UserSettings)
                     .ThenInclude(us => us.SelectedRegions)
+                .Include(u => u.UserSettings)
+                    .ThenInclude(us => us.Rooms)
                 .FirstOrDefault(u => u.TelegramAccountId == Context.User.Id);
         }
 
@@ -68,6 +70,47 @@ namespace Masya.TelegramBot.Modules
         {
             await EditMessageAsync(
                 replyMarkup: await _keyboards.InlineSearchAsync(CallbackDataTypes.ChangeSettings)
+            );
+        }
+
+        [Callback(CallbackDataTypes.UpdateRooms)]
+        public async Task HandleChangeRoomsAsync(int selectedRoomsId = -1)
+        {
+            var user = GetUser();
+            if (selectedRoomsId != -1)
+            {
+                var selectedRooms = user.UserSettings.Rooms.FirstOrDefault(c => c.Id == selectedRoomsId);
+
+                if (selectedRooms == null)
+                {
+                    user.UserSettings.Rooms.Add(
+                        _dbContext.Rooms.First(c => c.Id == selectedRoomsId)
+                    );
+                }
+                else
+                {
+                    user.UserSettings.Rooms.Remove(selectedRooms);
+                }
+                await _dbContext.SaveChangesAsync();
+            }
+
+            var rooms = await _keyboards.InlineSearchAsync(
+                CallbackDataTypes.UpdateRooms, user.UserSettings
+            );
+
+            if (!rooms.InlineKeyboard.Any())
+            {
+                await Context.BotService.Client.AnswerCallbackQueryAsync(
+                    callbackQueryId: Context.Callback.Id,
+                    text: "There are no rooms yet."
+                );
+                return;
+            }
+
+            await EditMessageAsync(
+                text: selectedRoomsId != -1 ? MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings) : null,
+                replyMarkup: rooms,
+                parseMode: ParseMode.Markdown
             );
         }
 

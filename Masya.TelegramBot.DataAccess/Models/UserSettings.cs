@@ -16,7 +16,7 @@ namespace Masya.TelegramBot.DataAccess.Models
 
         public int? MaxFloor { get; set; }
 
-        public int? MaxRoomsCount { get; set; }
+        public List<Room> Rooms { get; set; }
 
         public List<DirectoryItem> SelectedRegions { get; set; }
 
