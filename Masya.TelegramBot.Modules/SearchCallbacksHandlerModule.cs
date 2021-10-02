@@ -129,6 +129,8 @@ namespace Masya.TelegramBot.Modules
 
                     default: break;
                 }
+
+                await _dbContext.SaveChangesAsync();
             }
 
             var floors = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdateFloors, user.UserSettings);
