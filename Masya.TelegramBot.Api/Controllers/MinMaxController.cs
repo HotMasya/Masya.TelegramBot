@@ -7,7 +7,6 @@ using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
@@ -18,17 +17,14 @@ namespace Masya.TelegramBot.Api.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
-        private readonly ILogger<MinMaxController> _logger;
 
         public MinMaxController(
             ApplicationDbContext dbContext,
-            IMapper mapper,
-            ILogger<MinMaxController> logger
+            IMapper mapper
         )
         {
             _dbContext = dbContext;
             _mapper = mapper;
-            _logger = logger;
         }
 
         [HttpGet]
@@ -91,9 +87,8 @@ namespace Masya.TelegramBot.Api.Controllers
 
             if (dto.Floors != null)
             {
-                _logger.LogInformation("Floors: {0}", dto.Floors?.Length);
                 var floorsIdsToDelete = floors
-                    .Select(f => f.Id)
+                    .Select(p => p.Id)
                     .Except(
                         dto.Floors
                             .Where(df => df.Id.HasValue)
@@ -106,19 +101,19 @@ namespace Masya.TelegramBot.Api.Controllers
 
                 _dbContext.Floors.RemoveRange(floorsToDelete);
 
-                foreach (var floorDto in dto.Floors)
+                foreach (var floorsDto in dto.Floors)
                 {
-                    if (floorDto.Id.HasValue)
+                    if (!floorsDto.Id.HasValue)
                     {
-                        _dbContext.Floors.Add(_mapper.Map<Floor>(floorDto));
+                        _dbContext.Floors.Add(_mapper.Map<Floor>(floorsDto));
                         continue;
                     }
 
-                    var floor = floors.FirstOrDefault(f => f.Id == floorDto.Id.Value);
+                    var price = floors.FirstOrDefault(p => p.Id == floorsDto.Id.Value);
 
-                    if (floor is null) continue;
+                    if (floorsDto is null) continue;
 
-                    _mapper.Map(floor, floorDto);
+                    _mapper.Map(floors, floorsDto);
                 }
             }
 
