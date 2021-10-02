@@ -18,14 +18,17 @@ namespace Masya.TelegramBot.Api.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ILogger<MinMaxController> _logger;
 
         public MinMaxController(
             ApplicationDbContext dbContext,
-            IMapper mapper
+            IMapper mapper,
+            ILogger<MinMaxController> logger
         )
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -88,6 +91,7 @@ namespace Masya.TelegramBot.Api.Controllers
 
             if (dto.Floors != null)
             {
+                _logger.LogInformation("Floors: {0}", dto.Floors?.Length);
                 var floorsIdsToDelete = floors
                     .Select(f => f.Id)
                     .Except(
