@@ -109,11 +109,11 @@ namespace Masya.TelegramBot.Api.Controllers
                         continue;
                     }
 
-                    var price = floors.FirstOrDefault(p => p.Id == floorsDto.Id.Value);
+                    var floor = floors.FirstOrDefault(f => f.Id == floorsDto.Id.Value);
 
-                    if (floorsDto is null) continue;
+                    if (floor is null) continue;
 
-                    _mapper.Map(floors, floorsDto);
+                    _mapper.Map(floor, floorsDto);
                 }
             }
 
