@@ -67,6 +67,21 @@ namespace Masya.TelegramBot.Api.Services
                 offerFromDb.Phone = string.Join(", ", offer.SalesAgent.Phones);
             }
 
+            if (offer.ImageUrls != null && offer.ImageUrls.Count > 0)
+            {
+                foreach (string imageUrl in offer.ImageUrls)
+                {
+                    if (!string.IsNullOrEmpty(imageUrl))
+                    {
+                        offerFromDb.Images.Add(new Image
+                        {
+                            RealtyObjectId = offerFromDb.Id,
+                            Url = imageUrl
+                        });
+                    }
+                }
+            }
+
             if (!string.IsNullOrEmpty(offer.Location.District))
             {
                 var districtId = _districts
