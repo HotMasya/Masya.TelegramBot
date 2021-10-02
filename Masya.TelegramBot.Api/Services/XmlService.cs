@@ -67,6 +67,11 @@ namespace Masya.TelegramBot.Api.Services
                 offerFromDb.Phone = string.Join(", ", offer.SalesAgent.Phones);
             }
 
+            if (offer.Price != null)
+            {
+                offerFromDb.Price = (int?)offer.Price.Value;
+            }
+
             if (offerFromDb.Images != null)
             {
                 DbContext.Images.RemoveRange(offerFromDb.Images);
