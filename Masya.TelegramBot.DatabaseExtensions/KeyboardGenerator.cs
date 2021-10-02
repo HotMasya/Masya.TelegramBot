@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Masya.TelegramBot.Commands.Options;
@@ -18,6 +19,9 @@ namespace Masya.TelegramBot.DatabaseExtensions
     {
         public IServiceProvider Services { get; }
         public CommandServiceOptions Options { get; }
+
+        public const string MaxOperation = "__max__";
+        public const string MinOperation = "__min__";
 
         public KeyboardGenerator(IServiceProvider services, IOptions<CommandServiceOptions> options)
         {
@@ -119,12 +123,112 @@ namespace Masya.TelegramBot.DatabaseExtensions
             return new InlineKeyboardMarkup(buttons);
         }
 
+        private async Task<InlineKeyboardMarkup> ChangePriceAsync(int? selectedMinPrice, int? selectedMaxPrice)
+        {
+            using var scope = Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var prices = await dbContext.Prices.ToListAsync();
+            if (prices.Count == 0)
+            {
+                return null;
+            }
+            var buttons = new List<List<InlineKeyboardButton>>();
+            var nfi = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
+            nfi.NumberGroupSeparator = " ";
+            foreach (var price in prices)
+            {
+                buttons.Add(new List<InlineKeyboardButton>{
+                    InlineKeyboardButton.WithCallbackData(
+                        string.Format(
+                            "{0} {1}",
+                            selectedMinPrice.HasValue && price.MinVal.Equals(selectedMinPrice.Value) ? "✅" : "",
+                            price.MinVal.ToString("#,0.00", nfi)
+                        ),
+                        string.Join(
+                            Options.CallbackDataSeparator,
+                            CallbackDataTypes.UpdatePrice,
+                            MinOperation,
+                            price.MinVal.ToString()
+                        )
+                    ),
+                    InlineKeyboardButton.WithCallbackData(
+                        string.Format(
+                            "{0} {1}",
+                            selectedMaxPrice.HasValue && price.MaxVal.Equals(selectedMaxPrice.Value) ? "✅" : "",
+                            price.MaxVal.ToString("#,0.00", nfi)
+                        ),
+                        string.Join(
+                            Options.CallbackDataSeparator,
+                            CallbackDataTypes.UpdatePrice,
+                            MaxOperation,
+                            price.MaxVal.ToString()
+                        )
+                    )
+                });
+            }
+            buttons.Add(new List<InlineKeyboardButton>(){
+                InlineKeyboardButton.WithCallbackData("⬅ Go back", CallbackDataTypes.ChangeSettings)
+            });
+            return new InlineKeyboardMarkup(buttons);
+        }
+
+        private async Task<InlineKeyboardMarkup> ChangeFloorsAsync(int? selectedMinFloor, int? selectedMaxFloor)
+        {
+            using var scope = Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var floors = await dbContext.Floors.ToListAsync();
+            if (floors.Count == 0)
+            {
+                return null;
+            }
+            var buttons = new List<List<InlineKeyboardButton>>();
+            var nfi = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
+            nfi.NumberGroupSeparator = " ";
+            foreach (var floor in floors)
+            {
+                buttons.Add(new List<InlineKeyboardButton>{
+                    InlineKeyboardButton.WithCallbackData(
+                        string.Format(
+                            "{0} {1}",
+                            selectedMinFloor.HasValue && floor.MinVal.Equals(selectedMinFloor.Value) ? "✅" : "",
+                            floor.MinVal.ToString("#,0.00", nfi)
+                        ),
+                        string.Join(
+                            Options.CallbackDataSeparator,
+                            CallbackDataTypes.UpdateFloors,
+                            MinOperation,
+                            floor.MinVal.ToString()
+                        )
+                    ),
+                    InlineKeyboardButton.WithCallbackData(
+                        string.Format(
+                            "{0} {1}",
+                            selectedMaxFloor.HasValue && floor.MaxVal.Equals(selectedMaxFloor.Value) ? "✅" : "",
+                            floor.MaxVal.ToString("#,0.00", nfi)
+                        ),
+                        string.Join(
+                            Options.CallbackDataSeparator,
+                            CallbackDataTypes.UpdateFloors,
+                            MaxOperation,
+                            floor.MaxVal.ToString()
+                        )
+                    )
+                });
+            }
+            buttons.Add(new List<InlineKeyboardButton>(){
+                InlineKeyboardButton.WithCallbackData("⬅ Go back", CallbackDataTypes.ChangeSettings)
+            });
+            return new InlineKeyboardMarkup(buttons);
+        }
+
         public async Task<InlineKeyboardMarkup> InlineSearchAsync(string callbackDataType = null, UserSettings userSettings = null)
         {
             return callbackDataType switch
             {
                 CallbackDataTypes.UpdateRegions => await ChangeSettingByTypeAsync(DirectoryType.District, userSettings.SelectedRegions),
                 CallbackDataTypes.UpdateCategories => await ChangeCategoriesAsync(userSettings.SelectedCategories),
+                CallbackDataTypes.UpdatePrice => await ChangePriceAsync(userSettings.MinPrice, userSettings.MaxPrice),
+                CallbackDataTypes.UpdateFloors => await ChangeFloorsAsync(userSettings.MinFloor, userSettings.MaxFloor),
                 CallbackDataTypes.ChangeSettings => new InlineKeyboardMarkup(
                     new InlineKeyboardButton[][] {
                         new InlineKeyboardButton[] {

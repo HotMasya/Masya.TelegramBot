@@ -30,15 +30,20 @@ namespace Masya.TelegramBot.Modules
             _logger = logger;
         }
 
-        [Command("/search")]
-        public async Task SearchAsync()
+        private User GetUser()
         {
-            var user = _dbContext.Users
+            return _dbContext.Users
                 .Include(u => u.UserSettings)
                     .ThenInclude(us => us.SelectedCategories)
                 .Include(u => u.UserSettings)
                     .ThenInclude(us => us.SelectedRegions)
                 .FirstOrDefault(u => u.TelegramAccountId == Context.User.Id);
+        }
+
+        [Command("/search")]
+        public async Task SearchAsync()
+        {
+            var user = GetUser();
 
             if (user == null)
             {
@@ -66,15 +71,88 @@ namespace Masya.TelegramBot.Modules
             );
         }
 
+        [Callback(CallbackDataTypes.UpdatePrice)]
+        public async Task HandleUpdatePriceAsync(string type = null, int selectedValue = -1)
+        {
+            var user = GetUser();
+
+            if (selectedValue != -1 && !string.IsNullOrEmpty(type))
+            {
+                switch (type)
+                {
+                    case KeyboardGenerator.MaxOperation:
+                        user.UserSettings.MaxPrice = selectedValue;
+                        break;
+
+                    case KeyboardGenerator.MinOperation:
+                        user.UserSettings.MinPrice = selectedValue;
+                        break;
+
+                    default: break;
+                }
+            }
+
+            var prices = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdatePrice, user.UserSettings);
+
+            if (!prices.InlineKeyboard.Any())
+            {
+                await Context.BotService.Client.AnswerCallbackQueryAsync(
+                    callbackQueryId: Context.Callback.Id,
+                    text: "There are no prices buttons yet."
+                );
+                return;
+            }
+
+            await EditMessageAsync(
+                text: !string.IsNullOrEmpty(type) && selectedValue != -1 ? MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings) : null,
+                replyMarkup: prices,
+                parseMode: ParseMode.Markdown
+            );
+        }
+
+        [Callback(CallbackDataTypes.UpdatePrice)]
+        public async Task HandleUpdateFloorsAsync(string type = null, int selectedValue = -1)
+        {
+            var user = GetUser();
+
+            if (selectedValue != -1 && !string.IsNullOrEmpty(type))
+            {
+                switch (type)
+                {
+                    case KeyboardGenerator.MaxOperation:
+                        user.UserSettings.MaxFloor = selectedValue;
+                        break;
+
+                    case KeyboardGenerator.MinOperation:
+                        user.UserSettings.MinFloor = selectedValue;
+                        break;
+
+                    default: break;
+                }
+            }
+
+            var floors = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdateFloors, user.UserSettings);
+
+            if (!floors.InlineKeyboard.Any())
+            {
+                await Context.BotService.Client.AnswerCallbackQueryAsync(
+                    callbackQueryId: Context.Callback.Id,
+                    text: "There are no floors buttons yet."
+                );
+                return;
+            }
+
+            await EditMessageAsync(
+                text: !string.IsNullOrEmpty(type) && selectedValue != -1 ? MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings) : null,
+                replyMarkup: floors,
+                parseMode: ParseMode.Markdown
+            );
+        }
+
         [Callback(CallbackDataTypes.UpdateCategories)]
         public async Task HandleUpdateCategoriesAsync(int categoryId = -1)
         {
-            var user = _dbContext.Users
-                        .Include(u => u.UserSettings)
-                            .ThenInclude(us => us.SelectedCategories)
-                        .Include(u => u.UserSettings)
-                            .ThenInclude(us => us.SelectedRegions)
-                        .FirstOrDefault(u => u.TelegramAccountId == Context.User.Id);
+            var user = GetUser();
 
             if (user == null)
             {
@@ -121,12 +199,7 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.UpdateRegions)]
         public async Task HandleUpdateRegionsAsync(int regionId = -1)
         {
-            var user = _dbContext.Users
-                        .Include(u => u.UserSettings)
-                            .ThenInclude(us => us.SelectedCategories)
-                        .Include(u => u.UserSettings)
-                            .ThenInclude(us => us.SelectedRegions)
-                        .FirstOrDefault(u => u.TelegramAccountId == Context.User.Id);
+            var user = GetUser();
 
             if (user == null)
             {
