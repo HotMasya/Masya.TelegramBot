@@ -88,7 +88,7 @@ namespace Masya.TelegramBot.Api.Controllers
             if (dto.Floors != null)
             {
                 var floorsIdsToDelete = floors
-                    .Select(p => p.Id)
+                    .Select(f => f.Id)
                     .Except(
                         dto.Floors
                             .Where(df => df.Id.HasValue)
