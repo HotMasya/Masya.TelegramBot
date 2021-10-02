@@ -82,6 +82,9 @@ namespace Masya.TelegramBot.Api.Xml
         [XmlElement(ElementName = "price")]
         public Price Price { get; set; }
 
+        [XmlElement(ElementName = "sales-agent")]
+        public SalesAgent SalesAgent { get; set; }
+
         [XmlElement(ElementName = "image")]
         public List<string> ImageUrls { get; set; }
     }
