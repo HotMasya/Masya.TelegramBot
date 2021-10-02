@@ -61,7 +61,7 @@ namespace Masya.TelegramBot.Modules
             await ReplyAsync(
                 content: MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings),
                 parseMode: ParseMode.Markdown,
-                replyMarkup: await _keyboards.InlineSearchAsync()
+                replyMarkup: await _keyboards.InlineSearchAsync(CallbackDataTypes.MainMenu)
             );
         }
 
