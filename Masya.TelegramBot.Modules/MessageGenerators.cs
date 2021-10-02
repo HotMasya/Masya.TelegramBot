@@ -46,7 +46,9 @@ namespace Masya.TelegramBot.Modules
 
             var minFloor = userSettings.MinFloor.HasValue
                 ? "from " + userSettings.MinFloor.Value.ToString()
-                : "any";
+                : userSettings.MaxFloor.HasValue
+                    ? ""
+                    : "any";
 
             var maxFloor = userSettings.MaxFloor.HasValue
                 ? "to " + userSettings.MaxFloor.Value.ToString()
@@ -54,7 +56,9 @@ namespace Masya.TelegramBot.Modules
 
             var minPrice = userSettings.MinPrice.HasValue
                 ? "from " + userSettings.MinPrice.Value.ToString()
-                : "any";
+                : userSettings.MaxPrice.HasValue
+                    ? ""
+                    : "any";
 
             var maxPrice = userSettings.MaxPrice.HasValue
                 ? "to " + userSettings.MaxPrice.Value.ToString()
