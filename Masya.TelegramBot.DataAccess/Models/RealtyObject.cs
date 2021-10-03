@@ -42,6 +42,7 @@ namespace Masya.TelegramBot.DataAccess.Models
 
         public int? Floor { get; set; }
         public int? TotalFloors { get; set; }
+        public int? Rooms { get; set; }
 
         public int? Price { get; set; }
 

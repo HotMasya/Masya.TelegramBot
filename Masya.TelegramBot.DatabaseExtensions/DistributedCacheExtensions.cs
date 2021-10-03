@@ -13,10 +13,11 @@ namespace Microsoft.Extensions.Caching.Distributed
             TimeSpan? absoluteExpirationTime = null,
             TimeSpan? slidingExpirationTime = null)
         {
-            var options = new DistributedCacheEntryOptions();
-
-            options.AbsoluteExpirationRelativeToNow = absoluteExpirationTime ?? TimeSpan.FromSeconds(60);
-            options.SlidingExpiration = slidingExpirationTime;
+            var options = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = absoluteExpirationTime ?? TimeSpan.FromSeconds(60),
+                SlidingExpiration = slidingExpirationTime
+            };
             var jsonData = JsonSerializer.Serialize(item);
             await cache.SetStringAsync(recordId, jsonData, options);
         }

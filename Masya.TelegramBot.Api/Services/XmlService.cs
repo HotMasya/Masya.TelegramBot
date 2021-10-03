@@ -63,6 +63,7 @@ namespace Masya.TelegramBot.Api.Services
             offerFromDb.TotalArea = offer.Area?.Value == 0 ? null : offer.Area?.Value;
             offerFromDb.LivingSpace = offer.LivingSpace?.Value == 0 ? null : offer.LivingSpace?.Value;
             offerFromDb.LotArea = offer.LotArea?.Value == 0 ? null : offer.LotArea?.Value;
+            offerFromDb.Rooms = offer.Rooms == 0 ? null : offer.Rooms;
 
             if (offer.SalesAgent?.Phones != null && offer.SalesAgent.Phones.Count > 0)
             {

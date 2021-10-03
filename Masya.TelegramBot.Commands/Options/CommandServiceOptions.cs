@@ -7,5 +7,8 @@ namespace Masya.TelegramBot.Commands.Options
         public int MaxMenuColumns { get; set; } = 3;
         public int MaxSearchColumns { get; set; } = 3;
         public string CallbackDataSeparator { get; set; } = ";";
+
+        //  Should be separated into the inherited class
+        public int ObjectsSentLimit { get; set; } = 10;
     }
 }
