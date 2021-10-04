@@ -103,6 +103,7 @@ namespace Masya.TelegramBot.Modules
                         .Include(ro => ro.WallMaterial)
                         .Include(ro => ro.State)
                         .Include(ro => ro.Street)
+                        .OrderBy(ro => ro.Id)
                         .ToListAsync();
 
                     var results = allObjects
