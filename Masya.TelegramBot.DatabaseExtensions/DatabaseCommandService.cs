@@ -34,17 +34,26 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
         public override bool CheckCommandCondition(DatabaseCommandInfo commandInfo, Message message)
         {
-            using var scope = services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var user = dbContext.Users.FirstOrDefault(u => u.TelegramAccountId == message.From.Id);
+            try
+            {
+                using var scope = services.CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var user = dbContext.Users.FirstOrDefault(u => u.TelegramAccountId == message.From.Id);
 
-            return (
-                base.CheckCommandCondition(commandInfo, message) &&
-                commandInfo.Permission == Permission.Guest || (
-                    user is not null &&
-                    user.Permission >= commandInfo.Permission
-                )
-            );
+                return (
+                    base.CheckCommandCondition(commandInfo, message) &&
+                    commandInfo.Permission == Permission.Guest || (
+                        user is not null &&
+                        user.Permission >= commandInfo.Permission
+                    )
+                );
+            }
+            catch (NullReferenceException ex)
+            {
+                logger.LogError("{1}\nSouce: {0}", ex.ToString(), ex.Source);
+            }
+
+            return false;
         }
 
         protected override DatabaseCommandInfo GetCommand(string name, Message message)
