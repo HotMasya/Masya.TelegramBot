@@ -241,7 +241,11 @@ namespace Masya.TelegramBot.Modules
                         );
                     }
 
-                    await Context.BotService.Client.SendMediaGroupAsync(Context.Chat.Id, photos, true);
+                    if (photos.Count > 0)
+                    {
+                        await Context.BotService.Client.SendMediaGroupAsync(Context.Chat.Id, photos, true);
+                        continue;
+                    }
                 }
 
                 await ReplyAsync(BuildRealtyObjectDescr(r));
@@ -255,8 +259,7 @@ namespace Masya.TelegramBot.Modules
             string caption = null
         )
         {
-            using var fImageStream = await client.GetStreamAsync(url);
-            _logger.LogInformation("fImageStream length: {0}", fImageStream.Length);
+            using var fImageStream = await client.GetStreamAsync(new Uri(url));
             var inputFile = new InputMedia(fImageStream, fileName);
             var inputPhoto = new InputMediaPhoto(inputFile);
             if (!string.IsNullOrEmpty(caption))
