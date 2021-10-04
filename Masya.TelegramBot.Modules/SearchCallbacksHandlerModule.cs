@@ -45,6 +45,7 @@ namespace Masya.TelegramBot.Modules
         public async Task SearchAsync()
         {
             var userSettings = await _dbContext.UserSettings
+                .AsSplitQuery()
                 .Include(us => us.SelectedCategories)
                 .Include(us => us.SelectedRegions)
                 .Include(us => us.Rooms)
