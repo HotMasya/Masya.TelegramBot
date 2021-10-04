@@ -120,23 +120,25 @@ namespace Masya.TelegramBot.Commands.Services
             }
             else
             {
-                using var scope = services.CreateScope();
-                var moduleInstance = ActivatorUtilities.CreateInstance(
-                    scope.ServiceProvider,
-                    commandInfo.MethodInfo.DeclaringType,
-                    Array.Empty<object>()
-                );
-                var propInfo = commandInfo.MethodInfo.DeclaringType.GetProperty("Context");
-                var context = new DefaultCommandContext<TCommandInfo, TAliasInfo>(
-                    botService: BotService,
-                    commandService: this,
-                    chat: message.Chat,
-                    user: message.From,
-                    message: message
-                );
+                using (var scope = services.CreateScope())
+                {
+                    var moduleInstance = ActivatorUtilities.CreateInstance(
+                        scope.ServiceProvider,
+                        commandInfo.MethodInfo.DeclaringType,
+                        Array.Empty<object>()
+                    );
+                    var propInfo = commandInfo.MethodInfo.DeclaringType.GetProperty("Context");
+                    var context = new DefaultCommandContext<TCommandInfo, TAliasInfo>(
+                        botService: BotService,
+                        commandService: this,
+                        chat: message.Chat,
+                        user: message.From,
+                        message: message
+                    );
 
-                propInfo.SetValue(moduleInstance, context);
-                commandInfo.MethodInfo.Invoke(moduleInstance, parts.MatchParamTypes(commandInfo.MethodInfo));
+                    propInfo.SetValue(moduleInstance, context);
+                    await (Task)commandInfo.MethodInfo.Invoke(moduleInstance, parts.MatchParamTypes(commandInfo.MethodInfo));
+                }
             }
         }
 
