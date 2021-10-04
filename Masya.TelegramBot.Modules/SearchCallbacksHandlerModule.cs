@@ -279,13 +279,19 @@ namespace Masya.TelegramBot.Modules
                 builder.AppendLine(obj.Description);
             }
 
-            builder.AppendLine(
-                string.Format(
-                    "\nAddress: *{0}, {1}*",
-                    obj.District.Value,
-                    obj.Street.Value
-                )
-            );
+            if (obj.District != null)
+            {
+                builder.AppendLine(
+                    string.Format("\n🏢 District: *{0}*", obj.District.Value)
+                );
+            }
+
+            if (obj.Street != null)
+            {
+                builder.AppendLine(
+                    string.Format("\n🏢 Address: *{0}*", obj.Street.Value)
+                );
+            }
 
             if (obj.State != null)
             {
@@ -304,7 +310,7 @@ namespace Masya.TelegramBot.Modules
             if (obj.Rooms.HasValue)
             {
                 builder.AppendLine(
-                    string.Format("\n🚪 Rooms: *{0}", obj.Rooms.Value)
+                    string.Format("\n🚪 Rooms: *{0}*", obj.Rooms.Value)
                 );
             }
 
