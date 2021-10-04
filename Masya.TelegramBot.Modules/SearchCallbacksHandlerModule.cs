@@ -92,6 +92,7 @@ namespace Masya.TelegramBot.Modules
                         .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
 
                     var results = await _dbContext.RealtyObjects
+                        .AsQueryable()
                         .AsSplitQuery()
                         .Include(ro => ro.Images)
                         .Include(ro => ro.Category)
