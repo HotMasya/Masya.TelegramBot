@@ -8,7 +8,6 @@ namespace Masya.TelegramBot.DatabaseExtensions.Abstractions
 {
     public interface IKeyboardGenerator
     {
-        IServiceProvider Services { get; }
         CommandServiceOptions Options { get; }
         IReplyMarkup Menu(Permission userPermission);
         Task<InlineKeyboardMarkup> InlineSearchAsync(string callbackDataType = null, UserSettings userSettings = null);

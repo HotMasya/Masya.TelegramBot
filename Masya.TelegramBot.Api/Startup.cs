@@ -59,7 +59,7 @@ namespace Masya.TelegramBot.Api
             );
             });
             services.AddSingleton<IDatabaseLogsService, DatabaseLogsService>();
-            services.AddSingleton<IKeyboardGenerator, KeyboardGenerator>();
+            services.AddScoped<IKeyboardGenerator, KeyboardGenerator>();
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = Configuration.GetConnectionString("Redis");

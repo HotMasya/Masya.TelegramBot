@@ -29,8 +29,8 @@ namespace Masya.TelegramBot.Modules
         private const string SearchProcessPrefix = "SearchProcess_";
 
         public SearchCallbacksHandlerModule(
-            IKeyboardGenerator keyboards,
             ApplicationDbContext dbContext,
+            IKeyboardGenerator keyboards,
             ILogger<SearchCallbacksHandlerModule> logger,
             IDistributedCache cache
         )
@@ -44,6 +44,7 @@ namespace Masya.TelegramBot.Modules
         private async Task<DataAccess.Models.User> GetUserWithSettings()
         {
             return await _dbContext.Users
+                .AsSplitQuery()
                 .Include(u => u.UserSettings)
                     .ThenInclude(us => us.SelectedCategories)
                 .Include(u => u.UserSettings)

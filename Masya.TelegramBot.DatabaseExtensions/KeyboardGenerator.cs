@@ -9,7 +9,6 @@ using Masya.TelegramBot.DataAccess.Models;
 using Masya.TelegramBot.DataAccess.Types;
 using Masya.TelegramBot.DatabaseExtensions.Abstractions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -17,16 +16,20 @@ namespace Masya.TelegramBot.DatabaseExtensions
 {
     public sealed class KeyboardGenerator : IKeyboardGenerator
     {
-        public IServiceProvider Services { get; }
         public CommandServiceOptions Options { get; }
 
         public const string MaxOperation = "__max__";
         public const string MinOperation = "__min__";
 
-        public KeyboardGenerator(IServiceProvider services, IOptions<CommandServiceOptions> options)
+        private readonly ApplicationDbContext _dbContext;
+
+        public KeyboardGenerator(
+            IOptions<CommandServiceOptions> options,
+            ApplicationDbContext dbContext
+        )
         {
-            Services = services;
             Options = options.Value;
+            _dbContext = dbContext;
         }
 
         private void UpdateButtons(List<List<KeyboardButton>> buttons, ref int currentRowIndex)
@@ -44,9 +47,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
         private async Task<InlineKeyboardMarkup> ChangeCategoriesAsync(IEnumerable<Category> selectedCategories)
         {
-            using var scope = Services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var categories = await dbContext.Categories.ToListAsync();
+            var categories = await _dbContext.Categories.ToListAsync();
             var rows = (int)Math.Ceiling(categories.Count / (double)Options.MaxSearchColumns) + 1;
             var buttons = new List<List<InlineKeyboardButton>>();
             var categoriesIndex = 0;
@@ -80,9 +81,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
         private async Task<InlineKeyboardMarkup> ChangeRoomsAsync(IEnumerable<Room> selectedRooms)
         {
-            using var scope = Services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var rooms = await dbContext.Rooms.ToListAsync();
+            var rooms = await _dbContext.Rooms.ToListAsync();
 
             if (rooms.Count == 0)
             {
@@ -114,9 +113,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
         private async Task<InlineKeyboardMarkup> ChangeSettingByTypeAsync(DirectoryType type, IEnumerable<DirectoryItem> selectedRegions)
         {
-            using var scope = Services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var regions = await dbContext.DirectoryItems
+            var regions = await _dbContext.DirectoryItems
                 .AsQueryable()
                 .Where(di => di.DirectoryId == (int)type)
                 .OrderBy(di => di.Value)
@@ -159,9 +156,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
         private async Task<InlineKeyboardMarkup> ChangePriceAsync(int? selectedMinPrice, int? selectedMaxPrice)
         {
-            using var scope = Services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var prices = await dbContext.Prices.ToListAsync();
+            var prices = await _dbContext.Prices.ToListAsync();
             if (prices.Count == 0)
             {
                 return null;
@@ -208,9 +203,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
         private async Task<InlineKeyboardMarkup> ChangeFloorsAsync(int? selectedMinFloor, int? selectedMaxFloor)
         {
-            using var scope = Services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var floors = await dbContext.Floors.ToListAsync();
+            var floors = await _dbContext.Floors.ToListAsync();
             if (floors.Count == 0)
             {
                 return null;
@@ -294,9 +287,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
         {
             var buttons = new List<List<KeyboardButton>>();
             int currentRowIndex = 0;
-            using var scope = Services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var commands = dbContext.Commands
+            var commands = _dbContext.Commands
                 .AsQueryable()
                 .Where(c => c.ParentCommand == null)
                 .Include(c => c.Aliases)
