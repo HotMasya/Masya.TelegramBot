@@ -221,14 +221,14 @@ namespace Masya.TelegramBot.Modules
                 if (r.Images != null && r.Images.Count > 0)
                 {
                     var photos = new List<InputMediaPhoto>
-                        {
-                            await UrlToTelegramPhotoAsync(
-                                r.Images[0].Url,
-                                r.Images[0].Id.ToString(),
-                                httpClient,
-                                BuildRealtyObjectDescr(r)
-                            )
-                        };
+                    {
+                        await UrlToTelegramPhotoAsync(
+                            r.Images[0].Url,
+                            r.Images[0].Id.ToString(),
+                            httpClient,
+                            BuildRealtyObjectDescr(r)
+                        )
+                    };
 
                     for (int i = 1; i < r.Images.Count; i++)
                     {
@@ -248,9 +248,15 @@ namespace Masya.TelegramBot.Modules
             }
         }
 
-        private static async Task<InputMediaPhoto> UrlToTelegramPhotoAsync(string url, string fileName, HttpClient client, string caption = null)
+        private async Task<InputMediaPhoto> UrlToTelegramPhotoAsync(
+            string url,
+            string fileName,
+            HttpClient client,
+            string caption = null
+        )
         {
             using var fImageStream = await client.GetStreamAsync(url);
+            _logger.LogInformation("fImageStream length: {0}", fImageStream.Length);
             var inputFile = new InputMedia(fImageStream, fileName);
             var inputPhoto = new InputMediaPhoto(inputFile);
             if (!string.IsNullOrEmpty(caption))
