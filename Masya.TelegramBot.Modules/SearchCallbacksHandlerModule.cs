@@ -16,6 +16,7 @@ using System.Net.Http;
 using System.Text;
 using System;
 using Telegram.Bot.Types.ReplyMarkups;
+using System.IO;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -259,8 +260,8 @@ namespace Masya.TelegramBot.Modules
             string caption = null
         )
         {
-            using var fImageStream = await client.GetStreamAsync(new Uri(url));
-            var inputFile = new InputMedia(fImageStream, fileName);
+            var fImageBytes = await client.GetByteArrayAsync(url);
+            var inputFile = new InputMedia(new MemoryStream(fImageBytes), fileName);
             var inputPhoto = new InputMediaPhoto(inputFile);
             if (!string.IsNullOrEmpty(caption))
             {
