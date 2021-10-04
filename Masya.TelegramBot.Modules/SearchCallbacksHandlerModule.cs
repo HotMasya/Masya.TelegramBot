@@ -93,7 +93,6 @@ namespace Masya.TelegramBot.Modules
 
                     var results = await _dbContext.RealtyObjects
                         .AsQueryable()
-                        .AsSplitQuery()
                         .Include(ro => ro.Images)
                         .Include(ro => ro.Category)
                         .Include(ro => ro.District)
