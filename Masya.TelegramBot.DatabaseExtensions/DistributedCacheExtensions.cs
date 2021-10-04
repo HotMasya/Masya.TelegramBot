@@ -31,7 +31,7 @@ namespace Microsoft.Extensions.Caching.Distributed
 
             if (jsondata is null)
             {
-                return default(T);
+                return default;
             }
 
             return JsonSerializer.Deserialize<T>(jsondata);

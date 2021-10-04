@@ -80,32 +80,66 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.ExecuteSearch)]
         public async Task HandleExecuteSearchAsync()
         {
-            string cacheKey = SearchProcessPrefix + Context.User.Id;
-            int objLimit = Context.CommandService.Options.ObjectsSentLimit;
-            var searchProcess = await _cache.GetRecordAsync<SearchProcess>(cacheKey);
-
-            if (searchProcess == null)
+            try
             {
-                var results = await SearchRealtyObjectsAsync();
+                string cacheKey = SearchProcessPrefix + Context.User.Id;
+                int objLimit = Context.CommandService.Options.ObjectsSentLimit;
+                var searchProcess = await _cache.GetRecordAsync<SearchProcess>(cacheKey);
 
-                if (results.Count == 0)
+                if (searchProcess == null)
                 {
+                    var results = await SearchRealtyObjectsAsync();
+
+                    if (results.Count == 0)
+                    {
+                        await ReplyAsync(
+                            "No result were found for your search.\n*Configure search settings:* /search",
+                            ParseMode.Markdown
+                        );
+                        return;
+                    }
+
+                    if (results.Count > objLimit)
+                    {
+                        searchProcess = new SearchProcess
+                        {
+                            TelegramId = Context.User.Id,
+                            RealtyObjects = results,
+                            ItemsSentCount = objLimit,
+                        };
+
+                        await _cache.SetRecordAsync(
+                            cacheKey,
+                            searchProcess,
+                            TimeSpan.FromMinutes(10),
+                            TimeSpan.FromMinutes(3)
+                        );
+
+                        await SendResultsAsync(results.Take(searchProcess.ItemsSentCount).ToList());
+                        await ReplyAsync(
+                            content: string.Format("Sent *{0} of {1}* results.", searchProcess.ItemsSentCount, searchProcess.RealtyObjects.Count()),
+                            replyMarkup: new InlineKeyboardMarkup(
+                                InlineKeyboardButton.WithCallbackData("🔍See more", CallbackDataTypes.ExecuteSearch)
+                            ),
+                            parseMode: ParseMode.Markdown
+                        );
+                        return;
+                    }
+
+                    await SendResultsAsync(results.Take(objLimit).ToList());
                     await ReplyAsync(
-                        "No result were found for your search.\n*Configure search settings:* /search",
+                        "There are no more results with such search settings.\n*Configure search settings:* /search",
                         ParseMode.Markdown
                     );
                     return;
                 }
 
-                if (results.Count > objLimit)
+                if (searchProcess.RealtyObjects.Count() > searchProcess.ItemsSentCount + objLimit)
                 {
-                    searchProcess = new SearchProcess
-                    {
-                        TelegramId = Context.User.Id,
-                        RealtyObjects = results,
-                        ItemsSentCount = objLimit,
-                    };
+                    await _cache.RemoveAsync(cacheKey);
 
+                    searchProcess.ItemsSentCount += objLimit;
+                    searchProcess.RealtyObjects = searchProcess.RealtyObjects.Skip(objLimit);
                     await _cache.SetRecordAsync(
                         cacheKey,
                         searchProcess,
@@ -113,7 +147,12 @@ namespace Masya.TelegramBot.Modules
                         TimeSpan.FromMinutes(3)
                     );
 
-                    await SendResultsAsync(results.Take(searchProcess.ItemsSentCount).ToList());
+                    await SendResultsAsync(
+                        searchProcess.RealtyObjects
+                            .Take(searchProcess.ItemsSentCount)
+                            .ToList()
+                    );
+
                     await ReplyAsync(
                         content: string.Format("Sent *{0} of {1}* results.", searchProcess.ItemsSentCount, searchProcess.RealtyObjects.Count()),
                         replyMarkup: new InlineKeyboardMarkup(
@@ -124,57 +163,25 @@ namespace Masya.TelegramBot.Modules
                     return;
                 }
 
-                await SendResultsAsync(results.Take(objLimit).ToList());
-                await ReplyAsync(
-                    "There are no more results with such search settings.\n*Configure search settings:* /search",
-                    ParseMode.Markdown
-                );
-                return;
+                if (searchProcess.RealtyObjects.Count() <= searchProcess.ItemsSentCount + objLimit)
+                {
+                    await _cache.RemoveAsync(cacheKey);
+                    await SendResultsAsync(
+                        searchProcess.RealtyObjects
+                            .Skip(searchProcess.ItemsSentCount)
+                            .Take(objLimit)
+                            .ToList()
+                    );
+                    await ReplyAsync(
+                        "There are no more results with such search settings.\n*Configure search settings:* /search",
+                        ParseMode.Markdown
+                    );
+                    return;
+                }
             }
-
-            if (searchProcess.RealtyObjects.Count() > searchProcess.ItemsSentCount + objLimit)
+            catch (Exception e)
             {
-                await _cache.RemoveAsync(cacheKey);
-
-                searchProcess.ItemsSentCount += objLimit;
-                searchProcess.RealtyObjects = searchProcess.RealtyObjects.Skip(objLimit);
-                await _cache.SetRecordAsync(
-                    cacheKey,
-                    searchProcess,
-                    TimeSpan.FromMinutes(10),
-                    TimeSpan.FromMinutes(3)
-                );
-
-                await SendResultsAsync(
-                    searchProcess.RealtyObjects
-                        .Take(searchProcess.ItemsSentCount)
-                        .ToList()
-                );
-
-                await ReplyAsync(
-                    content: string.Format("Sent *{0} of {1}* results.", searchProcess.ItemsSentCount, searchProcess.RealtyObjects.Count()),
-                    replyMarkup: new InlineKeyboardMarkup(
-                        InlineKeyboardButton.WithCallbackData("🔍See more", CallbackDataTypes.ExecuteSearch)
-                    ),
-                    parseMode: ParseMode.Markdown
-                );
-                return;
-            }
-
-            if (searchProcess.RealtyObjects.Count() <= searchProcess.ItemsSentCount + objLimit)
-            {
-                await _cache.RemoveAsync(cacheKey);
-                await SendResultsAsync(
-                    searchProcess.RealtyObjects
-                        .Skip(searchProcess.ItemsSentCount)
-                        .Take(objLimit)
-                        .ToList()
-                );
-                await ReplyAsync(
-                    "There are no more results with such search settings.\n*Configure search settings:* /search",
-                    ParseMode.Markdown
-                );
-                return;
+                _logger.LogError(e.ToString());
             }
         }
 
