@@ -8,6 +8,8 @@ namespace Masya.TelegramBot.DataAccess.Models
         [Key]
         public long Id { get; set; }
 
+        public User User { get; set; }
+
         public int? MinPrice { get; set; }
 
         public int? MaxPrice { get; set; }

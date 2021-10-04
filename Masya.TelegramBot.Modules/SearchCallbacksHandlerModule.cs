@@ -44,250 +44,248 @@ namespace Masya.TelegramBot.Modules
         [Command("/search")]
         public async Task SearchAsync()
         {
-            var user = await _dbContext.Users
-                .AsSplitQuery()
+            var userSettings = await _dbContext.UserSettings
                 .AsQueryable()
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.SelectedCategories)
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.SelectedRegions)
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.Rooms)
-                .FirstOrDefaultAsync(u => u.TelegramAccountId == Context.User.Id);
+                .Include(us => us.SelectedCategories)
+                .Include(us => us.SelectedRegions)
+                .Include(us => us.Rooms)
+                .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
 
-            if (user == null)
+            if (userSettings == null)
             {
-                return;
-            }
+                var user = await _dbContext.Users.FirstOrDefaultAsync(us => us.TelegramAccountId == Context.User.Id);
+                if (user == null)
+                {
+                    return;
+                }
 
-            if (user.UserSettings == null)
-            {
-                user.UserSettings = new UserSettings();
+                userSettings = new UserSettings();
+                user.UserSettings = userSettings;
                 await _dbContext.SaveChangesAsync();
             }
 
             await ReplyAsync(
-                content: MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings),
+                content: MessageGenerators.GenerateSearchSettingsMessage(userSettings),
                 parseMode: ParseMode.Markdown,
                 replyMarkup: await _keyboards.InlineSearchAsync(CallbackDataTypes.MainMenu)
             );
         }
 
-        [Callback(CallbackDataTypes.ExecuteSearch)]
-        public async Task HandleExecuteSearchAsync()
-        {
-            try
-            {
-                string cacheKey = SearchProcessPrefix + Context.User.Id;
-                int objLimit = Context.CommandService.Options.ObjectsSentLimit;
-                var searchProcess = await _cache.GetRecordAsync<SearchProcess>(cacheKey);
+        // [Callback(CallbackDataTypes.ExecuteSearch)]
+        // public async Task HandleExecuteSearchAsync()
+        // {
+        //     try
+        //     {
+        //         string cacheKey = SearchProcessPrefix + Context.User.Id;
+        //         int objLimit = Context.CommandService.Options.ObjectsSentLimit;
+        //         var searchProcess = await _cache.GetRecordAsync<SearchProcess>(cacheKey);
 
-                if (searchProcess == null)
-                {
-                    var user = await _dbContext.Users
-                        .AsSplitQuery()
-                        .AsQueryable()
-                        .Include(u => u.UserSettings)
-                            .ThenInclude(us => us.SelectedCategories)
-                        .Include(u => u.UserSettings)
-                            .ThenInclude(us => us.SelectedRegions)
-                        .Include(u => u.UserSettings)
-                            .ThenInclude(us => us.Rooms)
-                        .FirstOrDefaultAsync(u => u.TelegramAccountId == Context.User.Id);
-                    var userSettings = user.UserSettings;
+        //         if (searchProcess == null)
+        //         {
+        //             var user = await _dbContext.Users
+        //                 .AsSplitQuery()
+        //                 .AsQueryable()
+        //                 .Include(u => u.UserSettings)
+        //                     .ThenInclude(us => us.SelectedCategories)
+        //                 .Include(u => u.UserSettings)
+        //                     .ThenInclude(us => us.SelectedRegions)
+        //                 .Include(u => u.UserSettings)
+        //                     .ThenInclude(us => us.Rooms)
+        //                 .FirstOrDefaultAsync(u => u.TelegramAccountId == Context.User.Id);
+        //             var userSettings = user.UserSettings;
 
-                    var results = await _dbContext.RealtyObjects
-                        .AsQueryable()
-                            .Include(ro => ro.Images)
-                            .Include(ro => ro.Category)
-                            .Include(ro => ro.District)
-                            .Include(ro => ro.WallMaterial)
-                            .Include(ro => ro.State)
-                            .Include(ro => ro.Street)
-                        .Where(
-                            ro => userSettings.SelectedCategories.Any(sc => sc.Id == ro.CategoryId)
-                            && userSettings.SelectedRegions.Any(sr => sr.Id == ro.DistrictId)
-                            && (
-                                !userSettings.MinPrice.HasValue
-                                || ro.Price >= userSettings.MinPrice.Value
-                            )
-                            && (
-                                !userSettings.MaxPrice.HasValue
-                                || ro.Price <= userSettings.MaxPrice.Value
-                            )
-                            && (
-                                !userSettings.MinFloor.HasValue
-                                || ro.Floor >= userSettings.MinFloor.Value
-                            )
-                            && (
-                                !userSettings.MaxFloor.HasValue
-                                || ro.Floor <= userSettings.MaxFloor.Value
-                            )
-                            && userSettings.Rooms.Any(r => r.RoomsCount == ro.Floor)
-                        )
-                        .ToListAsync();
+        //             var results = await _dbContext.RealtyObjects
+        //                 .AsQueryable()
+        //                     .Include(ro => ro.Images)
+        //                     .Include(ro => ro.Category)
+        //                     .Include(ro => ro.District)
+        //                     .Include(ro => ro.WallMaterial)
+        //                     .Include(ro => ro.State)
+        //                     .Include(ro => ro.Street)
+        //                 .Where(
+        //                     ro => userSettings.SelectedCategories.Any(sc => sc.Id == ro.CategoryId)
+        //                     && userSettings.SelectedRegions.Any(sr => sr.Id == ro.DistrictId)
+        //                     && (
+        //                         !userSettings.MinPrice.HasValue
+        //                         || ro.Price >= userSettings.MinPrice.Value
+        //                     )
+        //                     && (
+        //                         !userSettings.MaxPrice.HasValue
+        //                         || ro.Price <= userSettings.MaxPrice.Value
+        //                     )
+        //                     && (
+        //                         !userSettings.MinFloor.HasValue
+        //                         || ro.Floor >= userSettings.MinFloor.Value
+        //                     )
+        //                     && (
+        //                         !userSettings.MaxFloor.HasValue
+        //                         || ro.Floor <= userSettings.MaxFloor.Value
+        //                     )
+        //                     && userSettings.Rooms.Any(r => r.RoomsCount == ro.Floor)
+        //                 )
+        //                 .ToListAsync();
 
-                    if (results.Count == 0)
-                    {
-                        await ReplyAsync(
-                            "No result were found for your search.\n*Configure search settings:* /search",
-                            ParseMode.Markdown
-                        );
-                        return;
-                    }
+        //             if (results.Count == 0)
+        //             {
+        //                 await ReplyAsync(
+        //                     "No result were found for your search.\n*Configure search settings:* /search",
+        //                     ParseMode.Markdown
+        //                 );
+        //                 return;
+        //             }
 
-                    if (results.Count > objLimit)
-                    {
-                        searchProcess = new SearchProcess
-                        {
-                            TelegramId = Context.User.Id,
-                            RealtyObjects = results,
-                            ItemsSentCount = objLimit,
-                        };
+        //             if (results.Count > objLimit)
+        //             {
+        //                 searchProcess = new SearchProcess
+        //                 {
+        //                     TelegramId = Context.User.Id,
+        //                     RealtyObjects = results,
+        //                     ItemsSentCount = objLimit,
+        //                 };
 
-                        await _cache.SetRecordAsync(
-                            cacheKey,
-                            searchProcess,
-                            TimeSpan.FromMinutes(10),
-                            TimeSpan.FromMinutes(3)
-                        );
+        //                 await _cache.SetRecordAsync(
+        //                     cacheKey,
+        //                     searchProcess,
+        //                     TimeSpan.FromMinutes(10),
+        //                     TimeSpan.FromMinutes(3)
+        //                 );
 
-                        await SendResultsAsync(results.Take(searchProcess.ItemsSentCount).ToList());
-                        await ReplyAsync(
-                            content: string.Format("Sent *{0} of {1}* results.", searchProcess.ItemsSentCount, searchProcess.RealtyObjects.Count()),
-                            replyMarkup: new InlineKeyboardMarkup(
-                                InlineKeyboardButton.WithCallbackData("🔍See more", CallbackDataTypes.ExecuteSearch)
-                            ),
-                            parseMode: ParseMode.Markdown
-                        );
-                        return;
-                    }
+        //                 await SendResultsAsync(results.Take(searchProcess.ItemsSentCount).ToList());
+        //                 await ReplyAsync(
+        //                     content: string.Format("Sent *{0} of {1}* results.", searchProcess.ItemsSentCount, searchProcess.RealtyObjects.Count()),
+        //                     replyMarkup: new InlineKeyboardMarkup(
+        //                         InlineKeyboardButton.WithCallbackData("🔍See more", CallbackDataTypes.ExecuteSearch)
+        //                     ),
+        //                     parseMode: ParseMode.Markdown
+        //                 );
+        //                 return;
+        //             }
 
-                    await SendResultsAsync(results.Take(objLimit).ToList());
-                    await ReplyAsync(
-                        "There are no more results with such search settings.\n*Configure search settings:* /search",
-                        ParseMode.Markdown
-                    );
-                    return;
-                }
+        //             await SendResultsAsync(results.Take(objLimit).ToList());
+        //             await ReplyAsync(
+        //                 "There are no more results with such search settings.\n*Configure search settings:* /search",
+        //                 ParseMode.Markdown
+        //             );
+        //             return;
+        //         }
 
-                if (searchProcess.RealtyObjects.Count() > searchProcess.ItemsSentCount + objLimit)
-                {
-                    await _cache.RemoveAsync(cacheKey);
+        //         if (searchProcess.RealtyObjects.Count() > searchProcess.ItemsSentCount + objLimit)
+        //         {
+        //             await _cache.RemoveAsync(cacheKey);
 
-                    searchProcess.ItemsSentCount += objLimit;
-                    searchProcess.RealtyObjects = searchProcess.RealtyObjects.Skip(objLimit);
-                    await _cache.SetRecordAsync(
-                        cacheKey,
-                        searchProcess,
-                        TimeSpan.FromMinutes(10),
-                        TimeSpan.FromMinutes(3)
-                    );
+        //             searchProcess.ItemsSentCount += objLimit;
+        //             searchProcess.RealtyObjects = searchProcess.RealtyObjects.Skip(objLimit);
+        //             await _cache.SetRecordAsync(
+        //                 cacheKey,
+        //                 searchProcess,
+        //                 TimeSpan.FromMinutes(10),
+        //                 TimeSpan.FromMinutes(3)
+        //             );
 
-                    await SendResultsAsync(
-                        searchProcess.RealtyObjects
-                            .Take(searchProcess.ItemsSentCount)
-                            .ToList()
-                    );
+        //             await SendResultsAsync(
+        //                 searchProcess.RealtyObjects
+        //                     .Take(searchProcess.ItemsSentCount)
+        //                     .ToList()
+        //             );
 
-                    await ReplyAsync(
-                        content: string.Format("Sent *{0} of {1}* results.", searchProcess.ItemsSentCount, searchProcess.RealtyObjects.Count()),
-                        replyMarkup: new InlineKeyboardMarkup(
-                            InlineKeyboardButton.WithCallbackData("🔍See more", CallbackDataTypes.ExecuteSearch)
-                        ),
-                        parseMode: ParseMode.Markdown
-                    );
-                    return;
-                }
+        //             await ReplyAsync(
+        //                 content: string.Format("Sent *{0} of {1}* results.", searchProcess.ItemsSentCount, searchProcess.RealtyObjects.Count()),
+        //                 replyMarkup: new InlineKeyboardMarkup(
+        //                     InlineKeyboardButton.WithCallbackData("🔍See more", CallbackDataTypes.ExecuteSearch)
+        //                 ),
+        //                 parseMode: ParseMode.Markdown
+        //             );
+        //             return;
+        //         }
 
-                if (searchProcess.RealtyObjects.Count() <= searchProcess.ItemsSentCount + objLimit)
-                {
-                    await _cache.RemoveAsync(cacheKey);
-                    await SendResultsAsync(
-                        searchProcess.RealtyObjects
-                            .Skip(searchProcess.ItemsSentCount)
-                            .Take(objLimit)
-                            .ToList()
-                    );
-                    await ReplyAsync(
-                        "There are no more results with such search settings.\n*Configure search settings:* /search",
-                        ParseMode.Markdown
-                    );
-                    return;
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.ToString());
-            }
-        }
+        //         if (searchProcess.RealtyObjects.Count() <= searchProcess.ItemsSentCount + objLimit)
+        //         {
+        //             await _cache.RemoveAsync(cacheKey);
+        //             await SendResultsAsync(
+        //                 searchProcess.RealtyObjects
+        //                     .Skip(searchProcess.ItemsSentCount)
+        //                     .Take(objLimit)
+        //                     .ToList()
+        //             );
+        //             await ReplyAsync(
+        //                 "There are no more results with such search settings.\n*Configure search settings:* /search",
+        //                 ParseMode.Markdown
+        //             );
+        //             return;
+        //         }
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         _logger.LogError(e.ToString());
+        //     }
+        // }
 
-        private async Task SendResultsAsync(List<RealtyObject> results)
-        {
-            using var httpClient = new HttpClient();
+        // private async Task SendResultsAsync(List<RealtyObject> results)
+        // {
+        //     using var httpClient = new HttpClient();
 
-            foreach (var r in results)
-            {
-                if (r.Images != null && r.Images.Count > 0)
-                {
-                    var photos = new List<InputMediaPhoto>
-                        {
-                            await UrlToTelegramPhotoAsync(
-                                r.Images[0].Url,
-                                r.Images[0].Id.ToString(),
-                                httpClient,
-                                BuildRealtyObjectDescr(r)
-                            )
-                        };
+        //     foreach (var r in results)
+        //     {
+        //         if (r.Images != null && r.Images.Count > 0)
+        //         {
+        //             var photos = new List<InputMediaPhoto>
+        //                 {
+        //                     await UrlToTelegramPhotoAsync(
+        //                         r.Images[0].Url,
+        //                         r.Images[0].Id.ToString(),
+        //                         httpClient,
+        //                         BuildRealtyObjectDescr(r)
+        //                     )
+        //                 };
 
-                    for (int i = 1; i < r.Images.Count; i++)
-                    {
-                        photos.Add(
-                            await UrlToTelegramPhotoAsync(
-                                r.Images[i].Url,
-                                r.Images[i].Id.ToString(),
-                                httpClient
-                            )
-                        );
-                    }
+        //             for (int i = 1; i < r.Images.Count; i++)
+        //             {
+        //                 photos.Add(
+        //                     await UrlToTelegramPhotoAsync(
+        //                         r.Images[i].Url,
+        //                         r.Images[i].Id.ToString(),
+        //                         httpClient
+        //                     )
+        //                 );
+        //             }
 
-                    await Context.BotService.Client.SendMediaGroupAsync(Context.Chat.Id, photos, true);
-                }
+        //             await Context.BotService.Client.SendMediaGroupAsync(Context.Chat.Id, photos, true);
+        //         }
 
-                await ReplyAsync(BuildRealtyObjectDescr(r));
-            }
-        }
+        //         await ReplyAsync(BuildRealtyObjectDescr(r));
+        //     }
+        // }
 
-        private static async Task<InputMediaPhoto> UrlToTelegramPhotoAsync(string url, string fileName, HttpClient client, string caption = null)
-        {
-            using var fImageStream = await client.GetStreamAsync(url);
-            var inputFile = new InputMedia(fImageStream, fileName);
-            var inputPhoto = new InputMediaPhoto(inputFile);
-            if (!string.IsNullOrEmpty(caption))
-            {
-                inputPhoto.Caption = caption;
-            }
+        // private static async Task<InputMediaPhoto> UrlToTelegramPhotoAsync(string url, string fileName, HttpClient client, string caption = null)
+        // {
+        //     using var fImageStream = await client.GetStreamAsync(url);
+        //     var inputFile = new InputMedia(fImageStream, fileName);
+        //     var inputPhoto = new InputMediaPhoto(inputFile);
+        //     if (!string.IsNullOrEmpty(caption))
+        //     {
+        //         inputPhoto.Caption = caption;
+        //     }
 
-            return inputPhoto;
-        }
+        //     return inputPhoto;
+        // }
 
-        private static string BuildRealtyObjectDescr(RealtyObject obj)
-        {
-            var builder = new StringBuilder();
-            if (!string.IsNullOrEmpty(obj.Description))
-            {
-                builder.AppendLine(obj.Description);
-            }
+        // private static string BuildRealtyObjectDescr(RealtyObject obj)
+        // {
+        //     var builder = new StringBuilder();
+        //     if (!string.IsNullOrEmpty(obj.Description))
+        //     {
+        //         builder.AppendLine(obj.Description);
+        //     }
 
-            if (!string.IsNullOrEmpty(obj.Phone))
-            {
-                builder.AppendLine(
-                    string.Format("Contact(s): *{0}*", obj.Phone)
-                );
-            }
+        //     if (!string.IsNullOrEmpty(obj.Phone))
+        //     {
+        //         builder.AppendLine(
+        //             string.Format("Contact(s): *{0}*", obj.Phone)
+        //         );
+        //     }
 
-            return builder.ToString();
-        }
+        //     return builder.ToString();
+        // }
 
         [Callback(CallbackDataTypes.ChangeSettings)]
         public async Task HandleChangeSettingsAsync()
@@ -308,35 +306,37 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.UpdateRooms)]
         public async Task HandleChangeRoomsAsync(int selectedRoomsId = -1)
         {
-            var user = await _dbContext.Users
-                .AsSplitQuery()
+            var userSettings = await _dbContext.UserSettings
                 .AsQueryable()
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.SelectedCategories)
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.SelectedRegions)
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.Rooms)
-                .FirstOrDefaultAsync(u => u.TelegramAccountId == Context.User.Id);
+                .Include(us => us.SelectedCategories)
+                .Include(us => us.SelectedRegions)
+                .Include(us => us.Rooms)
+                .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
+
+            if (userSettings == null)
+            {
+                return;
+            }
+
             if (selectedRoomsId != -1)
             {
-                var selectedRooms = user.UserSettings.Rooms.FirstOrDefault(c => c.Id == selectedRoomsId);
+                var selectedRooms = userSettings.Rooms.FirstOrDefault(c => c.Id == selectedRoomsId);
 
                 if (selectedRooms == null)
                 {
-                    user.UserSettings.Rooms.Add(
+                    userSettings.Rooms.Add(
                         _dbContext.Rooms.First(c => c.Id == selectedRoomsId)
                     );
                 }
                 else
                 {
-                    user.UserSettings.Rooms.Remove(selectedRooms);
+                    userSettings.Rooms.Remove(selectedRooms);
                 }
                 await _dbContext.SaveChangesAsync();
             }
 
             var rooms = await _keyboards.InlineSearchAsync(
-                CallbackDataTypes.UpdateRooms, user.UserSettings
+                CallbackDataTypes.UpdateRooms, userSettings
             );
 
             if (!rooms.InlineKeyboard.Any())
@@ -349,7 +349,7 @@ namespace Masya.TelegramBot.Modules
             }
 
             await EditMessageAsync(
-                text: selectedRoomsId != -1 ? MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings) : null,
+                text: selectedRoomsId != -1 ? MessageGenerators.GenerateSearchSettingsMessage(userSettings) : null,
                 replyMarkup: rooms,
                 parseMode: ParseMode.Markdown
             );
@@ -358,27 +358,28 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.UpdatePrice)]
         public async Task HandleUpdatePriceAsync(string type = null, int selectedValue = -1)
         {
-            var user = await _dbContext.Users
-                .AsSplitQuery()
+            var userSettings = await _dbContext.UserSettings
                 .AsQueryable()
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.SelectedCategories)
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.SelectedRegions)
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.Rooms)
-                .FirstOrDefaultAsync(u => u.TelegramAccountId == Context.User.Id);
+                .Include(us => us.SelectedCategories)
+                .Include(us => us.SelectedRegions)
+                .Include(us => us.Rooms)
+                .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
+
+            if (userSettings == null)
+            {
+                return;
+            }
 
             if (selectedValue != -1 && !string.IsNullOrEmpty(type))
             {
                 switch (type)
                 {
                     case KeyboardGenerator.MaxOperation:
-                        user.UserSettings.MaxPrice = user.UserSettings.MaxPrice == selectedValue ? null : selectedValue;
+                        userSettings.MaxPrice = userSettings.MaxPrice == selectedValue ? null : selectedValue;
                         break;
 
                     case KeyboardGenerator.MinOperation:
-                        user.UserSettings.MinPrice = user.UserSettings.MinPrice == selectedValue ? null : selectedValue;
+                        userSettings.MinPrice = userSettings.MinPrice == selectedValue ? null : selectedValue;
                         break;
 
                     default:
@@ -387,7 +388,7 @@ namespace Masya.TelegramBot.Modules
                 await _dbContext.SaveChangesAsync();
             }
 
-            var prices = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdatePrice, user.UserSettings);
+            var prices = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdatePrice, userSettings);
 
             if (!prices.InlineKeyboard.Any())
             {
@@ -399,7 +400,7 @@ namespace Masya.TelegramBot.Modules
             }
 
             await EditMessageAsync(
-                text: !string.IsNullOrEmpty(type) && selectedValue != -1 ? MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings) : null,
+                text: !string.IsNullOrEmpty(type) && selectedValue != -1 ? MessageGenerators.GenerateSearchSettingsMessage(userSettings) : null,
                 replyMarkup: prices,
                 parseMode: ParseMode.Markdown
             );
@@ -408,27 +409,29 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.UpdateFloors)]
         public async Task HandleUpdateFloorsAsync(string type = null, int selectedValue = -1)
         {
-            var user = await _dbContext.Users
-                .AsSplitQuery()
+            var userSettings = await _dbContext.UserSettings
                 .AsQueryable()
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.SelectedCategories)
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.SelectedRegions)
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.Rooms)
-                .FirstOrDefaultAsync(u => u.TelegramAccountId == Context.User.Id);
+                .Include(us => us.SelectedCategories)
+                .Include(us => us.SelectedRegions)
+                .Include(us => us.Rooms)
+                .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
+
+            if (userSettings == null)
+            {
+                return;
+            }
+
 
             if (selectedValue != -1 && !string.IsNullOrEmpty(type))
             {
                 switch (type)
                 {
                     case KeyboardGenerator.MaxOperation:
-                        user.UserSettings.MaxFloor = user.UserSettings.MaxFloor == selectedValue ? null : selectedValue;
+                        userSettings.MaxFloor = userSettings.MaxFloor == selectedValue ? null : selectedValue;
                         break;
 
                     case KeyboardGenerator.MinOperation:
-                        user.UserSettings.MinFloor = user.UserSettings.MinFloor == selectedValue ? null : selectedValue;
+                        userSettings.MinFloor = userSettings.MinFloor == selectedValue ? null : selectedValue;
                         break;
 
                     default: break;
@@ -437,7 +440,7 @@ namespace Masya.TelegramBot.Modules
                 await _dbContext.SaveChangesAsync();
             }
 
-            var floors = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdateFloors, user.UserSettings);
+            var floors = await _keyboards.InlineSearchAsync(CallbackDataTypes.UpdateFloors, userSettings);
 
             if (!floors.InlineKeyboard.Any())
             {
@@ -449,7 +452,7 @@ namespace Masya.TelegramBot.Modules
             }
 
             await EditMessageAsync(
-                text: !string.IsNullOrEmpty(type) && selectedValue != -1 ? MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings) : null,
+                text: !string.IsNullOrEmpty(type) && selectedValue != -1 ? MessageGenerators.GenerateSearchSettingsMessage(userSettings) : null,
                 replyMarkup: floors,
                 parseMode: ParseMode.Markdown
             );
@@ -458,41 +461,37 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.UpdateCategories)]
         public async Task HandleUpdateCategoriesAsync(int categoryId = -1)
         {
-            var user = await _dbContext.Users
-                .AsSplitQuery()
+            var userSettings = await _dbContext.UserSettings
                 .AsQueryable()
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.SelectedCategories)
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.SelectedRegions)
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.Rooms)
-                .FirstOrDefaultAsync(u => u.TelegramAccountId == Context.User.Id);
+                .Include(us => us.SelectedCategories)
+                .Include(us => us.SelectedRegions)
+                .Include(us => us.Rooms)
+                .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
 
-            if (user == null)
+            if (userSettings == null)
             {
                 return;
             }
 
             if (categoryId != -1)
             {
-                var selectedCategory = user.UserSettings.SelectedCategories.FirstOrDefault(c => c.Id == categoryId);
+                var selectedCategory = userSettings.SelectedCategories.FirstOrDefault(c => c.Id == categoryId);
 
                 if (selectedCategory == null)
                 {
-                    user.UserSettings.SelectedCategories.Add(
+                    userSettings.SelectedCategories.Add(
                         _dbContext.Categories.First(c => c.Id == categoryId)
                     );
                 }
                 else
                 {
-                    user.UserSettings.SelectedCategories.Remove(selectedCategory);
+                    userSettings.SelectedCategories.Remove(selectedCategory);
                 }
                 await _dbContext.SaveChangesAsync();
             }
 
             var categories = await _keyboards.InlineSearchAsync(
-                CallbackDataTypes.UpdateCategories, user.UserSettings
+                CallbackDataTypes.UpdateCategories, userSettings
             );
 
             if (!categories.InlineKeyboard.Any())
@@ -505,7 +504,7 @@ namespace Masya.TelegramBot.Modules
             }
 
             await EditMessageAsync(
-                text: categoryId != -1 ? MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings) : null,
+                text: categoryId != -1 ? MessageGenerators.GenerateSearchSettingsMessage(userSettings) : null,
                 replyMarkup: categories,
                 parseMode: ParseMode.Markdown
             );
@@ -514,41 +513,37 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.UpdateRegions)]
         public async Task HandleUpdateRegionsAsync(int regionId = -1)
         {
-            var user = await _dbContext.Users
-                .AsSplitQuery()
+            var userSettings = await _dbContext.UserSettings
                 .AsQueryable()
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.SelectedCategories)
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.SelectedRegions)
-                .Include(u => u.UserSettings)
-                    .ThenInclude(us => us.Rooms)
-                .FirstOrDefaultAsync(u => u.TelegramAccountId == Context.User.Id);
+                .Include(us => us.SelectedCategories)
+                .Include(us => us.SelectedRegions)
+                .Include(us => us.Rooms)
+                .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
 
-            if (user == null)
+            if (userSettings == null)
             {
                 return;
             }
 
             if (regionId != -1)
             {
-                var selectedRegion = user.UserSettings.SelectedRegions.FirstOrDefault(c => c.Id == regionId);
+                var selectedRegion = userSettings.SelectedRegions.FirstOrDefault(c => c.Id == regionId);
 
                 if (selectedRegion == null)
                 {
-                    user.UserSettings.SelectedRegions.Add(
+                    userSettings.SelectedRegions.Add(
                         _dbContext.DirectoryItems.First(c => c.Id == regionId)
                     );
                 }
                 else
                 {
-                    user.UserSettings.SelectedRegions.Remove(selectedRegion);
+                    userSettings.SelectedRegions.Remove(selectedRegion);
                 }
                 await _dbContext.SaveChangesAsync();
             }
 
             var regions = await _keyboards.InlineSearchAsync(
-                CallbackDataTypes.UpdateRegions, user.UserSettings
+                CallbackDataTypes.UpdateRegions, userSettings
             );
 
             if (!regions.InlineKeyboard.Any())
@@ -561,7 +556,7 @@ namespace Masya.TelegramBot.Modules
             }
 
             await EditMessageAsync(
-                text: regionId != -1 ? MessageGenerators.GenerateSearchSettingsMessage(user.UserSettings) : null,
+                text: regionId != -1 ? MessageGenerators.GenerateSearchSettingsMessage(userSettings) : null,
                 replyMarkup: regions,
                 parseMode: ParseMode.Markdown
             );
