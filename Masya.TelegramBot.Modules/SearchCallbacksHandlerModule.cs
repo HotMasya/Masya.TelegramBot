@@ -44,32 +44,35 @@ namespace Masya.TelegramBot.Modules
         [Command("/search")]
         public async Task SearchAsync()
         {
-            var userSettings = await _dbContext.UserSettings
-                .AsSplitQuery()
-                .Include(us => us.SelectedCategories)
-                .Include(us => us.SelectedRegions)
-                .Include(us => us.Rooms)
-                .Select(us => us)
-                .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
-
-            if (userSettings == null)
+            using (_dbContext)
             {
-                var user = await _dbContext.Users.FirstOrDefaultAsync(us => us.TelegramAccountId == Context.User.Id);
-                if (user == null)
+                var userSettings = await _dbContext.UserSettings
+                    .AsSplitQuery()
+                    .Include(us => us.SelectedCategories)
+                    .Include(us => us.SelectedRegions)
+                    .Include(us => us.Rooms)
+                    .Select(us => us)
+                    .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
+
+                if (userSettings == null)
                 {
-                    return;
+                    var user = await _dbContext.Users.FirstOrDefaultAsync(us => us.TelegramAccountId == Context.User.Id);
+                    if (user == null)
+                    {
+                        return;
+                    }
+
+                    userSettings = new UserSettings();
+                    user.UserSettings = userSettings;
+                    await _dbContext.SaveChangesAsync();
                 }
 
-                userSettings = new UserSettings();
-                user.UserSettings = userSettings;
-                await _dbContext.SaveChangesAsync();
+                await ReplyAsync(
+                    content: MessageGenerators.GenerateSearchSettingsMessage(userSettings),
+                    parseMode: ParseMode.Markdown,
+                    replyMarkup: await _keyboards.InlineSearchAsync(CallbackDataTypes.MainMenu)
+                );
             }
-
-            await ReplyAsync(
-                content: MessageGenerators.GenerateSearchSettingsMessage(userSettings),
-                parseMode: ParseMode.Markdown,
-                replyMarkup: await _keyboards.InlineSearchAsync(CallbackDataTypes.MainMenu)
-            );
         }
 
         // [Callback(CallbackDataTypes.ExecuteSearch)]
