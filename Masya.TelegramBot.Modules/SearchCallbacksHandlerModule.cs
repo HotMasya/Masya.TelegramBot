@@ -12,9 +12,11 @@ using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
 using System;
 using Telegram.Bot.Types.ReplyMarkups;
+using System.IO;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -23,18 +25,21 @@ namespace Masya.TelegramBot.Modules
         private readonly IKeyboardGenerator _keyboards;
         private readonly ApplicationDbContext _dbContext;
         private readonly IDistributedCache _cache;
+        private readonly ILogger<SearchCallbacksHandlerModule> _logger;
 
         private const string SearchProcessPrefix = "SearchProcess_";
 
         public SearchCallbacksHandlerModule(
             ApplicationDbContext dbContext,
             IKeyboardGenerator keyboards,
+            ILogger<SearchCallbacksHandlerModule> logger,
             IDistributedCache cache
         )
         {
             _dbContext = dbContext;
             _keyboards = keyboards;
             _cache = cache;
+            _logger = logger;
         }
 
         [Command("/search")]
@@ -72,73 +77,112 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.ExecuteSearch)]
         public async Task HandleExecuteSearchAsync()
         {
-            string cacheKey = SearchProcessPrefix + Context.User.Id;
-            int objLimit = Context.CommandService.Options.ObjectsSentLimit;
-            var searchProcess = await _cache.GetRecordAsync<SearchProcess>(cacheKey);
-
-            if (searchProcess == null)
+            try
             {
-                var userSettings = await _dbContext.UserSettings
-                    .AsNoTracking()
-                    .AsSplitQuery()
-                    .Include(us => us.SelectedCategories)
-                    .Include(us => us.SelectedRegions)
-                    .Include(us => us.Rooms)
-                    .Select(us => us)
-                    .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
+                string cacheKey = SearchProcessPrefix + Context.User.Id;
+                int objLimit = Context.CommandService.Options.ObjectsSentLimit;
+                var searchProcess = await _cache.GetRecordAsync<SearchProcess>(cacheKey);
 
-                var allObjects = await _dbContext.RealtyObjects
-                    .AsNoTracking()
-                    .AsSplitQuery()
-                    .Include(ro => ro.Images)
-                    .Include(ro => ro.Category)
-                    .Include(ro => ro.District)
-                    .Include(ro => ro.WallMaterial)
-                    .Include(ro => ro.State)
-                    .Include(ro => ro.Street)
-                    .ToListAsync();
-
-                var results = allObjects
-                    .Where(ro => userSettings.SelectedCategories.Any(sc => sc.Id == ro.CategoryId))
-                    .Where(ro => userSettings.SelectedRegions.Any(sr => sr.Id == ro.DistrictId))
-                    .Where(ro => !userSettings.MinPrice.HasValue || ro.Price >= userSettings.MinPrice.Value)
-                    .Where(ro => !userSettings.MaxPrice.HasValue || ro.Price <= userSettings.MaxPrice.Value)
-                    .Where(ro => !userSettings.MinFloor.HasValue || ro.Floor >= userSettings.MinFloor.Value)
-                    .Where(ro => !userSettings.MaxFloor.HasValue || ro.Floor <= userSettings.MaxFloor.Value)
-                    .Where(ro => userSettings.Rooms.Any(r => r.RoomsCount == ro.Floor))
-                    .ToList();
-
-                if (results.Count == 0)
+                if (searchProcess == null)
                 {
+                    var userSettings = await _dbContext.UserSettings
+                        .AsNoTracking()
+                        .AsSplitQuery()
+                        .Include(us => us.SelectedCategories)
+                        .Include(us => us.SelectedRegions)
+                        .Include(us => us.Rooms)
+                        .Select(us => us)
+                        .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
+
+                    var allObjects = await _dbContext.RealtyObjects
+                        .AsNoTracking()
+                        .AsSplitQuery()
+                        .Include(ro => ro.Images)
+                        .Include(ro => ro.Category)
+                        .Include(ro => ro.District)
+                        .Include(ro => ro.WallMaterial)
+                        .Include(ro => ro.State)
+                        .Include(ro => ro.Street)
+                        .ToListAsync();
+
+                    var results = allObjects
+                        .Where(ro => userSettings.SelectedCategories.Any(sc => sc.Id == ro.CategoryId))
+                        .Where(ro => userSettings.SelectedRegions.Any(sr => sr.Id == ro.DistrictId))
+                        .Where(ro => !userSettings.MinPrice.HasValue || ro.Price >= userSettings.MinPrice.Value)
+                        .Where(ro => !userSettings.MaxPrice.HasValue || ro.Price <= userSettings.MaxPrice.Value)
+                        .Where(ro => !userSettings.MinFloor.HasValue || ro.Floor >= userSettings.MinFloor.Value)
+                        .Where(ro => !userSettings.MaxFloor.HasValue || ro.Floor <= userSettings.MaxFloor.Value)
+                        .Where(ro => userSettings.Rooms.Any(r => r.RoomsCount == ro.Floor))
+                        .ToList();
+
+                    if (results.Count == 0)
+                    {
+                        await ReplyAsync(
+                            "No result were found for your search.\n*Configure search settings:* /search",
+                            ParseMode.Markdown
+                        );
+                        return;
+                    }
+
+                    if (results.Count > objLimit)
+                    {
+                        searchProcess = new SearchProcess
+                        {
+                            TelegramId = Context.User.Id,
+                            RealtyObjects = results,
+                            ItemsSentCount = objLimit,
+                        };
+
+                        await _cache.SetRecordAsync(
+                            cacheKey,
+                            searchProcess,
+                            TimeSpan.FromMinutes(10)
+                        );
+
+                        await SendResultsAsync(results.Take(searchProcess.ItemsSentCount).ToList());
+                        await ReplyAsync(
+                            content: string.Format(
+                                "Sent *{0} of {1}* results.\nThe button below will be unavailable in 10 minutes.",
+                                searchProcess.ItemsSentCount,
+                                searchProcess.RealtyObjects.Count()
+                            ),
+                            replyMarkup: new InlineKeyboardMarkup(
+                                InlineKeyboardButton.WithCallbackData("🔍See more", CallbackDataTypes.ExecuteSearch)
+                            ),
+                            parseMode: ParseMode.Markdown
+                        );
+                        return;
+                    }
+
+                    await SendResultsAsync(results.Take(objLimit).ToList());
                     await ReplyAsync(
-                        "No result were found for your search.\n*Configure search settings:* /search",
+                        "There are no more results with such search settings.\n*Configure search settings:* /search",
                         ParseMode.Markdown
                     );
                     return;
                 }
 
-                if (results.Count > objLimit)
+                if (searchProcess.RealtyObjects.Count() > searchProcess.ItemsSentCount + objLimit)
                 {
-                    searchProcess = new SearchProcess
-                    {
-                        TelegramId = Context.User.Id,
-                        RealtyObjects = results,
-                        ItemsSentCount = objLimit,
-                    };
+                    await _cache.RemoveAsync(cacheKey);
 
+                    searchProcess.ItemsSentCount += objLimit;
+                    searchProcess.RealtyObjects = searchProcess.RealtyObjects.Skip(objLimit);
                     await _cache.SetRecordAsync(
                         cacheKey,
                         searchProcess,
-                        TimeSpan.FromMinutes(10)
+                        TimeSpan.FromMinutes(10),
+                        TimeSpan.FromMinutes(3)
                     );
 
-                    await SendResultsAsync(results.Take(searchProcess.ItemsSentCount).ToList());
+                    await SendResultsAsync(
+                        searchProcess.RealtyObjects
+                            .Take(searchProcess.ItemsSentCount)
+                            .ToList()
+                    );
+
                     await ReplyAsync(
-                        content: string.Format(
-                            "Sent *{0} of {1}* results.\nThe button below will be unavailable in 10 minutes.",
-                            searchProcess.ItemsSentCount,
-                            searchProcess.RealtyObjects.Count()
-                        ),
+                        content: string.Format("Sent *{0} of {1}* results.", searchProcess.ItemsSentCount, searchProcess.RealtyObjects.Count()),
                         replyMarkup: new InlineKeyboardMarkup(
                             InlineKeyboardButton.WithCallbackData("🔍See more", CallbackDataTypes.ExecuteSearch)
                         ),
@@ -147,77 +191,55 @@ namespace Masya.TelegramBot.Modules
                     return;
                 }
 
-                await SendResultsAsync(results.Take(objLimit).ToList());
-                await ReplyAsync(
-                    "There are no more results with such search settings.\n*Configure search settings:* /search",
-                    ParseMode.Markdown
-                );
-                return;
+                if (searchProcess.RealtyObjects.Count() <= searchProcess.ItemsSentCount + objLimit)
+                {
+                    await _cache.RemoveAsync(cacheKey);
+                    await SendResultsAsync(
+                        searchProcess.RealtyObjects
+                            .Skip(searchProcess.ItemsSentCount)
+                            .Take(objLimit)
+                            .ToList()
+                    );
+                    await ReplyAsync(
+                        "There are no more results with such search settings.\n*Configure search settings:* /search",
+                        ParseMode.Markdown
+                    );
+                    return;
+                }
             }
-
-            if (searchProcess.RealtyObjects.Count() > searchProcess.ItemsSentCount + objLimit)
+            catch (Exception e)
             {
-                await _cache.RemoveAsync(cacheKey);
-
-                searchProcess.ItemsSentCount += objLimit;
-                searchProcess.RealtyObjects = searchProcess.RealtyObjects.Skip(objLimit);
-                await _cache.SetRecordAsync(
-                    cacheKey,
-                    searchProcess,
-                    TimeSpan.FromMinutes(10),
-                    TimeSpan.FromMinutes(3)
-                );
-
-                await SendResultsAsync(
-                    searchProcess.RealtyObjects
-                        .Take(searchProcess.ItemsSentCount)
-                        .ToList()
-                );
-
-                await ReplyAsync(
-                    content: string.Format("Sent *{0} of {1}* results.", searchProcess.ItemsSentCount, searchProcess.RealtyObjects.Count()),
-                    replyMarkup: new InlineKeyboardMarkup(
-                        InlineKeyboardButton.WithCallbackData("🔍See more", CallbackDataTypes.ExecuteSearch)
-                    ),
-                    parseMode: ParseMode.Markdown
-                );
-                return;
-            }
-
-            if (searchProcess.RealtyObjects.Count() <= searchProcess.ItemsSentCount + objLimit)
-            {
-                await _cache.RemoveAsync(cacheKey);
-                await SendResultsAsync(
-                    searchProcess.RealtyObjects
-                        .Skip(searchProcess.ItemsSentCount)
-                        .Take(objLimit)
-                        .ToList()
-                );
-                await ReplyAsync(
-                    "There are no more results with such search settings.\n*Configure search settings:* /search",
-                    ParseMode.Markdown
-                );
-                return;
+                _logger.LogError(e.ToString());
             }
         }
 
         private async Task SendResultsAsync(List<RealtyObject> results)
         {
+            using var httpClient = new HttpClient();
+
             foreach (var r in results)
             {
                 if (r.Images != null && r.Images.Count > 0)
                 {
                     var photos = new List<InputMediaPhoto>
                     {
-                        new InputMediaPhoto(r.Images[0].Url){
-                            Caption = BuildRealtyObjectDescr(r),
-                            ParseMode = ParseMode.Markdown
-                        }
+                        await UrlToTelegramPhotoAsync(
+                            r.Images[0].Url,
+                            r.Images[0].Id.ToString(),
+                            httpClient,
+                            BuildRealtyObjectDescr(r)
+                        )
                     };
 
                     for (int i = 1; i < r.Images.Count; i++)
                     {
-                        photos.Add(new InputMediaPhoto(r.Images[i].Url));
+                        photos.Add(
+                            await UrlToTelegramPhotoAsync(
+                                r.Images[i].Url,
+                                r.Images[i].Id.ToString(),
+                                httpClient
+                            )
+                        );
                     }
 
                     if (photos.Count > 0)
@@ -229,6 +251,24 @@ namespace Masya.TelegramBot.Modules
 
                 await ReplyAsync(BuildRealtyObjectDescr(r), ParseMode.Markdown);
             }
+        }
+
+        private static async Task<InputMediaPhoto> UrlToTelegramPhotoAsync(
+            string url,
+            string fileName,
+            HttpClient client,
+            string caption = null
+        )
+        {
+            var fImageBytes = await client.GetByteArrayAsync(url);
+            var inputFile = new InputMedia(new MemoryStream(fImageBytes), fileName);
+            var inputPhoto = new InputMediaPhoto(inputFile);
+            if (!string.IsNullOrEmpty(caption))
+            {
+                inputPhoto.Caption = caption;
+            }
+
+            return inputPhoto;
         }
 
         private static string BuildRealtyObjectDescr(RealtyObject obj)
