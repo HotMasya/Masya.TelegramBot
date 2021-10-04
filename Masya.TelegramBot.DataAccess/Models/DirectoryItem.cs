@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Masya.TelegramBot.DataAccess.Models
 {
@@ -13,5 +14,7 @@ namespace Masya.TelegramBot.DataAccess.Models
 
         public Directory Directory { get; set; }
         public Category Category { get; set; }
+
+        public List<UserSettings> UserSettings { get; set; }
     }
 }

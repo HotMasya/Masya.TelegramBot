@@ -1,4 +1,5 @@
 ﻿using Masya.TelegramBot.DataAccess.Types;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Masya.TelegramBot.DataAccess.Models
@@ -12,5 +13,7 @@ namespace Masya.TelegramBot.DataAccess.Models
         public string Name { get; set; }
 
         public SuperType SuperType { get; set; }
+
+        public List<UserSettings> UserSettings { get; set; }
     }
 }
