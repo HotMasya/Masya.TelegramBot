@@ -45,10 +45,11 @@ namespace Masya.TelegramBot.Modules
         public async Task SearchAsync()
         {
             var userSettings = await _dbContext.UserSettings
-                .AsQueryable()
+                .AsSplitQuery()
                 .Include(us => us.SelectedCategories)
                 .Include(us => us.SelectedRegions)
                 .Include(us => us.Rooms)
+                .Select(us => us)
                 .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
 
             if (userSettings == null)
@@ -307,10 +308,11 @@ namespace Masya.TelegramBot.Modules
         public async Task HandleChangeRoomsAsync(int selectedRoomsId = -1)
         {
             var userSettings = await _dbContext.UserSettings
-                .AsQueryable()
+                .AsSplitQuery()
                 .Include(us => us.SelectedCategories)
                 .Include(us => us.SelectedRegions)
                 .Include(us => us.Rooms)
+                .Select(us => us)
                 .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
 
             if (userSettings == null)
@@ -359,10 +361,11 @@ namespace Masya.TelegramBot.Modules
         public async Task HandleUpdatePriceAsync(string type = null, int selectedValue = -1)
         {
             var userSettings = await _dbContext.UserSettings
-                .AsQueryable()
+                .AsSplitQuery()
                 .Include(us => us.SelectedCategories)
                 .Include(us => us.SelectedRegions)
                 .Include(us => us.Rooms)
+                .Select(us => us)
                 .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
 
             if (userSettings == null)
@@ -410,10 +413,11 @@ namespace Masya.TelegramBot.Modules
         public async Task HandleUpdateFloorsAsync(string type = null, int selectedValue = -1)
         {
             var userSettings = await _dbContext.UserSettings
-                .AsQueryable()
+                .AsSplitQuery()
                 .Include(us => us.SelectedCategories)
                 .Include(us => us.SelectedRegions)
                 .Include(us => us.Rooms)
+                .Select(us => us)
                 .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
 
             if (userSettings == null)
@@ -462,10 +466,11 @@ namespace Masya.TelegramBot.Modules
         public async Task HandleUpdateCategoriesAsync(int categoryId = -1)
         {
             var userSettings = await _dbContext.UserSettings
-                .AsQueryable()
+                .AsSplitQuery()
                 .Include(us => us.SelectedCategories)
                 .Include(us => us.SelectedRegions)
                 .Include(us => us.Rooms)
+                .Select(us => us)
                 .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
 
             if (userSettings == null)
@@ -514,10 +519,11 @@ namespace Masya.TelegramBot.Modules
         public async Task HandleUpdateRegionsAsync(int regionId = -1)
         {
             var userSettings = await _dbContext.UserSettings
-                .AsQueryable()
+                .AsSplitQuery()
                 .Include(us => us.SelectedCategories)
                 .Include(us => us.SelectedRegions)
                 .Include(us => us.Rooms)
+                .Select(us => us)
                 .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
 
             if (userSettings == null)
