@@ -71,7 +71,7 @@ namespace Masya.TelegramBot.Api
                     Configuration.GetConnectionString("RemoteDb"),
                     o =>
                     {
-                        o.CommandTimeout(30);
+                        o.CommandTimeout(60);
                         o.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
                     }
                 );
