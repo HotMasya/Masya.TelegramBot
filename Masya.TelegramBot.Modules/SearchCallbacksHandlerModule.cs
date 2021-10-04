@@ -244,7 +244,7 @@ namespace Masya.TelegramBot.Modules
 
                     if (photos.Count > 0)
                     {
-                        await Context.BotService.Client.SendMediaGroupAsync(Context.Chat.Id, photos, true);
+                        await Context.BotService.Client.SendMediaGroupAsync(Context.Chat.Id, photos.Take(10), true);
                         continue;
                     }
                 }
