@@ -72,221 +72,220 @@ namespace Masya.TelegramBot.Modules
             );
         }
 
-        // [Callback(CallbackDataTypes.ExecuteSearch)]
-        // public async Task HandleExecuteSearchAsync()
-        // {
-        //     try
-        //     {
-        //         string cacheKey = SearchProcessPrefix + Context.User.Id;
-        //         int objLimit = Context.CommandService.Options.ObjectsSentLimit;
-        //         var searchProcess = await _cache.GetRecordAsync<SearchProcess>(cacheKey);
+        [Callback(CallbackDataTypes.ExecuteSearch)]
+        public async Task HandleExecuteSearchAsync()
+        {
+            try
+            {
+                string cacheKey = SearchProcessPrefix + Context.User.Id;
+                int objLimit = Context.CommandService.Options.ObjectsSentLimit;
+                var searchProcess = await _cache.GetRecordAsync<SearchProcess>(cacheKey);
 
-        //         if (searchProcess == null)
-        //         {
-        //             var user = await _dbContext.Users
-        //                 .AsSplitQuery()
-        //                 .AsQueryable()
-        //                 .Include(u => u.UserSettings)
-        //                     .ThenInclude(us => us.SelectedCategories)
-        //                 .Include(u => u.UserSettings)
-        //                     .ThenInclude(us => us.SelectedRegions)
-        //                 .Include(u => u.UserSettings)
-        //                     .ThenInclude(us => us.Rooms)
-        //                 .FirstOrDefaultAsync(u => u.TelegramAccountId == Context.User.Id);
-        //             var userSettings = user.UserSettings;
+                if (searchProcess == null)
+                {
+                    var userSettings = await _dbContext.UserSettings
+                        .AsSplitQuery()
+                        .Include(us => us.SelectedCategories)
+                        .Include(us => us.SelectedRegions)
+                        .Include(us => us.Rooms)
+                        .Select(us => us)
+                        .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
 
-        //             var results = await _dbContext.RealtyObjects
-        //                 .AsQueryable()
-        //                     .Include(ro => ro.Images)
-        //                     .Include(ro => ro.Category)
-        //                     .Include(ro => ro.District)
-        //                     .Include(ro => ro.WallMaterial)
-        //                     .Include(ro => ro.State)
-        //                     .Include(ro => ro.Street)
-        //                 .Where(
-        //                     ro => userSettings.SelectedCategories.Any(sc => sc.Id == ro.CategoryId)
-        //                     && userSettings.SelectedRegions.Any(sr => sr.Id == ro.DistrictId)
-        //                     && (
-        //                         !userSettings.MinPrice.HasValue
-        //                         || ro.Price >= userSettings.MinPrice.Value
-        //                     )
-        //                     && (
-        //                         !userSettings.MaxPrice.HasValue
-        //                         || ro.Price <= userSettings.MaxPrice.Value
-        //                     )
-        //                     && (
-        //                         !userSettings.MinFloor.HasValue
-        //                         || ro.Floor >= userSettings.MinFloor.Value
-        //                     )
-        //                     && (
-        //                         !userSettings.MaxFloor.HasValue
-        //                         || ro.Floor <= userSettings.MaxFloor.Value
-        //                     )
-        //                     && userSettings.Rooms.Any(r => r.RoomsCount == ro.Floor)
-        //                 )
-        //                 .ToListAsync();
+                    var results = await _dbContext.RealtyObjects
+                        .AsSplitQuery()
+                            .Include(ro => ro.Images)
+                            .Include(ro => ro.Category)
+                            .Include(ro => ro.District)
+                            .Include(ro => ro.WallMaterial)
+                            .Include(ro => ro.State)
+                            .Include(ro => ro.Street)
+                        .Where(
+                            ro => userSettings.SelectedCategories.Any(sc => sc.Id == ro.CategoryId)
+                            && userSettings.SelectedRegions.Any(sr => sr.Id == ro.DistrictId)
+                            && (
+                                !userSettings.MinPrice.HasValue
+                                || ro.Price >= userSettings.MinPrice.Value
+                            )
+                            && (
+                                !userSettings.MaxPrice.HasValue
+                                || ro.Price <= userSettings.MaxPrice.Value
+                            )
+                            && (
+                                !userSettings.MinFloor.HasValue
+                                || ro.Floor >= userSettings.MinFloor.Value
+                            )
+                            && (
+                                !userSettings.MaxFloor.HasValue
+                                || ro.Floor <= userSettings.MaxFloor.Value
+                            )
+                            && userSettings.Rooms.Any(r => r.RoomsCount == ro.Floor)
+                        )
+                        .ToListAsync();
 
-        //             if (results.Count == 0)
-        //             {
-        //                 await ReplyAsync(
-        //                     "No result were found for your search.\n*Configure search settings:* /search",
-        //                     ParseMode.Markdown
-        //                 );
-        //                 return;
-        //             }
+                    if (results.Count == 0)
+                    {
+                        await ReplyAsync(
+                            "No result were found for your search.\n*Configure search settings:* /search",
+                            ParseMode.Markdown
+                        );
+                        return;
+                    }
 
-        //             if (results.Count > objLimit)
-        //             {
-        //                 searchProcess = new SearchProcess
-        //                 {
-        //                     TelegramId = Context.User.Id,
-        //                     RealtyObjects = results,
-        //                     ItemsSentCount = objLimit,
-        //                 };
+                    if (results.Count > objLimit)
+                    {
+                        searchProcess = new SearchProcess
+                        {
+                            TelegramId = Context.User.Id,
+                            RealtyObjects = results,
+                            ItemsSentCount = objLimit,
+                        };
 
-        //                 await _cache.SetRecordAsync(
-        //                     cacheKey,
-        //                     searchProcess,
-        //                     TimeSpan.FromMinutes(10),
-        //                     TimeSpan.FromMinutes(3)
-        //                 );
+                        await _cache.SetRecordAsync(
+                            cacheKey,
+                            searchProcess,
+                            TimeSpan.FromMinutes(10)
+                        );
 
-        //                 await SendResultsAsync(results.Take(searchProcess.ItemsSentCount).ToList());
-        //                 await ReplyAsync(
-        //                     content: string.Format("Sent *{0} of {1}* results.", searchProcess.ItemsSentCount, searchProcess.RealtyObjects.Count()),
-        //                     replyMarkup: new InlineKeyboardMarkup(
-        //                         InlineKeyboardButton.WithCallbackData("🔍See more", CallbackDataTypes.ExecuteSearch)
-        //                     ),
-        //                     parseMode: ParseMode.Markdown
-        //                 );
-        //                 return;
-        //             }
+                        await SendResultsAsync(results.Take(searchProcess.ItemsSentCount).ToList());
+                        await ReplyAsync(
+                            content: string.Format(
+                                "Sent *{0} of {1}* results.\nThe button below will be unavailable in 10 minutes.",
+                                searchProcess.ItemsSentCount,
+                                searchProcess.RealtyObjects.Count()
+                            ),
+                            replyMarkup: new InlineKeyboardMarkup(
+                                InlineKeyboardButton.WithCallbackData("🔍See more", CallbackDataTypes.ExecuteSearch)
+                            ),
+                            parseMode: ParseMode.Markdown
+                        );
+                        return;
+                    }
 
-        //             await SendResultsAsync(results.Take(objLimit).ToList());
-        //             await ReplyAsync(
-        //                 "There are no more results with such search settings.\n*Configure search settings:* /search",
-        //                 ParseMode.Markdown
-        //             );
-        //             return;
-        //         }
+                    await SendResultsAsync(results.Take(objLimit).ToList());
+                    await ReplyAsync(
+                        "There are no more results with such search settings.\n*Configure search settings:* /search",
+                        ParseMode.Markdown
+                    );
+                    return;
+                }
 
-        //         if (searchProcess.RealtyObjects.Count() > searchProcess.ItemsSentCount + objLimit)
-        //         {
-        //             await _cache.RemoveAsync(cacheKey);
+                if (searchProcess.RealtyObjects.Count() > searchProcess.ItemsSentCount + objLimit)
+                {
+                    await _cache.RemoveAsync(cacheKey);
 
-        //             searchProcess.ItemsSentCount += objLimit;
-        //             searchProcess.RealtyObjects = searchProcess.RealtyObjects.Skip(objLimit);
-        //             await _cache.SetRecordAsync(
-        //                 cacheKey,
-        //                 searchProcess,
-        //                 TimeSpan.FromMinutes(10),
-        //                 TimeSpan.FromMinutes(3)
-        //             );
+                    searchProcess.ItemsSentCount += objLimit;
+                    searchProcess.RealtyObjects = searchProcess.RealtyObjects.Skip(objLimit);
+                    await _cache.SetRecordAsync(
+                        cacheKey,
+                        searchProcess,
+                        TimeSpan.FromMinutes(10),
+                        TimeSpan.FromMinutes(3)
+                    );
 
-        //             await SendResultsAsync(
-        //                 searchProcess.RealtyObjects
-        //                     .Take(searchProcess.ItemsSentCount)
-        //                     .ToList()
-        //             );
+                    await SendResultsAsync(
+                        searchProcess.RealtyObjects
+                            .Take(searchProcess.ItemsSentCount)
+                            .ToList()
+                    );
 
-        //             await ReplyAsync(
-        //                 content: string.Format("Sent *{0} of {1}* results.", searchProcess.ItemsSentCount, searchProcess.RealtyObjects.Count()),
-        //                 replyMarkup: new InlineKeyboardMarkup(
-        //                     InlineKeyboardButton.WithCallbackData("🔍See more", CallbackDataTypes.ExecuteSearch)
-        //                 ),
-        //                 parseMode: ParseMode.Markdown
-        //             );
-        //             return;
-        //         }
+                    await ReplyAsync(
+                        content: string.Format("Sent *{0} of {1}* results.", searchProcess.ItemsSentCount, searchProcess.RealtyObjects.Count()),
+                        replyMarkup: new InlineKeyboardMarkup(
+                            InlineKeyboardButton.WithCallbackData("🔍See more", CallbackDataTypes.ExecuteSearch)
+                        ),
+                        parseMode: ParseMode.Markdown
+                    );
+                    return;
+                }
 
-        //         if (searchProcess.RealtyObjects.Count() <= searchProcess.ItemsSentCount + objLimit)
-        //         {
-        //             await _cache.RemoveAsync(cacheKey);
-        //             await SendResultsAsync(
-        //                 searchProcess.RealtyObjects
-        //                     .Skip(searchProcess.ItemsSentCount)
-        //                     .Take(objLimit)
-        //                     .ToList()
-        //             );
-        //             await ReplyAsync(
-        //                 "There are no more results with such search settings.\n*Configure search settings:* /search",
-        //                 ParseMode.Markdown
-        //             );
-        //             return;
-        //         }
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         _logger.LogError(e.ToString());
-        //     }
-        // }
+                if (searchProcess.RealtyObjects.Count() <= searchProcess.ItemsSentCount + objLimit)
+                {
+                    await _cache.RemoveAsync(cacheKey);
+                    await SendResultsAsync(
+                        searchProcess.RealtyObjects
+                            .Skip(searchProcess.ItemsSentCount)
+                            .Take(objLimit)
+                            .ToList()
+                    );
+                    await ReplyAsync(
+                        "There are no more results with such search settings.\n*Configure search settings:* /search",
+                        ParseMode.Markdown
+                    );
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.ToString());
+            }
+        }
 
-        // private async Task SendResultsAsync(List<RealtyObject> results)
-        // {
-        //     using var httpClient = new HttpClient();
+        private async Task SendResultsAsync(List<RealtyObject> results)
+        {
+            using var httpClient = new HttpClient();
 
-        //     foreach (var r in results)
-        //     {
-        //         if (r.Images != null && r.Images.Count > 0)
-        //         {
-        //             var photos = new List<InputMediaPhoto>
-        //                 {
-        //                     await UrlToTelegramPhotoAsync(
-        //                         r.Images[0].Url,
-        //                         r.Images[0].Id.ToString(),
-        //                         httpClient,
-        //                         BuildRealtyObjectDescr(r)
-        //                     )
-        //                 };
+            foreach (var r in results)
+            {
+                if (r.Images != null && r.Images.Count > 0)
+                {
+                    var photos = new List<InputMediaPhoto>
+                        {
+                            await UrlToTelegramPhotoAsync(
+                                r.Images[0].Url,
+                                r.Images[0].Id.ToString(),
+                                httpClient,
+                                BuildRealtyObjectDescr(r)
+                            )
+                        };
 
-        //             for (int i = 1; i < r.Images.Count; i++)
-        //             {
-        //                 photos.Add(
-        //                     await UrlToTelegramPhotoAsync(
-        //                         r.Images[i].Url,
-        //                         r.Images[i].Id.ToString(),
-        //                         httpClient
-        //                     )
-        //                 );
-        //             }
+                    for (int i = 1; i < r.Images.Count; i++)
+                    {
+                        photos.Add(
+                            await UrlToTelegramPhotoAsync(
+                                r.Images[i].Url,
+                                r.Images[i].Id.ToString(),
+                                httpClient
+                            )
+                        );
+                    }
 
-        //             await Context.BotService.Client.SendMediaGroupAsync(Context.Chat.Id, photos, true);
-        //         }
+                    await Context.BotService.Client.SendMediaGroupAsync(Context.Chat.Id, photos, true);
+                }
 
-        //         await ReplyAsync(BuildRealtyObjectDescr(r));
-        //     }
-        // }
+                await ReplyAsync(BuildRealtyObjectDescr(r));
+            }
+        }
 
-        // private static async Task<InputMediaPhoto> UrlToTelegramPhotoAsync(string url, string fileName, HttpClient client, string caption = null)
-        // {
-        //     using var fImageStream = await client.GetStreamAsync(url);
-        //     var inputFile = new InputMedia(fImageStream, fileName);
-        //     var inputPhoto = new InputMediaPhoto(inputFile);
-        //     if (!string.IsNullOrEmpty(caption))
-        //     {
-        //         inputPhoto.Caption = caption;
-        //     }
+        private static async Task<InputMediaPhoto> UrlToTelegramPhotoAsync(string url, string fileName, HttpClient client, string caption = null)
+        {
+            using var fImageStream = await client.GetStreamAsync(url);
+            var inputFile = new InputMedia(fImageStream, fileName);
+            var inputPhoto = new InputMediaPhoto(inputFile);
+            if (!string.IsNullOrEmpty(caption))
+            {
+                inputPhoto.Caption = caption;
+            }
 
-        //     return inputPhoto;
-        // }
+            return inputPhoto;
+        }
 
-        // private static string BuildRealtyObjectDescr(RealtyObject obj)
-        // {
-        //     var builder = new StringBuilder();
-        //     if (!string.IsNullOrEmpty(obj.Description))
-        //     {
-        //         builder.AppendLine(obj.Description);
-        //     }
+        private static string BuildRealtyObjectDescr(RealtyObject obj)
+        {
+            var builder = new StringBuilder();
+            if (!string.IsNullOrEmpty(obj.Description))
+            {
+                builder.AppendLine(obj.Description);
+            }
 
-        //     if (!string.IsNullOrEmpty(obj.Phone))
-        //     {
-        //         builder.AppendLine(
-        //             string.Format("Contact(s): *{0}*", obj.Phone)
-        //         );
-        //     }
+            if (!string.IsNullOrEmpty(obj.Phone))
+            {
+                builder.AppendLine(
+                    string.Format("Contact(s): *{0}*", obj.Phone)
+                );
+            }
 
-        //     return builder.ToString();
-        // }
+            return builder.ToString();
+        }
 
         [Callback(CallbackDataTypes.ChangeSettings)]
         public async Task HandleChangeSettingsAsync()
