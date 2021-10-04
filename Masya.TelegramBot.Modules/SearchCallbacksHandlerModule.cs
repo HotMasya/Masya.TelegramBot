@@ -44,6 +44,7 @@ namespace Masya.TelegramBot.Modules
         private async Task<DataAccess.Models.User> GetUserWithSettings()
         {
             return await _dbContext.Users
+                .AsSplitQuery()
                 .Include(u => u.UserSettings)
                     .ThenInclude(us => us.SelectedCategories)
                 .Include(u => u.UserSettings)
