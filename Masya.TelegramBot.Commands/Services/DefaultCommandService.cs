@@ -47,8 +47,8 @@ namespace Masya.TelegramBot.Commands.Services
         }
 
         public virtual bool CheckCommandCondition(TCommandInfo commandInfo, Message message) =>
-                commandInfo is not null
-                && commandInfo.MethodInfo is not null
+                commandInfo != null
+                && commandInfo.MethodInfo != null
                 && commandInfo.IsEnabled;
 
         protected virtual TCommandInfo GetCommand(string name, Message message) => commands.FirstOrDefault(cm => CommandFilter(cm, name));
@@ -98,49 +98,46 @@ namespace Masya.TelegramBot.Commands.Services
                 return;
             }
 
-            await Task.Run(() =>
+            if (commands is null || commands.Count == 0)
             {
-                if (commands is null || commands.Count == 0)
-                {
-                    return;
-                }
+                return;
+            }
 
-                var parts = new CommandParts(message.Text, Options);
-                var commandInfo = GetCommand(parts.Name, message);
+            var parts = new CommandParts(message.Text, Options);
+            var commandInfo = GetCommand(parts.Name, message);
 
-                if (!CheckCommandCondition(commandInfo, message))
-                {
-                    return;
-                }
+            if (!CheckCommandCondition(commandInfo, message))
+            {
+                return;
+            }
 
-                logger.LogInformation($"Executing command: {parts.Name}");
+            logger.LogInformation($"Executing command: {parts.Name}");
 
-                if (parts.ArgsStr.Length == 0 && commandInfo.MethodInfo.GetParameters().Length != 0)
-                {
-                    var t = new Task(async () => await ExecuteCommandByStepsAsync(message, commandInfo.MethodInfo, parts));
-                    t.Start();
-                }
-                else
-                {
-                    using var scope = services.CreateScope();
-                    var moduleInstance = ActivatorUtilities.CreateInstance(
-                        scope.ServiceProvider,
-                        commandInfo.MethodInfo.DeclaringType,
-                        Array.Empty<object>()
-                    );
-                    var propInfo = commandInfo.MethodInfo.DeclaringType.GetProperty("Context");
-                    var context = new DefaultCommandContext<TCommandInfo, TAliasInfo>(
-                        botService: BotService,
-                        commandService: this,
-                        chat: message.Chat,
-                        user: message.From,
-                        message: message
-                    );
+            if (parts.ArgsStr.Length == 0 && commandInfo.MethodInfo.GetParameters().Length != 0)
+            {
+                var t = new Task(async () => await ExecuteCommandByStepsAsync(message, commandInfo.MethodInfo, parts));
+                t.Start();
+            }
+            else
+            {
+                using var scope = services.CreateScope();
+                var moduleInstance = ActivatorUtilities.CreateInstance(
+                    scope.ServiceProvider,
+                    commandInfo.MethodInfo.DeclaringType,
+                    Array.Empty<object>()
+                );
+                var propInfo = commandInfo.MethodInfo.DeclaringType.GetProperty("Context");
+                var context = new DefaultCommandContext<TCommandInfo, TAliasInfo>(
+                    botService: BotService,
+                    commandService: this,
+                    chat: message.Chat,
+                    user: message.From,
+                    message: message
+                );
 
-                    propInfo.SetValue(moduleInstance, context);
-                    commandInfo.MethodInfo.Invoke(moduleInstance, parts.MatchParamTypes(commandInfo.MethodInfo));
-                }
-            });
+                propInfo.SetValue(moduleInstance, context);
+                commandInfo.MethodInfo.Invoke(moduleInstance, parts.MatchParamTypes(commandInfo.MethodInfo));
+            }
         }
 
         public virtual async Task LoadCommandsAsync(Assembly assembly)
