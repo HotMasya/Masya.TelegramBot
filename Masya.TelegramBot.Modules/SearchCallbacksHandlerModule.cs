@@ -45,6 +45,7 @@ namespace Masya.TelegramBot.Modules
         {
             return await _dbContext.Users
                 .AsSplitQuery()
+                .AsQueryable()
                 .Include(u => u.UserSettings)
                     .ThenInclude(us => us.SelectedCategories)
                 .Include(u => u.UserSettings)

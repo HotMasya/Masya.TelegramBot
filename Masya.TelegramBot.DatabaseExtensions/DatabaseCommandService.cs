@@ -41,7 +41,6 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
             return (
                 base.CheckCommandCondition(commandInfo, message) &&
-                commandInfo != null &&
                 commandInfo.Permission == Permission.Guest || (
                     user != null &&
                     user.Permission >= commandInfo.Permission
