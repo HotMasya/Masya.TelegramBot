@@ -249,7 +249,7 @@ namespace Masya.TelegramBot.Modules
                     }
                 }
 
-                await ReplyAsync(BuildRealtyObjectDescr(r), ParseMode.Markdown);
+                await ReplyAsync(BuildRealtyObjectDescr(r));
             }
         }
 
@@ -266,7 +266,6 @@ namespace Masya.TelegramBot.Modules
             if (!string.IsNullOrEmpty(caption))
             {
                 inputPhoto.Caption = caption;
-                inputPhoto.ParseMode = ParseMode.Markdown;
             }
 
             return inputPhoto;
