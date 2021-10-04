@@ -45,6 +45,7 @@ namespace Masya.TelegramBot.Modules
         public async Task SearchAsync()
         {
             var userSettings = await _dbContext.UserSettings
+                .AsNoTracking()
                 .AsSplitQuery()
                 .Include(us => us.SelectedCategories)
                 .Include(us => us.SelectedRegions)
@@ -84,6 +85,7 @@ namespace Masya.TelegramBot.Modules
                 if (searchProcess == null)
                 {
                     var userSettings = await _dbContext.UserSettings
+                        .AsNoTracking()
                         .AsSplitQuery()
                         .Include(us => us.SelectedCategories)
                         .Include(us => us.SelectedRegions)
@@ -92,6 +94,7 @@ namespace Masya.TelegramBot.Modules
                         .FirstOrDefaultAsync(us => us.User.TelegramAccountId == Context.User.Id);
 
                     var allObjects = await _dbContext.RealtyObjects
+                        .AsNoTracking()
                         .AsSplitQuery()
                         .Include(ro => ro.Images)
                         .Include(ro => ro.Category)
