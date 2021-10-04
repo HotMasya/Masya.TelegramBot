@@ -249,11 +249,11 @@ namespace Masya.TelegramBot.Modules
                     }
                 }
 
-                await ReplyAsync(BuildRealtyObjectDescr(r));
+                await ReplyAsync(BuildRealtyObjectDescr(r), ParseMode.Markdown);
             }
         }
 
-        private async Task<InputMediaPhoto> UrlToTelegramPhotoAsync(
+        private static async Task<InputMediaPhoto> UrlToTelegramPhotoAsync(
             string url,
             string fileName,
             HttpClient client,
@@ -282,7 +282,7 @@ namespace Masya.TelegramBot.Modules
             if (!string.IsNullOrEmpty(obj.Phone))
             {
                 builder.AppendLine(
-                    string.Format("Contact(s): *{0}*", obj.Phone)
+                    string.Format("\n📞 Contact(s): *{0}*", obj.Phone)
                 );
             }
 

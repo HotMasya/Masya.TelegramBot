@@ -56,7 +56,14 @@ namespace Masya.TelegramBot.Api.Services
         {
             offerFromDb.Floor = offer.Floor == 0 ? null : offer.Floor;
             offerFromDb.TotalFloors = offer.FloorsTotal == 0 || offer.FloorsTotal > MaxFloors ? null : offer.FloorsTotal;
-            offerFromDb.Description = offer.Description;
+            offerFromDb.Description = offer.Description
+                .Replace("&quot;", "\"")
+                .Replace("&lt;", "<")
+                .Replace("&gt;", ">")
+                .Replace("&ndash;", "–")
+                .Replace("&mdash;", "—")
+                .Replace("&laquo;", "«")
+                .Replace("&raquo;", "»");
             offerFromDb.CreatedAt = offer.CreationDate;
             offerFromDb.EditedAt = offer.CreationDate;
             offerFromDb.KitchenSpace = offer.KitchenSpace?.Value == 0 ? null : offer.KitchenSpace?.Value;
