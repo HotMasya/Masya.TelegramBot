@@ -93,33 +93,19 @@ namespace Masya.TelegramBot.Modules
 
                     var results = await _dbContext.RealtyObjects
                         .AsSplitQuery()
-                            .Include(ro => ro.Images)
-                            .Include(ro => ro.Category)
-                            .Include(ro => ro.District)
-                            .Include(ro => ro.WallMaterial)
-                            .Include(ro => ro.State)
-                            .Include(ro => ro.Street)
-                        .Where(
-                            ro => userSettings.SelectedCategories.Any(sc => sc.Id == ro.CategoryId)
-                            && userSettings.SelectedRegions.Any(sr => sr.Id == ro.DistrictId)
-                            && (
-                                !userSettings.MinPrice.HasValue
-                                || ro.Price >= userSettings.MinPrice.Value
-                            )
-                            && (
-                                !userSettings.MaxPrice.HasValue
-                                || ro.Price <= userSettings.MaxPrice.Value
-                            )
-                            && (
-                                !userSettings.MinFloor.HasValue
-                                || ro.Floor >= userSettings.MinFloor.Value
-                            )
-                            && (
-                                !userSettings.MaxFloor.HasValue
-                                || ro.Floor <= userSettings.MaxFloor.Value
-                            )
-                            && userSettings.Rooms.Any(r => r.RoomsCount == ro.Floor)
-                        )
+                        .Include(ro => ro.Images)
+                        .Include(ro => ro.Category)
+                        .Include(ro => ro.District)
+                        .Include(ro => ro.WallMaterial)
+                        .Include(ro => ro.State)
+                        .Include(ro => ro.Street)
+                        .Where(ro => userSettings.SelectedCategories.Any(sc => sc.Id == ro.CategoryId))
+                        .Where(ro => userSettings.SelectedRegions.Any(sr => sr.Id == ro.DistrictId))
+                        .Where(ro => !userSettings.MinPrice.HasValue || ro.Price >= userSettings.MinPrice.Value)
+                        .Where(ro => !userSettings.MaxPrice.HasValue || ro.Price <= userSettings.MaxPrice.Value)
+                        .Where(ro => !userSettings.MinFloor.HasValue || ro.Floor >= userSettings.MinFloor.Value)
+                        .Where(ro => !userSettings.MaxFloor.HasValue || ro.Floor <= userSettings.MaxFloor.Value)
+                        .Where(ro => userSettings.Rooms.Any(r => r.RoomsCount == ro.Floor))
                         .ToListAsync();
 
                     if (results.Count == 0)
