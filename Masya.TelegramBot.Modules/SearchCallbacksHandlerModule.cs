@@ -266,6 +266,7 @@ namespace Masya.TelegramBot.Modules
             if (!string.IsNullOrEmpty(caption))
             {
                 inputPhoto.Caption = caption;
+                inputPhoto.ParseMode = ParseMode.Markdown;
             }
 
             return inputPhoto;
@@ -277,6 +278,49 @@ namespace Masya.TelegramBot.Modules
             if (!string.IsNullOrEmpty(obj.Description))
             {
                 builder.AppendLine(obj.Description);
+            }
+
+            builder.AppendLine(
+                string.Format(
+                    "\nAddress: *{0}, {1}*",
+                    obj.District.Value,
+                    obj.Street.Value
+                )
+            );
+
+            if (obj.State != null)
+            {
+                builder.AppendLine(
+                    string.Format("\n🔨 State: *{0}*", obj.State.Value)
+                );
+            }
+
+            if (obj.WallMaterial != null)
+            {
+                builder.AppendLine(
+                    string.Format("\n🧱 State: *{0}*", obj.WallMaterial.Value)
+                );
+            }
+
+            if (obj.Rooms.HasValue)
+            {
+                builder.AppendLine(
+                    string.Format("\n🚪 Rooms: *{0}", obj.Rooms.Value)
+                );
+            }
+
+            if (obj.Floor.HasValue)
+            {
+                builder.AppendLine(
+                    string.Format("\n🏦 Floor: *{0}*", obj.Floor.Value)
+                );
+            }
+
+            if (obj.TotalFloors.HasValue)
+            {
+                builder.AppendLine(
+                    string.Format("\n🏦 Total floors: *{0}*", obj.TotalFloors.Value)
+                );
             }
 
             if (!string.IsNullOrEmpty(obj.Phone))
