@@ -60,7 +60,7 @@ namespace Masya.TelegramBot.Commands.Services
             var callbackDataParams = callbackSplittedData.Skip(1).ToArray();
             var callbackInfo = callbacks.FirstOrDefault(c => c.CallbackData.Equals(callbackDataType));
             var callbackParams = new CommandParts(callbackDataParams, Options);
-            if (callbackInfo == null)
+            if (callbackInfo == null || callbackInfo.Handler == null)
             {
                 return;
             }
@@ -81,7 +81,7 @@ namespace Masya.TelegramBot.Commands.Services
                 callback: callback
             );
             propInfo.SetValue(moduleInstance, context);
-            callbackInfo?.Handler.Invoke(moduleInstance, callbackParams.MatchParamTypes(callbackInfo.Handler));
+            await (Task)callbackInfo.Handler.Invoke(moduleInstance, callbackParams.MatchParamTypes(callbackInfo.Handler));
             await BotService.Client.AnswerCallbackQueryAsync(callback.Id);
         }
 
@@ -120,25 +120,23 @@ namespace Masya.TelegramBot.Commands.Services
             }
             else
             {
-                using (var scope = services.CreateScope())
-                {
-                    var moduleInstance = ActivatorUtilities.CreateInstance(
-                        scope.ServiceProvider,
-                        commandInfo.MethodInfo.DeclaringType,
-                        Array.Empty<object>()
-                    );
-                    var propInfo = commandInfo.MethodInfo.DeclaringType.GetProperty("Context");
-                    var context = new DefaultCommandContext<TCommandInfo, TAliasInfo>(
-                        botService: BotService,
-                        commandService: this,
-                        chat: message.Chat,
-                        user: message.From,
-                        message: message
-                    );
+                var scope = services.CreateScope();
+                var moduleInstance = ActivatorUtilities.CreateInstance(
+                    scope.ServiceProvider,
+                    commandInfo.MethodInfo.DeclaringType,
+                    Array.Empty<object>()
+                );
+                var propInfo = commandInfo.MethodInfo.DeclaringType.GetProperty("Context");
+                var context = new DefaultCommandContext<TCommandInfo, TAliasInfo>(
+                    botService: BotService,
+                    commandService: this,
+                    chat: message.Chat,
+                    user: message.From,
+                    message: message
+                );
 
-                    propInfo.SetValue(moduleInstance, context);
-                    await (Task)commandInfo.MethodInfo.Invoke(moduleInstance, parts.MatchParamTypes(commandInfo.MethodInfo));
-                }
+                propInfo.SetValue(moduleInstance, context);
+                await (Task)commandInfo.MethodInfo.Invoke(moduleInstance, parts.MatchParamTypes(commandInfo.MethodInfo));
             }
         }
 
@@ -317,9 +315,9 @@ namespace Masya.TelegramBot.Commands.Services
                 }
             };
 
-            messageCollector.OnFinish += (sender, args) =>
+            messageCollector.OnFinish += async (sender, args) =>
             {
-                method.Invoke(moduleInstance, result.ToArray());
+                await (Task)method.Invoke(moduleInstance, result.ToArray());
             };
 
             messageCollector.Start();
@@ -342,7 +340,7 @@ namespace Masya.TelegramBot.Commands.Services
                 );
         }
 
-        protected virtual Task HandleContact(Message message)
+        protected virtual async Task HandleContact(Message message)
         {
             logger.LogInformation(
                 "Received a contact: {0} {1} {2}",
@@ -351,7 +349,7 @@ namespace Masya.TelegramBot.Commands.Services
                 message.Contact.PhoneNumber
             );
 
-            if (contactHandler == null) return Task.CompletedTask;
+            if (contactHandler == null) return;
 
             using var scope = services.CreateScope();
             var moduleInstance = ActivatorUtilities.CreateInstance(
@@ -369,8 +367,7 @@ namespace Masya.TelegramBot.Commands.Services
             );
 
             propInfo.SetValue(moduleInstance, context);
-            contactHandler.MethodInfo.Invoke(moduleInstance, new[] { message.Contact });
-            return Task.CompletedTask;
+            await (Task)contactHandler.MethodInfo.Invoke(moduleInstance, new[] { message.Contact });
         }
     }
 }
