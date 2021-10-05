@@ -9,6 +9,6 @@ namespace Masya.TelegramBot.Commands.Options
         public string CallbackDataSeparator { get; set; } = ";";
 
         //  Should be separated into the inherited class
-        public int ObjectsSentLimit { get; set; } = 10;
+        public int ObjectsSentLimit { get; set; } = 5;
     }
 }

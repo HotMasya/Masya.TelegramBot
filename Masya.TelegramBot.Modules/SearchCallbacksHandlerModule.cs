@@ -85,6 +85,7 @@ namespace Masya.TelegramBot.Modules
 
                 if (searchProcess == null)
                 {
+                    var message = await ReplyAsync("🔍 Searching for realty objects...");
                     var userSettings = await _dbContext.UserSettings
                         .AsNoTracking()
                         .AsSplitQuery()
@@ -118,12 +119,14 @@ namespace Masya.TelegramBot.Modules
 
                     if (results.Count == 0)
                     {
-                        await ReplyAsync(
-                            "No result were found for your search.\n*Configure search settings:* /search",
+                        await EditMessageAsync(
+                            "❌ No result were found for your search settings.\n*Configure search settings:* /search",
                             ParseMode.Markdown
                         );
                         return;
                     }
+
+                    await EditMessageAsync(string.Format("✅ Found *{0}* objects.", results.Count), ParseMode.Markdown);
 
                     if (results.Count > objLimit)
                     {
@@ -220,6 +223,7 @@ namespace Masya.TelegramBot.Modules
 
             foreach (var r in results)
             {
+                await Task.Delay(TimeSpan.FromSeconds(1));
                 if (r.Images != null && r.Images.Count > 0)
                 {
                     var photos = new List<InputMediaPhoto>
