@@ -119,21 +119,28 @@ namespace Masya.TelegramBot.Modules
 
                     if (results.Count == 0)
                     {
-                        await EditMessageAsync(
-                            "❌ No result were found for your search settings.\n*Configure search settings:* /search",
-                            ParseMode.Markdown
+                        await Context.BotService.Client.EditMessageTextAsync(
+                            chatId: Context.Chat.Id,
+                            messageId: message.MessageId,
+                            text: "❌ No result were found for your search settings.\n*Configure search settings:* /search",
+                            parseMode: ParseMode.Markdown
                         );
                         return;
                     }
 
-                    await EditMessageAsync(string.Format("✅ Found *{0}* objects.", results.Count), ParseMode.Markdown);
+                    await Context.BotService.Client.EditMessageTextAsync(
+                            chatId: Context.Chat.Id,
+                            messageId: message.MessageId,
+                            text: string.Format("✅ Found *{0}* objects.", results.Count),
+                            parseMode: ParseMode.Markdown
+                        );
 
                     if (results.Count > objLimit)
                     {
                         searchProcess = new SearchProcess
                         {
                             TelegramId = Context.User.Id,
-                            RealtyObjects = results,
+                            RealtyObjects = results.Skip(objLimit),
                             ItemsSentCount = objLimit,
                         };
 
@@ -166,7 +173,7 @@ namespace Masya.TelegramBot.Modules
                     return;
                 }
 
-                if (searchProcess.RealtyObjects.Count() > searchProcess.ItemsSentCount + objLimit)
+                if (searchProcess.RealtyObjects.Count() > objLimit)
                 {
                     await _cache.RemoveAsync(cacheKey);
 
@@ -175,13 +182,12 @@ namespace Masya.TelegramBot.Modules
                     await _cache.SetRecordAsync(
                         cacheKey,
                         searchProcess,
-                        TimeSpan.FromMinutes(10),
-                        TimeSpan.FromMinutes(3)
+                        TimeSpan.FromMinutes(10)
                     );
 
                     await SendResultsAsync(
                         searchProcess.RealtyObjects
-                            .Take(searchProcess.ItemsSentCount)
+                            .Take(objLimit)
                             .ToList()
                     );
 
@@ -195,7 +201,7 @@ namespace Masya.TelegramBot.Modules
                     return;
                 }
 
-                if (searchProcess.RealtyObjects.Count() <= searchProcess.ItemsSentCount + objLimit)
+                if (searchProcess.RealtyObjects.Count() <= objLimit)
                 {
                     await _cache.RemoveAsync(cacheKey);
                     await SendResultsAsync(
