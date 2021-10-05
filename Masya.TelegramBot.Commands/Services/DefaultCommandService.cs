@@ -180,22 +180,12 @@ namespace Masya.TelegramBot.Commands.Services
             MethodInfo = methodInfo
         };
 
-        public static bool IsValidCommand(MethodInfo method)
-        {
-            var commandAttr = method.GetCustomAttribute<CommandAttribute>();
-            var regUserAttr = method.GetCustomAttribute<RegisterUserAttribute>();
-
-            if (commandAttr != null && regUserAttr != null)
-            {
-                throw new FormatException("RegisterUserAttribute should not be used with CommandAttribute.");
-            }
-
-            return commandAttr != null
-                && method.IsPublic
-                && !method.IsAbstract
-                && !method.IsGenericMethod
-                && (method.ReturnType == typeof(Task) || method.ReturnType == typeof(Task<>));
-        }
+        public static bool IsValidCommand(MethodInfo method) =>
+            method.GetCustomAttribute<CommandAttribute>() != null
+            && method.IsPublic
+            && !method.IsAbstract
+            && !method.IsGenericMethod
+            && (method.ReturnType == typeof(Task) || method.ReturnType == typeof(Task<>));
 
         public static bool IsModuleType(TypeInfo type) =>
                 type.IsPublic
