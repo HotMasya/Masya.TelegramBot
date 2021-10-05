@@ -23,22 +23,13 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
         public static string GenerateSearchSettingsMessage(UserSettings userSettings)
         {
-            var selCategories = string.Empty;
-            foreach (var cat in userSettings.SelectedCategories)
-            {
-                selCategories += cat.Name + ", ";
-            }
+            var selCategories = userSettings.SelectedCategories != null && userSettings.SelectedCategories.Count > 0
+                ? string.Join(", ", userSettings.SelectedCategories.Select(c => c.Name))
+                : "any";
 
-            selCategories = string.IsNullOrEmpty(selCategories) ? "any" : selCategories.TrimEnd();
-
-            var selRegionsBuilder = new StringBuilder();
-            foreach (var reg in userSettings.SelectedRegions)
-            {
-                selRegionsBuilder.Append(reg.Value + ", ");
-            }
-
-            var selRegions = selRegionsBuilder.ToString();
-            selRegions = string.IsNullOrEmpty(selRegions) ? "any" : selRegions.TrimEnd();
+            var selRegions = userSettings.SelectedRegions != null && userSettings.SelectedRegions.Count > 0
+                ? string.Join(", ", userSettings.SelectedRegions.Select(r => r.Value))
+                : "any";
 
             var selRooms = userSettings.Rooms.Any()
                 ? string.Join(", ", userSettings.Rooms.Select(r => r.RoomsCount.ToString()).OrderBy(r => r))
