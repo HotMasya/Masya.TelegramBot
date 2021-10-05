@@ -20,7 +20,6 @@ namespace Masya.TelegramBot.Commands.Services
         where TAliasInfo : AliasInfo
         where TCommandInfo : CommandInfo<TAliasInfo>, new()
     {
-        protected ContactHandlerInfo contactHandler;
         protected readonly List<TCommandInfo> commands;
         protected readonly List<CallbackInfo> callbacks;
         protected readonly IServiceProvider services;
@@ -87,12 +86,6 @@ namespace Masya.TelegramBot.Commands.Services
 
         public virtual async Task ExecuteCommandAsync(Message message)
         {
-            if (message.Contact != null)
-            {
-                await HandleContact(message);
-                return;
-            }
-
             if (string.IsNullOrEmpty(message.Text))
             {
                 return;
@@ -156,10 +149,6 @@ namespace Masya.TelegramBot.Commands.Services
                             {
                                 commands.Add(BuildCommandInfo(method));
                             }
-                            else if (IsContactHandler(method))
-                            {
-                                contactHandler = new ContactHandlerInfo(method);
-                            }
                             else if (IsValidCallbackHandler(method))
                             {
                                 callbacks.Add(new CallbackInfo
@@ -203,31 +192,6 @@ namespace Masya.TelegramBot.Commands.Services
 
             return commandAttr != null
                 && method.IsPublic
-                && !method.IsAbstract
-                && !method.IsGenericMethod
-                && (method.ReturnType == typeof(Task) || method.ReturnType == typeof(Task<>));
-        }
-
-        public static bool IsContactHandler(MethodInfo method)
-        {
-            var methodParams = method.GetParameters();
-
-            if (method.GetCustomAttribute<RegisterUserAttribute>() == null)
-            {
-                return false;
-            }
-
-            if (methodParams.Length != 1 || methodParams[0].ParameterType != typeof(Contact))
-            {
-                throw new FormatException(
-                    string.Format(
-                        "The contact handler should accept only one parameter of type {0}",
-                        typeof(Contact).FullName
-                    )
-                );
-            }
-
-            return method.IsPublic
                 && !method.IsAbstract
                 && !method.IsGenericMethod
                 && (method.ReturnType == typeof(Task) || method.ReturnType == typeof(Task<>));
@@ -338,36 +302,6 @@ namespace Masya.TelegramBot.Commands.Services
                 $"Please, specify {paramName}",
                 cancellationToken: cancellationToken
                 );
-        }
-
-        protected virtual async Task HandleContact(Message message)
-        {
-            logger.LogInformation(
-                "Received a contact: {0} {1} {2}",
-                message.Contact.FirstName,
-                message.Contact.LastName,
-                message.Contact.PhoneNumber
-            );
-
-            if (contactHandler == null) return;
-
-            using var scope = services.CreateScope();
-            var moduleInstance = ActivatorUtilities.CreateInstance(
-                scope.ServiceProvider,
-                contactHandler.MethodInfo.DeclaringType,
-                Array.Empty<object>()
-            );
-            var propInfo = contactHandler.MethodInfo.DeclaringType.GetProperty("Context");
-            var context = new DefaultCommandContext<TCommandInfo, TAliasInfo>(
-                botService: BotService,
-                commandService: this,
-                chat: message.Chat,
-                user: message.From,
-                message: message
-            );
-
-            propInfo.SetValue(moduleInstance, context);
-            await (Task)contactHandler.MethodInfo.Invoke(moduleInstance, new[] { message.Contact });
         }
     }
 }
