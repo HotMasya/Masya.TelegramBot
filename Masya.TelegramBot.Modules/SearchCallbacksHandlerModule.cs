@@ -244,13 +244,15 @@ namespace Masya.TelegramBot.Modules
 
                     for (int i = 1; i < r.Images.Count; i++)
                     {
-                        photos.Add(
-                            await UrlToTelegramPhotoAsync(
+                        var photo = await UrlToTelegramPhotoAsync(
                                 r.Images[i].Url,
                                 r.Images[i].Id.ToString(),
                                 httpClient
-                            )
                         );
+
+                        if (photo == null) continue;
+
+                        photos.Add(photo);
                     }
 
                     if (photos.Count > 0)
@@ -271,16 +273,23 @@ namespace Masya.TelegramBot.Modules
             string caption = null
         )
         {
-            var fImageBytes = await client.GetByteArrayAsync(url);
-            var inputFile = new InputMedia(new MemoryStream(fImageBytes), fileName);
-            var inputPhoto = new InputMediaPhoto(inputFile);
-            if (!string.IsNullOrEmpty(caption))
+            try
             {
-                inputPhoto.Caption = caption;
-                inputPhoto.ParseMode = ParseMode.Markdown;
-            }
+                var fImageBytes = await client.GetByteArrayAsync(url);
+                var inputFile = new InputMedia(new MemoryStream(fImageBytes), fileName);
+                var inputPhoto = new InputMediaPhoto(inputFile);
+                if (!string.IsNullOrEmpty(caption))
+                {
+                    inputPhoto.Caption = caption;
+                    inputPhoto.ParseMode = ParseMode.Markdown;
+                }
 
-            return inputPhoto;
+                return inputPhoto;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private static string BuildRealtyObjectDescr(RealtyObject obj)
