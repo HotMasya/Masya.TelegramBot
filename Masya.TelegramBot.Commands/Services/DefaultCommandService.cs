@@ -80,8 +80,8 @@ namespace Masya.TelegramBot.Commands.Services
                 callback: callback
             );
             propInfo.SetValue(moduleInstance, context);
-            await (Task)callbackInfo.Handler.Invoke(moduleInstance, callbackParams.MatchParamTypes(callbackInfo.Handler));
             await BotService.Client.AnswerCallbackQueryAsync(callback.Id);
+            await (Task)callbackInfo.Handler.Invoke(moduleInstance, callbackParams.MatchParamTypes(callbackInfo.Handler));
         }
 
         public virtual async Task ExecuteCommandAsync(Message message)
