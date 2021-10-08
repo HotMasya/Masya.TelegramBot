@@ -31,7 +31,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 ? string.Join(", ", userSettings.SelectedRegions.Select(r => r.Value))
                 : "any";
 
-            var selRooms = userSettings.Rooms.Any()
+            var selRooms = userSettings.Rooms != null && userSettings.Rooms.Any()
                 ? string.Join(", ", userSettings.Rooms.Select(r => r.RoomsCount.ToString()).OrderBy(r => r))
                 : "any";
 

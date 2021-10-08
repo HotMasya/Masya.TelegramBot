@@ -8,5 +8,6 @@ namespace Masya.TelegramBot.DatabaseExtensions
         public long TelegramId { get; set; }
         public IEnumerable<RealtyObject> RealtyObjects { get; set; }
         public int ItemsSentCount { get; set; }
+        public int TotalItemsFound { get; set; }
     }
 }

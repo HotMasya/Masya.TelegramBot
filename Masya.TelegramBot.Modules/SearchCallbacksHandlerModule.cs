@@ -142,6 +142,7 @@ namespace Masya.TelegramBot.Modules
                             TelegramId = Context.User.Id,
                             RealtyObjects = results.Skip(objLimit),
                             ItemsSentCount = objLimit,
+                            TotalItemsFound = results.Count,
                         };
 
                         await _cache.SetRecordAsync(
@@ -155,7 +156,7 @@ namespace Masya.TelegramBot.Modules
                             content: string.Format(
                                 "Sent *{0} of {1}* results.\nThe button below will be unavailable in 10 minutes.",
                                 searchProcess.ItemsSentCount,
-                                searchProcess.RealtyObjects.Count()
+                                searchProcess.TotalItemsFound
                             ),
                             replyMarkup: new InlineKeyboardMarkup(
                                 InlineKeyboardButton.WithCallbackData("🔍See more", CallbackDataTypes.ExecuteSearch)
@@ -192,7 +193,11 @@ namespace Masya.TelegramBot.Modules
                     );
 
                     await ReplyAsync(
-                        content: string.Format("Sent *{0} of {1}* results.", searchProcess.ItemsSentCount, searchProcess.RealtyObjects.Count()),
+                        content: string.Format(
+                            "Sent *{0} of {1}* results.",
+                            searchProcess.ItemsSentCount,
+                            searchProcess.TotalItemsFound
+                        ),
                         replyMarkup: new InlineKeyboardMarkup(
                             InlineKeyboardButton.WithCallbackData("🔍See more", CallbackDataTypes.ExecuteSearch)
                         ),
