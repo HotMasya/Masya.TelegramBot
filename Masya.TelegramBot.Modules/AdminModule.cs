@@ -33,6 +33,7 @@ namespace Masya.TelegramBot.Modules
                 _dbContext.Users.Remove(developer);
                 await _dbContext.SaveChangesAsync();
                 await ReplyAsync("✅ Sucessfully removed you from the database!");
+                return;
             }
 
             await ReplyAsync("⚠ You are not in the database yet.");
@@ -53,6 +54,7 @@ namespace Masya.TelegramBot.Modules
                 developer.Permission = Permission.SuperAdmin;
                 await _dbContext.SaveChangesAsync();
                 await ReplyAsync("✅ Sucessfully granted *Super Admin* permission to you!", ParseMode.Markdown);
+                return;
             }
 
             await ReplyAsync("⚠ You are not in the database yet.");
