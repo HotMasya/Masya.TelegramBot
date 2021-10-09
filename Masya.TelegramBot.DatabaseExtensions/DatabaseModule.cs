@@ -145,7 +145,8 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 await ReplyAsync(
                     content: BuildRealtyObjectDescr(r),
                     parseMode: ParseMode.Markdown,
-                    replyMarkup: GenerateFavoriteButton(r, favorites)
+                    replyMarkup: GenerateFavoriteButton(r, favorites),
+                    disableNotification: true
                 );
                 await Task.Delay(TimeSpan.FromSeconds(delay));
             }
