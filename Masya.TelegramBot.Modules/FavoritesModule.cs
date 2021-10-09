@@ -4,6 +4,8 @@ using Masya.TelegramBot.Commands.Attributes;
 using Masya.TelegramBot.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Masya.TelegramBot.DatabaseExtensions;
+using Masya.TelegramBot.DataAccess.Models;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -17,7 +19,7 @@ namespace Masya.TelegramBot.Modules
         }
 
         [Command("/favorites")]
-        public async Task HandleFavoritesCommand()
+        public async Task HandleFavoritesCommandAsync()
         {
             var favorites = await _dbContext.Favorites
                 .Include(f => f.RealtyObject)
@@ -32,7 +34,62 @@ namespace Masya.TelegramBot.Modules
                 );
             }
 
-            await SendResultsAsync(favorites);
+            await SendResultsAsync(favorites, favorites);
+        }
+
+        [Callback(CallbackDataTypes.RemoveFromFavorites)]
+        public async Task HandleRemoveFromFavoritesAsync(int objId)
+        {
+            var favorite = await _dbContext.Favorites.FirstOrDefaultAsync(f => f.RealtyObjectId == objId);
+
+            if (favorite != null)
+            {
+                _dbContext.Favorites.Remove(favorite);
+                await _dbContext.SaveChangesAsync();
+
+                await EditMessageAsync(
+                    replyMarkup: new InlineKeyboardMarkup(
+                        InlineKeyboardButton.WithCallbackData(
+                            "❤ Favorite",
+                            string.Join(
+                                Context.CommandService.Options.CallbackDataSeparator,
+                                CallbackDataTypes.AddToFavorites,
+                                objId.ToString()
+                            )
+                        )
+                    )
+                );
+            }
+        }
+
+        [Callback(CallbackDataTypes.AddToFavorites)]
+        public async Task HandleAddToFavoritesAsync(int objId)
+        {
+            var obj = await _dbContext.RealtyObjects.FirstOrDefaultAsync(ro => ro.Id == objId);
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.TelegramAccountId == Context.User.Id);
+            if (obj != null && user != null)
+            {
+                _dbContext.Favorites.Add(
+                    new Favorites
+                    {
+                        User = user,
+                        RealtyObject = obj
+                    }
+                );
+                await _dbContext.SaveChangesAsync();
+                await EditMessageAsync(
+                    replyMarkup: new InlineKeyboardMarkup(
+                        InlineKeyboardButton.WithCallbackData(
+                            "❌ Remove from favorites",
+                            string.Join(
+                                Context.CommandService.Options.CallbackDataSeparator,
+                                CallbackDataTypes.RemoveFromFavorites,
+                                objId.ToString()
+                            )
+                        )
+                    )
+                );
+            }
         }
     }
 }
