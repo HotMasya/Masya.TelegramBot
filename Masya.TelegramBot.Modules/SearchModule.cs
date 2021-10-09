@@ -20,19 +20,19 @@ using System.IO;
 
 namespace Masya.TelegramBot.Modules
 {
-    public sealed class SearchCallbacksHandlerModule : DatabaseModule
+    public sealed class SearchModule : DatabaseModule
     {
         private readonly IKeyboardGenerator _keyboards;
         private readonly ApplicationDbContext _dbContext;
         private readonly IDistributedCache _cache;
-        private readonly ILogger<SearchCallbacksHandlerModule> _logger;
+        private readonly ILogger<SearchModule> _logger;
 
         private const string SearchProcessPrefix = "SearchProcess_";
 
-        public SearchCallbacksHandlerModule(
+        public SearchModule(
             ApplicationDbContext dbContext,
             IKeyboardGenerator keyboards,
-            ILogger<SearchCallbacksHandlerModule> logger,
+            ILogger<SearchModule> logger,
             IDistributedCache cache
         )
         {

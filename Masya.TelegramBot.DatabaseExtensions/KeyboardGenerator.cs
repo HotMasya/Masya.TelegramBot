@@ -321,14 +321,14 @@ namespace Masya.TelegramBot.DatabaseExtensions
             return new ReplyKeyboardMarkup(buttons) { ResizeKeyboard = true };
         }
 
-        public IReplyMarkup Roles()
+        public static IReplyMarkup Roles()
         {
             var buttons = new List<KeyboardButton>
             {
                 new KeyboardButton("Agent"),
                 new KeyboardButton("Customer")
             };
-            return new ReplyKeyboardMarkup(buttons);
+            return new ReplyKeyboardMarkup(buttons) { ResizeKeyboard = true };
         }
     }
 }

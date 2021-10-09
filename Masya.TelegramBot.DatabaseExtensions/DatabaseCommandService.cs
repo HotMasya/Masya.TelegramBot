@@ -23,19 +23,13 @@ namespace Masya.TelegramBot.DatabaseExtensions
 {
     public sealed class DatabaseCommandService : DefaultCommandService<DatabaseCommandInfo, DatabaseAliasInfo>
     {
-        private readonly IKeyboardGenerator _keyboards;
-
         public DatabaseCommandService(
             IOptionsMonitor<CommandServiceOptions> options,
             IBotService<DatabaseCommandInfo, DatabaseAliasInfo> botService,
             IServiceProvider services,
-            ILogger<DefaultCommandService<DatabaseCommandInfo, DatabaseAliasInfo>> logger,
-            IKeyboardGenerator keyboards
+            ILogger<DefaultCommandService<DatabaseCommandInfo, DatabaseAliasInfo>> logger
             )
-            : base(options, botService, services, logger)
-        {
-            _keyboards = keyboards;
-        }
+            : base(options, botService, services, logger) { }
 
         public override async Task LoadCommandsAsync(Assembly assembly)
         {
@@ -64,7 +58,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
             await BotService.Client.SendTextMessageAsync(
                 chatId: chatId,
                 text: "Who are you?",
-                replyMarkup: _keyboards.Roles()
+                replyMarkup: KeyboardGenerator.Roles()
             );
         }
 
@@ -166,22 +160,25 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
                 using var scope = services.CreateScope();
                 var ctx = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var keyboards = scope.ServiceProvider.GetRequiredService<IKeyboardGenerator>();
                 ctx.Users.Add(dbUser);
                 ctx.SaveChanges();
                 BotService.Client.SendTextMessageAsync(
                     chatId: message.Chat.Id,
                     text: MessageGenerators.GenerateMenuMessage(dbUser),
                     parseMode: ParseMode.Markdown,
-                    replyMarkup: _keyboards.Menu(dbUser.Permission)
+                    replyMarkup: keyboards.Menu(dbUser.Permission)
                     ).Wait();
             };
 
             collector.OnMessageTimeout += (sender, args) =>
             {
+                using var scope = services.CreateScope();
+                var keyboards = scope.ServiceProvider.GetRequiredService<IKeyboardGenerator>();
                 BotService.Client.SendTextMessageAsync(
                         chatId: message.Chat.Id,
                         text: "The time is out, please, try again.",
-                        replyMarkup: _keyboards.Menu(dbUser.Permission)
+                        replyMarkup: keyboards.Menu(dbUser.Permission)
                     ).Wait();
             };
 
