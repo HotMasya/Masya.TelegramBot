@@ -82,6 +82,11 @@ namespace Masya.TelegramBot.Modules
                 string cacheKey = SearchProcessPrefix + Context.User.Id;
                 int objLimit = Context.CommandService.Options.ObjectsSentLimit;
                 var searchProcess = await _cache.GetRecordAsync<SearchProcess>(cacheKey);
+                var favorites = await _dbContext.Favorites
+                    .Include(f => f.RealtyObject)
+                    .Where(f => f.User.TelegramAccountId == Context.User.Id)
+                    .Select(f => f.RealtyObject)
+                    .ToListAsync();
 
                 if (searchProcess == null)
                 {
@@ -151,7 +156,10 @@ namespace Masya.TelegramBot.Modules
                             TimeSpan.FromMinutes(10)
                         );
 
-                        await SendResultsAsync(results.Take(searchProcess.ItemsSentCount).ToList());
+                        await SendResultsAsync(
+                            results.Take(searchProcess.ItemsSentCount).ToList(),
+                            favorites
+                        );
                         await ReplyAsync(
                             content: string.Format(
                                 "Sent *{0} of {1}* results.\nThe button below will be unavailable in 10 minutes.",
@@ -166,7 +174,10 @@ namespace Masya.TelegramBot.Modules
                         return;
                     }
 
-                    await SendResultsAsync(results.Take(objLimit).ToList());
+                    await SendResultsAsync(
+                        results.Take(objLimit).ToList(),
+                        favorites
+                    );
                     await ReplyAsync(
                         "There are no more results with such search settings.\n*Configure search settings:* /search",
                         ParseMode.Markdown
@@ -187,9 +198,8 @@ namespace Masya.TelegramBot.Modules
                     );
 
                     await SendResultsAsync(
-                        searchProcess.RealtyObjects
-                            .Take(objLimit)
-                            .ToList()
+                        searchProcess.RealtyObjects.Take(objLimit).ToList(),
+                        favorites
                     );
 
                     await ReplyAsync(
@@ -213,7 +223,8 @@ namespace Masya.TelegramBot.Modules
                         searchProcess.RealtyObjects
                             .Skip(searchProcess.ItemsSentCount)
                             .Take(objLimit)
-                            .ToList()
+                            .ToList(),
+                        favorites
                     );
                     await ReplyAsync(
                         "There are no more results with such search settings.\n*Configure search settings:* /search",
