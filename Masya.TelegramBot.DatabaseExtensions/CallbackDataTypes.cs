@@ -11,5 +11,8 @@ namespace Masya.TelegramBot.DatabaseExtensions
         public const string UpdateRooms = "__SEARCH_SETTINGS_ROOMS__";
         public const string UpdateFloors = "__SEARCH_SETTINGS_FLOORS__";
         public const string UpdatePrice = "__SEARCH_SETTINGS_PRICE__";
+
+        public const string AddToFavorites = "__FAVORITES_ADD__";
+        public const string RemoveFromFavorites = "__FAVORITES_REMOVE__";
     }
 }
