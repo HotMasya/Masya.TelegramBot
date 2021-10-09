@@ -49,7 +49,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
             if (obj.WallMaterial != null)
             {
                 builder.AppendLine(
-                    string.Format("\n🧱 State: *{0}*", obj.WallMaterial.Value)
+                    string.Format("\n🧱 Walls material: *{0}*", obj.WallMaterial.Value)
                 );
             }
 
