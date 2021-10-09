@@ -6,6 +6,7 @@ using Masya.TelegramBot.DataAccess.Models;
 using Masya.TelegramBot.DataAccess.Types;
 using Masya.TelegramBot.DatabaseExtensions.Abstractions;
 using Masya.TelegramBot.DatabaseExtensions.Metadata;
+using Masya.TelegramBot.DatabaseExtensions.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

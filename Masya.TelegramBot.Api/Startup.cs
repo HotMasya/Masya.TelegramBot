@@ -19,6 +19,7 @@ using System;
 using Coravel;
 using Masya.TelegramBot.DatabaseExtensions.Metadata;
 using Masya.TelegramBot.DatabaseExtensions.Abstractions;
+using Masya.TelegramBot.DatabaseExtensions.Utils;
 using Masya.TelegramBot.Api.Services.Abstractions;
 using Microsoft.Extensions.Logging;
 using Coravel.Queuing.Interfaces;

@@ -8,11 +8,12 @@ using Masya.TelegramBot.DataAccess;
 using Masya.TelegramBot.DataAccess.Models;
 using Masya.TelegramBot.DataAccess.Types;
 using Masya.TelegramBot.DatabaseExtensions.Abstractions;
+using Masya.TelegramBot.DatabaseExtensions.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace Masya.TelegramBot.DatabaseExtensions
+namespace Masya.TelegramBot.DatabaseExtensions.Utils
 {
     public sealed class KeyboardGenerator : IKeyboardGenerator
     {

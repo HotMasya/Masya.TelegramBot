@@ -2,7 +2,7 @@ using System.Linq;
 using System.Text;
 using Masya.TelegramBot.DataAccess.Models;
 
-namespace Masya.TelegramBot.DatabaseExtensions
+namespace Masya.TelegramBot.DatabaseExtensions.Utils
 {
     public static class MessageGenerators
     {

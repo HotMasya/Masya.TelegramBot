@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Masya.TelegramBot.Commands;
 using Masya.TelegramBot.DataAccess.Models;
 using Masya.TelegramBot.DatabaseExtensions.Metadata;
+using Masya.TelegramBot.DatabaseExtensions.Types;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;

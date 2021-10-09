@@ -1,4 +1,4 @@
-namespace Masya.TelegramBot.DatabaseExtensions
+namespace Masya.TelegramBot.DatabaseExtensions.Types
 {
     public static class CallbackDataTypes
     {

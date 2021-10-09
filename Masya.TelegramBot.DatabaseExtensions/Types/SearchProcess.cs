@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Masya.TelegramBot.DataAccess.Models;
 
-namespace Masya.TelegramBot.DatabaseExtensions
+namespace Masya.TelegramBot.DatabaseExtensions.Types
 {
     public sealed class SearchProcess
     {

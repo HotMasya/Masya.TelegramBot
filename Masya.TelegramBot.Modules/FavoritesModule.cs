@@ -4,6 +4,7 @@ using Masya.TelegramBot.Commands.Attributes;
 using Masya.TelegramBot.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Masya.TelegramBot.DatabaseExtensions;
+using Masya.TelegramBot.DatabaseExtensions.Types;
 using Masya.TelegramBot.DataAccess.Models;
 using Telegram.Bot.Types.ReplyMarkups;
 

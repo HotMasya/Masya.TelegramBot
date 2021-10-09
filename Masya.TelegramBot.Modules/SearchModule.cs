@@ -1,22 +1,19 @@
 using Masya.TelegramBot.Commands.Attributes;
+using Masya.TelegramBot.DatabaseExtensions.Utils;
 using Masya.TelegramBot.DatabaseExtensions;
 using Masya.TelegramBot.DatabaseExtensions.Abstractions;
+using Masya.TelegramBot.DatabaseExtensions.Types;
+using Masya.TelegramBot.DataAccess;
+using Masya.TelegramBot.DataAccess.Models;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 using System.Linq;
 using System.Threading.Tasks;
-using Masya.TelegramBot.DataAccess;
+using System;
 using Microsoft.EntityFrameworkCore;
-using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types;
-using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System;
-using Telegram.Bot.Types.ReplyMarkups;
-using System.IO;
 
 namespace Masya.TelegramBot.Modules
 {
