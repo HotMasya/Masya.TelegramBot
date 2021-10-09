@@ -86,6 +86,11 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
         private InlineKeyboardMarkup GenerateFavoriteButton(RealtyObject obj, List<RealtyObject> favorites)
         {
+            if (favorites == null)
+            {
+                return null;
+            }
+
             if (favorites.Any(f => f.Id == obj.Id))
             {
                 return new InlineKeyboardMarkup(
@@ -112,7 +117,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
             );
         }
 
-        protected async Task SendResultsAsync(List<RealtyObject> results, List<RealtyObject> favorites, int delay = 5)
+        protected async Task SendObjectsAsync(List<RealtyObject> results, List<RealtyObject> favorites = null, int delay = 5)
         {
             using var httpClient = new HttpClient();
 

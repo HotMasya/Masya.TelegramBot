@@ -150,7 +150,7 @@ namespace Masya.TelegramBot.Modules
                             TimeSpan.FromMinutes(10)
                         );
 
-                        await SendResultsAsync(
+                        await SendObjectsAsync(
                             results.Take(searchProcess.ItemsSentCount).ToList(),
                             favorites
                         );
@@ -168,7 +168,7 @@ namespace Masya.TelegramBot.Modules
                         return;
                     }
 
-                    await SendResultsAsync(
+                    await SendObjectsAsync(
                         results.Take(objLimit).ToList(),
                         favorites
                     );
@@ -191,7 +191,7 @@ namespace Masya.TelegramBot.Modules
                         TimeSpan.FromMinutes(10)
                     );
 
-                    await SendResultsAsync(
+                    await SendObjectsAsync(
                         searchProcess.RealtyObjects.Take(objLimit).ToList(),
                         favorites
                     );
@@ -213,7 +213,7 @@ namespace Masya.TelegramBot.Modules
                 if (searchProcess.RealtyObjects.Count() <= objLimit)
                 {
                     await _cache.RemoveAsync(cacheKey);
-                    await SendResultsAsync(
+                    await SendObjectsAsync(
                         searchProcess.RealtyObjects
                             .Skip(searchProcess.ItemsSentCount)
                             .Take(objLimit)

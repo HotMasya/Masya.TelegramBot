@@ -31,11 +31,11 @@ namespace Masya.TelegramBot.Modules
             if (favorites == null || favorites.Count == 0)
             {
                 await ReplyAsync(
-                    "❌ You have no favorited objects.\nYou can use command /search to search and favorite some objects."
+                    "❌ You have no favorited objects.\n\nUse command /search to *search and favorite* some objects."
                 );
             }
 
-            await SendResultsAsync(favorites, favorites, 3);
+            await SendObjectsAsync(favorites, favorites, 3);
         }
 
         [Callback(CallbackDataTypes.RemoveFromFavorites)]

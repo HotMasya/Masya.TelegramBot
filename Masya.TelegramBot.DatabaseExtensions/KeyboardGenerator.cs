@@ -330,5 +330,33 @@ namespace Masya.TelegramBot.DatabaseExtensions
             };
             return new ReplyKeyboardMarkup(buttons) { ResizeKeyboard = true };
         }
+
+        public async Task<InlineKeyboardMarkup> SelectCategoriesAsync()
+        {
+            var categories = await _dbContext.Categories.Select(c => new { c.Id, c.Name }).ToListAsync();
+            var rows = (int)Math.Ceiling(categories.Count / (double)Options.MaxSearchColumns) + 1;
+            var buttons = new List<List<InlineKeyboardButton>>();
+            var categoriesIndex = 0;
+            for (int i = 0; i < rows - 1; i++)
+            {
+                buttons.Add(new List<InlineKeyboardButton>());
+                for (int j = 0; j < Options.MaxSearchColumns && categoriesIndex < categories.Count; j++, categoriesIndex++)
+                {
+                    buttons[^1].Add(
+                        InlineKeyboardButton.WithCallbackData(
+                            categories[categoriesIndex].Name,
+                            string.Join(
+                                Options.CallbackDataSeparator,
+                                CallbackDataTypes.SetObjectType,
+                                categories[categoriesIndex].Id.ToString()
+                            )
+                        )
+                    );
+                }
+                if (categoriesIndex == categories.Count) break;
+            }
+
+            return new InlineKeyboardMarkup(buttons);
+        }
     }
 }

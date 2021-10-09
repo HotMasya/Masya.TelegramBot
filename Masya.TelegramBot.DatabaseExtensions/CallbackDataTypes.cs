@@ -14,5 +14,20 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
         public const string AddToFavorites = "__FAVORITES_ADD__";
         public const string RemoveFromFavorites = "__FAVORITES_REMOVE__";
+
+        public const string SetObjectType = "__OBJECT_SET_TYPE__";
+        public const string SetObjectRegion = "__OBJECT_SET_REGION__";
+        public const string SetObjectStreet = "__OBJECT_SET_STREET__";
+        public const string SetObjectRoomsCount = "__OBJECT_SET_ROOMS__";
+        public const string SetObjectWallsMaterial = "__OBJECT_SET_WALLS_MATERIAL__";
+        public const string SetObjectState = "__OBJECT_SET_STATE__";
+        public const string SetObjectDescription = "__OBJECT_SET_DESCRIPTION__";
+        public const string SetObjectFloor = "__OBJECT_SET_FLOOR__";
+        public const string SetObjectTotalFloors = "__OBJECT_SET_TOTAL_FLOORS__";
+        public const string SetObjectPrice = "__OBJECT_SET_PRICE__";
+        public const string SetObjectLotArea = "__OBJECT_SET_LOT_AREA__";
+        public const string SetObjectKitchenArea = "__OBJECT_SET_KITCHEN_AREA__";
+        public const string SetObjectTotalArea = "__OBJECT_SET_TOTAL_AREA__";
+        public const string SetObjectLivingArea = "__OBJECT_SET_LIVING_AREA__";
     }
 }
