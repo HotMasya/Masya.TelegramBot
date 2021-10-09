@@ -7,6 +7,7 @@ using Masya.TelegramBot.DatabaseExtensions;
 using Masya.TelegramBot.DatabaseExtensions.Types;
 using Masya.TelegramBot.DataAccess.Models;
 using Telegram.Bot.Types.ReplyMarkups;
+using Telegram.Bot.Types.Enums;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -32,7 +33,8 @@ namespace Masya.TelegramBot.Modules
             if (favorites == null || favorites.Count == 0)
             {
                 await ReplyAsync(
-                    "❌ You have no favorited objects.\n\nUse command /search to *search and favorite* some objects."
+                    "❌ You have no favorited objects.\n\nUse command /search to *search and favorite* some objects.",
+                    ParseMode.Markdown
                 );
             }
 
