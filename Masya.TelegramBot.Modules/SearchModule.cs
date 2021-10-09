@@ -103,12 +103,6 @@ namespace Masya.TelegramBot.Modules
                     var allObjects = await _dbContext.RealtyObjects
                         .AsNoTracking()
                         .AsSplitQuery()
-                        .Include(ro => ro.Images)
-                        .Include(ro => ro.Category)
-                        .Include(ro => ro.District)
-                        .Include(ro => ro.WallMaterial)
-                        .Include(ro => ro.State)
-                        .Include(ro => ro.Street)
                         .OrderBy(ro => ro.Id)
                         .ToListAsync();
 

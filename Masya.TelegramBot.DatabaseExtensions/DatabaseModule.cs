@@ -112,13 +112,12 @@ namespace Masya.TelegramBot.DatabaseExtensions
             );
         }
 
-        protected async Task SendResultsAsync(List<RealtyObject> results, List<RealtyObject> favorites)
+        protected async Task SendResultsAsync(List<RealtyObject> results, List<RealtyObject> favorites, int delay = 5)
         {
             using var httpClient = new HttpClient();
 
             foreach (var r in results)
             {
-                await Task.Delay(TimeSpan.FromSeconds(5));
                 if (r.Images != null)
                 {
                     var photos = new List<InputMediaPhoto>();
@@ -148,6 +147,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                     parseMode: ParseMode.Markdown,
                     replyMarkup: GenerateFavoriteButton(r, favorites)
                 );
+                await Task.Delay(TimeSpan.FromSeconds(delay));
             }
         }
 

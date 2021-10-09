@@ -52,6 +52,13 @@ namespace Masya.TelegramBot.DataAccess
                 .Entity<Category>()
                 .Property(c => c.SuperType)
                 .HasConversion<int>();
+
+            modelBuilder.Entity<RealtyObject>().Navigation(ro => ro.Images).AutoInclude();
+            modelBuilder.Entity<RealtyObject>().Navigation(ro => ro.WallMaterial).AutoInclude();
+            modelBuilder.Entity<RealtyObject>().Navigation(ro => ro.State).AutoInclude();
+            modelBuilder.Entity<RealtyObject>().Navigation(ro => ro.District).AutoInclude();
+            modelBuilder.Entity<RealtyObject>().Navigation(ro => ro.Category).AutoInclude();
+            modelBuilder.Entity<RealtyObject>().Navigation(ro => ro.Street).AutoInclude();
         }
 
         public static async Task SeedDatabase(DbContext context)

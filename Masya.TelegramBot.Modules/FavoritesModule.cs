@@ -22,6 +22,7 @@ namespace Masya.TelegramBot.Modules
         public async Task HandleFavoritesCommandAsync()
         {
             var favorites = await _dbContext.Favorites
+                .AsNoTracking()
                 .Include(f => f.RealtyObject)
                 .Where(f => f.User.TelegramAccountId == Context.User.Id)
                 .Select(f => f.RealtyObject)
@@ -34,7 +35,7 @@ namespace Masya.TelegramBot.Modules
                 );
             }
 
-            await SendResultsAsync(favorites, favorites);
+            await SendResultsAsync(favorites, favorites, 3);
         }
 
         [Callback(CallbackDataTypes.RemoveFromFavorites)]
