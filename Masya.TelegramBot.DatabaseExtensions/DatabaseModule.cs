@@ -118,49 +118,28 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
             foreach (var r in results)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1));
-                if (r.Images != null && r.Images.Count > 0)
+                await Task.Delay(TimeSpan.FromSeconds(5));
+                if (r.Images != null)
                 {
-                    var photos = new List<InputMediaPhoto>
+                    var photos = new List<InputMediaPhoto>();
+                    foreach (var image in r.Images)
                     {
-                        await UrlToTelegramPhotoAsync(
-                            r.Images[0].Url,
-                            r.Images[0].Id.ToString(),
-                            httpClient,
-                            BuildRealtyObjectDescr(r)
-                        )
-                    };
-
-                    for (int i = 1; i < r.Images.Count; i++)
-                    {
-                        var photo = await UrlToTelegramPhotoAsync(
-                                r.Images[i].Url,
-                                r.Images[i].Id.ToString(),
+                        photos.Add(
+                            await UrlToTelegramPhotoAsync(
+                                image.Url,
+                                image.Id.ToString(),
                                 httpClient
+                            )
                         );
-
-                        if (photo == null) continue;
-
-                        photos.Add(photo);
                     }
 
                     if (photos.Count > 0)
                     {
-                        var messages = await Context.BotService.Client.SendMediaGroupAsync(
+                        await Context.BotService.Client.SendMediaGroupAsync(
                             chatId: Context.Chat.Id,
                             media: photos.Take(10),
                             disableNotification: true
                         );
-
-                        if (messages.Length > 0)
-                        {
-                            await Context.BotService.Client.EditMessageReplyMarkupAsync(
-                                chatId: Context.Chat.Id,
-                                messageId: messages[0].MessageId,
-                                replyMarkup: GenerateFavoriteButton(r, favorites)
-                            );
-                        }
-                        continue;
                     }
                 }
 
@@ -175,22 +154,14 @@ namespace Masya.TelegramBot.DatabaseExtensions
         private static async Task<InputMediaPhoto> UrlToTelegramPhotoAsync(
             string url,
             string fileName,
-            HttpClient client,
-            string caption = null
+            HttpClient client
         )
         {
             try
             {
                 var fImageBytes = await client.GetByteArrayAsync(url);
                 var inputFile = new InputMedia(new MemoryStream(fImageBytes), fileName);
-                var inputPhoto = new InputMediaPhoto(inputFile);
-                if (!string.IsNullOrEmpty(caption))
-                {
-                    inputPhoto.Caption = caption;
-                    inputPhoto.ParseMode = ParseMode.Markdown;
-                }
-
-                return inputPhoto;
+                return new InputMediaPhoto(inputFile);
             }
             catch
             {
