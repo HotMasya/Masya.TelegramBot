@@ -28,7 +28,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
 
             if (!string.IsNullOrEmpty(process.Description))
             {
-                builder.AppendLine(string.Format("📃 Description:\n _{0}_", process.Description));
+                builder.AppendLine(string.Format("📃 Description:\n _{0}_\n", process.Description));
             }
 
             if (!string.IsNullOrEmpty(process.Category))
