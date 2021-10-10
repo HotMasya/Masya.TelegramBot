@@ -73,6 +73,14 @@ namespace Masya.TelegramBot.Modules
             );
         }
 
+        [Callback(CallbackDataTypes.ShowObjectTypeButtions)]
+        public async Task HandleShowTypesButtonsAsync()
+        {
+            await EditMessageAsync(
+                replyMarkup: await _keyboards.SelectCategoriesAsync()
+            );
+        }
+
         [Callback(CallbackDataTypes.SetObjectType)]
         public async Task HandleSetObjectTypeAsync(int categoryId)
         {

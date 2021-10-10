@@ -15,6 +15,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Types
         public const string AddToFavorites = "__FAVORITES_ADD__";
         public const string RemoveFromFavorites = "__FAVORITES_REMOVE__";
 
+        public const string ShowObjectTypeButtions = "__OBJECT_SHOW_TYPES__";
         public const string SetObjectType = "__OBJECT_SET_TYPE__";
         public const string SetObjectRegion = "__OBJECT_SET_REGION__";
         public const string SetObjectStreet = "__OBJECT_SET_STREET__";
