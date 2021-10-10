@@ -74,6 +74,50 @@ namespace Masya.TelegramBot.Modules
             );
         }
 
+        [Callback(CallbackDataTypes.SetObjectPrice)]
+        public async Task HandleSetObjectPriceAsync()
+        {
+            Context.BotService.TryRemoveCollector(Context.Chat);
+            await EditMessageAsync();
+            var collector = Context.BotService.CreateMessageCollector(Context.Chat, TimeSpan.FromMinutes(2));
+            collector.Collect(m => m.Text);
+
+            collector.OnStart += async (sender, e) =>
+            {
+                await ReplyAsync("Please, send a valid price for your object.");
+            };
+
+            collector.OnMessageReceived += async (sender, e) =>
+            {
+                var parsed = int.TryParse(e.Message.Text, out int price);
+                if (!parsed || price <= 0)
+                {
+                    await ReplyAsync("❌ You have provided an invalid price.");
+                    collector.Finish();
+                    return;
+                }
+
+                var proc = await _cache.GetRecordAsync<CreateProcess>(CreateObjectProcessPrefix + Context.User.Id);
+                proc.Price = price;
+
+                await SaveCreationProcessAsync(proc);
+                await ReplyAsync("✅ Price has been set successfully!");
+                await SendCreationMenuMessageAsync(proc);
+
+                collector.Finish();
+                return;
+            };
+
+            collector.OnMessageTimeout += async (sender, e) =>
+            {
+                var proc = await _cache.GetRecordAsync<CreateProcess>(CreateObjectProcessPrefix + Context.User.Id);
+                await ReplyAsync("⌛ The time is out. Please, try again.");
+                await SendCreationMenuMessageAsync(proc);
+            };
+
+            collector.Start();
+        }
+
         [Callback(CallbackDataTypes.SetObjectDescription)]
         public async Task HandleSetObjectDescrAsync()
         {
@@ -98,11 +142,16 @@ namespace Masya.TelegramBot.Modules
 
                 var proc = await _cache.GetRecordAsync<CreateProcess>(CreateObjectProcessPrefix + Context.User.Id);
 
-                if (await TrySetObjectDescription(proc, e.Message.Text))
+                if (proc == null)
                 {
-                    await ReplyAsync("✅ Description has been set successfully!");
-                    await SendCreationMenuMessageAsync(proc);
+                    collector.Finish();
+                    return;
                 }
+
+                proc.Description = e.Message.Text;
+                await SaveCreationProcessAsync(proc);
+                await ReplyAsync("✅ Description has been set successfully!");
+                await SendCreationMenuMessageAsync(proc);
 
                 collector.Finish();
                 return;
@@ -128,22 +177,10 @@ namespace Masya.TelegramBot.Modules
             );
         }
 
-        private async Task<bool> TrySetObjectDescription(CreateProcess proc, string description)
-        {
-            if (proc == null)
-            {
-                return false;
-            }
-
-            proc.Description = description;
-            await SaveCreationProcessAsync(proc);
-            return true;
-        }
-
         private async Task SendCreationMenuMessageAsync(CreateProcess proc)
         {
-            await EditMessageAsync(
-                text: MessageGenerator.GenerateCreateProcessMessage(proc),
+            await ReplyAsync(
+                content: MessageGenerator.GenerateCreateProcessMessage(proc),
                 parseMode: ParseMode.Markdown,
                 replyMarkup: _keyboards.ShowCreationMenu(proc)
             );
@@ -177,7 +214,11 @@ namespace Masya.TelegramBot.Modules
             proc.Category = category.Name;
 
             await SaveCreationProcessAsync(proc);
-            await SendCreationMenuMessageAsync(proc);
+            await EditMessageAsync(
+                text: MessageGenerator.GenerateCreateProcessMessage(proc),
+                parseMode: ParseMode.Markdown,
+                replyMarkup: _keyboards.ShowCreationMenu(proc)
+            );
         }
     }
 }
