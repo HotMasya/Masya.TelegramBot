@@ -126,7 +126,8 @@ namespace Masya.TelegramBot.Modules
             await SaveCreationProcessAsync(proc);
             await EditMessageAsync(
                 text: MessageGenerator.GenerateCreateProcessMessage(proc),
-                replyMarkup: _keyboards.ShowCreationMenu(proc)
+                replyMarkup: _keyboards.ShowCreationMenu(proc),
+                parseMode: ParseMode.Markdown
             );
         }
 
