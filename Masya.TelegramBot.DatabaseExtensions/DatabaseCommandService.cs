@@ -267,6 +267,8 @@ namespace Masya.TelegramBot.DatabaseExtensions
                     text: "⌛ The time is out. Please, try again."
                 );
             };
+
+            collector.Start();
         }
 
         protected override DatabaseCommandInfo GetCommand(string name, Message message)
