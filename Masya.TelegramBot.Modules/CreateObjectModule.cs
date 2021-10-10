@@ -11,6 +11,7 @@ using Masya.TelegramBot.DatabaseExtensions.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -73,17 +74,88 @@ namespace Masya.TelegramBot.Modules
             );
         }
 
-        [Callback(CallbackDataTypes.ShowObjectTypeButtions)]
-        public async Task HandleShowTypesButtonsAsync()
+        [Callback(CallbackDataTypes.SetObjectDescription)]
+        public async Task HandleSetObjectDescrAsync()
+        {
+            await EditMessageAsync();
+            var collector = Context.BotService.CreateMessageCollector(Context.Chat, TimeSpan.FromMinutes(2));
+
+            collector.OnStart += async (sender, e) =>
+            {
+                await ReplyAsync("Please, send a valid description for your object.");
+            };
+
+            collector.OnMessageReceived += async (sender, e) =>
+            {
+                if (string.IsNullOrEmpty(e.Message.Text))
+                {
+                    await ReplyAsync("❌ You have provided an invalid description.");
+                    collector.Finish();
+                    return;
+                }
+
+                var proc = await _cache.GetRecordAsync<CreateProcess>(CreateObjectProcessPrefix + Context.User.Id);
+
+                if (await TrySetObjectDescription(proc, e.Message.Text))
+                {
+                    await ReplyAsync("✅ Description has been set successfully!");
+                    await SendCreationMenuMessageAsync(proc);
+                }
+
+                collector.Finish();
+                return;
+            };
+
+            collector.OnMessageTimeout += async (sender, e) =>
+            {
+                var proc = await _cache.GetRecordAsync<CreateProcess>(CreateObjectProcessPrefix + Context.User.Id);
+                await ReplyAsync("⌛ The time is out. Please, try again.");
+                await SendCreationMenuMessageAsync(proc);
+            };
+        }
+
+        private async Task SaveCreationProcessAsync(CreateProcess proc)
+        {
+            await _cache.SetRecordAsync(
+                CreateObjectProcessPrefix + Context.User.Id,
+                proc,
+                TimeSpan.FromDays(1),
+                TimeSpan.FromHours(1)
+            );
+        }
+
+        private async Task<bool> TrySetObjectDescription(CreateProcess proc, string description)
+        {
+            if (proc == null)
+            {
+                return false;
+            }
+
+            proc.Description = description;
+            await SaveCreationProcessAsync(proc);
+            return true;
+        }
+
+        private async Task SendCreationMenuMessageAsync(CreateProcess proc)
         {
             await EditMessageAsync(
-                replyMarkup: await _keyboards.SelectCategoriesAsync()
+                text: MessageGenerator.GenerateCreateProcessMessage(proc),
+                parseMode: ParseMode.Markdown,
+                replyMarkup: _keyboards.ShowCreationMenu(proc)
             );
         }
 
         [Callback(CallbackDataTypes.SetObjectType)]
-        public async Task HandleSetObjectTypeAsync(int categoryId)
+        public async Task HandleSetObjectTypeAsync(int categoryId = -1)
         {
+            if (categoryId == -1)
+            {
+                await EditMessageAsync(
+                    replyMarkup: await _keyboards.SelectCategoriesAsync()
+                );
+                return;
+            }
+
             var proc = await _cache.GetRecordAsync<CreateProcess>(CreateObjectProcessPrefix + Context.User.Id);
             var category = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
 
@@ -100,18 +172,8 @@ namespace Masya.TelegramBot.Modules
             proc.CategoryId = categoryId;
             proc.Category = category.Name;
 
-            await _cache.SetRecordAsync(
-                CreateObjectProcessPrefix + Context.User.Id,
-                proc,
-                TimeSpan.FromDays(1),
-                TimeSpan.FromHours(1)
-            );
-
-            await EditMessageAsync(
-                text: MessageGenerator.GenerateCreateProcessMessage(proc),
-                parseMode: ParseMode.Markdown,
-                replyMarkup: _keyboards.ShowCreationMenu(proc)
-            );
+            await SaveCreationProcessAsync(proc);
+            await SendCreationMenuMessageAsync(proc);
         }
     }
 }

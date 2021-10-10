@@ -41,7 +41,11 @@ namespace Masya.TelegramBot.Commands
                 );
             }
 
-            throw new InvalidOperationException("You should provide at least text or reply markup.");
+            return Context.BotService.Client.EditMessageReplyMarkupAsync(
+                    chatId: Context.Chat.Id,
+                    messageId: Context.Message.MessageId,
+                    replyMarkup: null
+            );
         }
 
         public Task<Message> ReplyAsync(

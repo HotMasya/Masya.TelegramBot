@@ -370,7 +370,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
             var buttons = new List<List<InlineKeyboardButton>>()
             {
                 new List<InlineKeyboardButton>{
-                    InlineKeyboardButton.WithCallbackData("Category", CallbackDataTypes.ShowObjectTypeButtions)
+                    InlineKeyboardButton.WithCallbackData("Category", CallbackDataTypes.SetObjectType)
                 },
                 new List<InlineKeyboardButton>{
                     InlineKeyboardButton.WithCallbackData("Description", CallbackDataTypes.SetObjectDescription),
