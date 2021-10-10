@@ -357,6 +357,46 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                 if (categoriesIndex == categories.Count) break;
             }
 
+            buttons.Add(new List<InlineKeyboardButton>{
+                InlineKeyboardButton.WithCallbackData("🔍 Search again", CallbackDataTypes.SetObjectStreet),
+                InlineKeyboardButton.WithCallbackData("❌ Cancel", CallbackDataTypes.CancelSetObjectStreet)
+            });
+
+            return new InlineKeyboardMarkup(buttons);
+        }
+
+        public async Task<InlineKeyboardMarkup> SearchStreetsResults(string query)
+        {
+            var streets = await _dbContext.DirectoryItems
+                .AsQueryable()
+                .Where(
+                    di => di.DirectoryId == (int)DirectoryType.Street
+                        && di.Value.Contains(query)
+                )
+                .ToListAsync();
+
+            var rows = (int)Math.Ceiling(streets.Count / (double)Options.MaxSearchColumns) + 1;
+            var buttons = new List<List<InlineKeyboardButton>>();
+            var streetsIndex = 0;
+            for (int i = 0; i < rows - 1; i++)
+            {
+                buttons.Add(new List<InlineKeyboardButton>());
+                for (int j = 0; j < Options.MaxSearchColumns && streetsIndex < streets.Count; j++, streetsIndex++)
+                {
+                    buttons[^1].Add(
+                        InlineKeyboardButton.WithCallbackData(
+                            streets[streetsIndex].Value,
+                            string.Join(
+                                Options.CallbackDataSeparator,
+                                CallbackDataTypes.SetObjectStreet,
+                                streets[streetsIndex].Id.ToString()
+                            )
+                        )
+                    );
+                }
+                if (streetsIndex == streets.Count) break;
+            }
+
             return new InlineKeyboardMarkup(buttons);
         }
 

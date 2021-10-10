@@ -10,6 +10,7 @@ using Masya.TelegramBot.DatabaseExtensions.Types;
 using Masya.TelegramBot.DatabaseExtensions.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -55,7 +56,7 @@ namespace Masya.TelegramBot.Modules
         [Command("/create")]
         public async Task CreateObjectCommandAsync()
         {
-            var proc = await _cache.GetRecordAsync<CreateProcess>(CreateObjectProcessPrefix + Context.User.Id);
+            var proc = await GetCurrentProcAsync();
 
             if (proc == null)
             {
@@ -72,6 +73,34 @@ namespace Masya.TelegramBot.Modules
                 parseMode: ParseMode.Markdown,
                 replyMarkup: _keyboards.ShowCreationMenu(proc)
             );
+        }
+
+        [Callback(CallbackDataTypes.SetObjectStreet)]
+        public async Task HandleSetObjectStreetAsync(int streetId)
+        {
+            var street = await _dbContext.DirectoryItems.FirstOrDefaultAsync(di => di.Id == streetId);
+
+            if (street == null)
+            {
+                return;
+            }
+
+            var proc = await GetCurrentProcAsync();
+
+            if (proc == null)
+            {
+                return;
+            }
+
+            await Context.BotService.Client.EditMessageReplyMarkupAsync(
+                chatId: Context.Chat.Id,
+                messageId: Context.Message.MessageId,
+                replyMarkup: null
+            );
+            proc.Street = street.Value;
+            proc.StreetId = street.Id;
+            await SaveCreationProcessAsync(proc);
+            await SendCreationMenuMessageAsync(proc);
         }
 
         [Callback(CallbackDataTypes.SetObjectPrice)]
@@ -97,7 +126,7 @@ namespace Masya.TelegramBot.Modules
                     return;
                 }
 
-                var proc = await _cache.GetRecordAsync<CreateProcess>(CreateObjectProcessPrefix + Context.User.Id);
+                var proc = await GetCurrentProcAsync();
                 proc.Price = price;
 
                 await SaveCreationProcessAsync(proc);
@@ -110,12 +139,20 @@ namespace Masya.TelegramBot.Modules
 
             collector.OnMessageTimeout += async (sender, e) =>
             {
-                var proc = await _cache.GetRecordAsync<CreateProcess>(CreateObjectProcessPrefix + Context.User.Id);
+                var proc = await GetCurrentProcAsync();
                 await ReplyAsync("⌛ The time is out. Please, try again.");
                 await SendCreationMenuMessageAsync(proc);
             };
 
             collector.Start();
+        }
+
+        [Callback(CallbackDataTypes.CancelSetObjectStreet)]
+        public async Task HandleCancelSetStreetAsync()
+        {
+            Context.BotService.TryRemoveCollector(Context.Chat);
+            var proc = await GetCurrentProcAsync();
+            await SendCreationMenuMessageAsync(proc);
         }
 
         [Callback(CallbackDataTypes.SetObjectDescription)]
@@ -133,14 +170,7 @@ namespace Masya.TelegramBot.Modules
 
             collector.OnMessageReceived += async (sender, e) =>
             {
-                if (string.IsNullOrEmpty(e.Message.Text))
-                {
-                    await ReplyAsync("❌ You have provided an invalid description.");
-                    collector.Finish();
-                    return;
-                }
-
-                var proc = await _cache.GetRecordAsync<CreateProcess>(CreateObjectProcessPrefix + Context.User.Id);
+                var proc = await GetCurrentProcAsync();
 
                 if (proc == null)
                 {
@@ -159,13 +189,16 @@ namespace Masya.TelegramBot.Modules
 
             collector.OnMessageTimeout += async (sender, e) =>
             {
-                var proc = await _cache.GetRecordAsync<CreateProcess>(CreateObjectProcessPrefix + Context.User.Id);
+                var proc = await GetCurrentProcAsync();
                 await ReplyAsync("⌛ The time is out. Please, try again.");
                 await SendCreationMenuMessageAsync(proc);
             };
 
             collector.Start();
         }
+
+        private async Task<CreateProcess> GetCurrentProcAsync()
+            => await _cache.GetRecordAsync<CreateProcess>(CreateObjectProcessPrefix + Context.User.Id);
 
         private async Task SaveCreationProcessAsync(CreateProcess proc)
         {
@@ -197,7 +230,7 @@ namespace Masya.TelegramBot.Modules
                 return;
             }
 
-            var proc = await _cache.GetRecordAsync<CreateProcess>(CreateObjectProcessPrefix + Context.User.Id);
+            var proc = await GetCurrentProcAsync();
             var category = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
 
             if (category == null)

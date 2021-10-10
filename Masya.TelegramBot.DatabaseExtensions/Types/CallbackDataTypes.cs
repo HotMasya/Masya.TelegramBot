@@ -18,6 +18,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Types
         public const string SetObjectType = "__OBJECT_SET_TYPE__";
         public const string SetObjectRegion = "__OBJECT_SET_REGION__";
         public const string SetObjectStreet = "__OBJECT_SET_STREET__";
+        public const string CancelSetObjectStreet = "__OBJECT_CANCEL_SET_STREET__";
         public const string SetObjectRoomsCount = "__OBJECT_SET_ROOMS__";
         public const string SetObjectWallsMaterial = "__OBJECT_SET_WALLS_MATERIAL__";
         public const string SetObjectState = "__OBJECT_SET_STATE__";

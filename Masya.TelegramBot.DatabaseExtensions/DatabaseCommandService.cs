@@ -6,6 +6,7 @@ using Masya.TelegramBot.DataAccess.Models;
 using Masya.TelegramBot.DataAccess.Types;
 using Masya.TelegramBot.DatabaseExtensions.Abstractions;
 using Masya.TelegramBot.DatabaseExtensions.Metadata;
+using Masya.TelegramBot.DatabaseExtensions.Types;
 using Masya.TelegramBot.DatabaseExtensions.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -193,7 +194,79 @@ namespace Masya.TelegramBot.DatabaseExtensions
             {
                 await HandleContactAsync(message);
             }
+
             await base.ExecuteCommandAsync(message);
+        }
+
+        public override Task HandleCallbackAsync(CallbackQuery callback)
+        {
+            if (callback.Data.Contains(CallbackDataTypes.SetObjectStreet) && !callback.Data.Contains(Options.CallbackDataSeparator))
+            {
+                return HandleSearchStreetAsync(callback);
+            }
+
+            return base.HandleCallbackAsync(callback);
+        }
+
+        private async Task HandleSearchStreetAsync(CallbackQuery callback)
+        {
+            await BotService.Client.EditMessageReplyMarkupAsync(
+                chatId: callback.Message.Chat.Id,
+                messageId: callback.Message.MessageId,
+                replyMarkup: null
+            );
+            BotService.TryRemoveCollector(callback.Message.Chat);
+            var collector = BotService.CreateMessageCollector(callback.Message.Chat, TimeSpan.FromMinutes(5));
+            collector.Collect(m => m.Text);
+
+            collector.OnStart += async (sender, _) =>
+            {
+                await BotService.Client.SendTextMessageAsync(
+                    chatId: callback.Message.Chat.Id,
+                    text: "🔍 Please, enter a *query* to search for a *valid address*.",
+                    parseMode: ParseMode.Markdown
+                );
+            };
+
+            collector.OnMessageReceived += async (sender, e) =>
+            {
+                var message = await BotService.Client.SendTextMessageAsync(
+                    chatId: e.Message.Chat,
+                    text: "🔍 Searching for addresses..."
+                );
+
+                using var scope = services.CreateScope();
+                var keyboards = scope.ServiceProvider.GetRequiredService<IKeyboardGenerator>();
+
+                var streetsKeyboard = await keyboards.SearchStreetsResults(e.Message.Text);
+
+                if (!streetsKeyboard.InlineKeyboard.Any())
+                {
+                    await BotService.Client.EditMessageTextAsync(
+                        chatId: message.Chat.Id,
+                        messageId: message.MessageId,
+                        text: "❌ Nothing was found for your query."
+                    );
+                    return;
+                }
+
+                await BotService.Client.EditMessageTextAsync(
+                    chatId: message.Chat.Id,
+                    messageId: message.MessageId,
+                    text: string.Format("✅ Found *{0}* results.", streetsKeyboard.InlineKeyboard.LongCount()),
+                    parseMode: ParseMode.Markdown,
+                    replyMarkup: streetsKeyboard
+                );
+                collector.Finish();
+            };
+
+            collector.OnMessageTimeout += async (sender, e) =>
+            {
+                await BotService.Client.SendTextMessageAsync(
+                    chatId: collector.Chat.Id,
+                    text: "⌛ The time is out. Please, try again."
+                );
+            };
         }
 
         protected override DatabaseCommandInfo GetCommand(string name, Message message)
