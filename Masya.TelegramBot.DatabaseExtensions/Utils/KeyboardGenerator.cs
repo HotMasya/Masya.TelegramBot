@@ -284,6 +284,47 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
             };
         }
 
+        public async Task<InlineKeyboardMarkup> ShowRegionsAsync()
+        {
+            var regions = await _dbContext.DirectoryItems
+                .AsQueryable()
+                .Where(di => di.DirectoryId == (int)DirectoryType.District)
+                .OrderBy(di => di.Value)
+                .ToListAsync();
+
+            if (regions.Count == 0)
+            {
+                return null;
+            }
+            var rows = (int)Math.Ceiling(regions.Count / (double)Options.MaxSearchColumns) + 1;
+            var buttons = new List<List<InlineKeyboardButton>>();
+            var regionsIndex = 0;
+            for (int i = 0; i < rows - 1; i++)
+            {
+                buttons.Add(new List<InlineKeyboardButton>());
+                for (int j = 0; j < Options.MaxSearchColumns && regionsIndex < regions.Count; j++, regionsIndex++)
+                {
+                    buttons[^1].Add(
+                        InlineKeyboardButton.WithCallbackData(
+                            regions[regionsIndex].Value,
+                            string.Join(
+                                Options.CallbackDataSeparator,
+                                CallbackDataTypes.SetObjectRegion,
+                                regions[regionsIndex].Id.ToString()
+                            )
+                        )
+                    );
+                }
+                if (regionsIndex == regions.Count) break;
+            }
+
+            buttons.Add(new List<InlineKeyboardButton>{
+                InlineKeyboardButton.WithCallbackData("❌ Cancel", CallbackDataTypes.CancelSetObjectStreet)
+            });
+
+            return new InlineKeyboardMarkup(buttons);
+        }
+
         public IReplyMarkup Menu(Permission userPermission)
         {
             var buttons = new List<List<KeyboardButton>>();

@@ -103,6 +103,33 @@ namespace Masya.TelegramBot.Modules
             await SendCreationMenuMessageAsync(proc);
         }
 
+        [Callback(CallbackDataTypes.SetObjectRegion)]
+        public async Task HandleSetObjectRegion(int regionId = -1)
+        {
+            if (regionId == -1)
+            {
+                await EditMessageAsync(
+                    replyMarkup: await _keyboards.ShowRegionsAsync()
+                );
+            }
+
+            var region = await _dbContext.DirectoryItems.FirstOrDefaultAsync(di => di.Id == regionId);
+            var proc = await GetCurrentProcAsync();
+
+            if (region == null || proc == null)
+            {
+                return;
+            }
+
+            proc.District = region.Value;
+            proc.DistrictId = region.Id;
+            await SaveCreationProcessAsync(proc);
+            await EditMessageAsync(
+                text: MessageGenerator.GenerateCreateProcessMessage(proc),
+                replyMarkup: _keyboards.ShowCreationMenu(proc)
+            );
+        }
+
         [Callback(CallbackDataTypes.SetObjectPrice)]
         public async Task HandleSetObjectPriceAsync()
         {
