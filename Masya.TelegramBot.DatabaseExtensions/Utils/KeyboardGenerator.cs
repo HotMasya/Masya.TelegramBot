@@ -359,5 +359,85 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
 
             return new InlineKeyboardMarkup(buttons);
         }
+
+        public InlineKeyboardMarkup ShowCreationMenu(CreateProcess process)
+        {
+            if (!process.CategoryId.HasValue)
+            {
+                return null;
+            }
+
+            var buttons = new List<List<InlineKeyboardButton>>()
+            {
+                new List<InlineKeyboardButton>{
+                    InlineKeyboardButton.WithCallbackData("Category", CallbackDataTypes.SetObjectType)
+                },
+                new List<InlineKeyboardButton>{
+                    InlineKeyboardButton.WithCallbackData("Description", CallbackDataTypes.SetObjectDescription),
+                    InlineKeyboardButton.WithCallbackData("Price", CallbackDataTypes.SetObjectPrice),
+                },
+                new List<InlineKeyboardButton>{
+                    InlineKeyboardButton.WithCallbackData("Address", CallbackDataTypes.SetObjectStreet),
+                    InlineKeyboardButton.WithCallbackData("District", CallbackDataTypes.SetObjectRegion),
+                }
+            };
+
+            switch (process.CategoryId.Value)
+            {
+                case SuperType.Sector:
+                    buttons.Add(new List<InlineKeyboardButton>
+                    {
+                        InlineKeyboardButton.WithCallbackData("Lot area", CallbackDataTypes.SetObjectLotArea),
+                    });
+                    break;
+
+                case SuperType.Flat:
+                case SuperType.Commercial:
+                case SuperType.NewBuilding:
+                case SuperType.Rental:
+                    buttons.Add(new List<InlineKeyboardButton>
+                    {
+                        InlineKeyboardButton.WithCallbackData("Floor", CallbackDataTypes.SetObjectFloor),
+                    });
+                    break;
+
+                default:
+                    break;
+            }
+
+            switch (process.CategoryId.Value)
+            {
+                case SuperType.House:
+                case SuperType.Flat:
+                case SuperType.Commercial:
+                case SuperType.NewBuilding:
+                case SuperType.Rental:
+                    buttons.Add(new List<InlineKeyboardButton>{
+                        InlineKeyboardButton.WithCallbackData("Total Floors", CallbackDataTypes.SetObjectTotalFloors),
+                    });
+                    buttons.Add(new List<InlineKeyboardButton>
+                    {
+                        InlineKeyboardButton.WithCallbackData("Rooms", CallbackDataTypes.SetObjectRoomsCount),
+                        InlineKeyboardButton.WithCallbackData("Kitchen Area", CallbackDataTypes.SetObjectKitchenArea),
+                    });
+                    buttons.Add(new List<InlineKeyboardButton>{
+                        InlineKeyboardButton.WithCallbackData("Total Area", CallbackDataTypes.SetObjectTotalArea),
+                        InlineKeyboardButton.WithCallbackData("Living Area", CallbackDataTypes.SetObjectLivingArea),
+                    });
+                    buttons.Add(new List<InlineKeyboardButton>{
+                        InlineKeyboardButton.WithCallbackData("Wall Material", CallbackDataTypes.SetObjectWallsMaterial),
+                        InlineKeyboardButton.WithCallbackData("State", CallbackDataTypes.SetObjectState),
+                    });
+                    break;
+
+                default: break;
+            }
+
+            buttons.Add(new List<InlineKeyboardButton>{
+                new InlineKeyboardButton("❌ Cancel")
+            });
+
+            return new InlineKeyboardMarkup(buttons);
+        }
     }
 }

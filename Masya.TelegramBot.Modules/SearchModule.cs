@@ -65,7 +65,7 @@ namespace Masya.TelegramBot.Modules
             }
 
             await ReplyAsync(
-                content: MessageGenerators.GenerateSearchSettingsMessage(userSettings),
+                content: MessageGenerator.GenerateSearchSettingsMessage(userSettings),
                 parseMode: ParseMode.Markdown,
                 replyMarkup: await _keyboards.InlineSearchAsync(CallbackDataTypes.MainMenu)
             );
@@ -293,7 +293,7 @@ namespace Masya.TelegramBot.Modules
             }
 
             await EditMessageAsync(
-                text: selectedRoomsId != -1 ? MessageGenerators.GenerateSearchSettingsMessage(userSettings) : null,
+                text: selectedRoomsId != -1 ? MessageGenerator.GenerateSearchSettingsMessage(userSettings) : null,
                 replyMarkup: rooms,
                 parseMode: ParseMode.Markdown
             );
@@ -345,7 +345,7 @@ namespace Masya.TelegramBot.Modules
             }
 
             await EditMessageAsync(
-                text: !string.IsNullOrEmpty(type) && selectedValue != -1 ? MessageGenerators.GenerateSearchSettingsMessage(userSettings) : null,
+                text: !string.IsNullOrEmpty(type) && selectedValue != -1 ? MessageGenerator.GenerateSearchSettingsMessage(userSettings) : null,
                 replyMarkup: prices,
                 parseMode: ParseMode.Markdown
             );
@@ -398,7 +398,7 @@ namespace Masya.TelegramBot.Modules
             }
 
             await EditMessageAsync(
-                text: !string.IsNullOrEmpty(type) && selectedValue != -1 ? MessageGenerators.GenerateSearchSettingsMessage(userSettings) : null,
+                text: !string.IsNullOrEmpty(type) && selectedValue != -1 ? MessageGenerator.GenerateSearchSettingsMessage(userSettings) : null,
                 replyMarkup: floors,
                 parseMode: ParseMode.Markdown
             );
@@ -451,7 +451,7 @@ namespace Masya.TelegramBot.Modules
             }
 
             await EditMessageAsync(
-                text: categoryId != -1 ? MessageGenerators.GenerateSearchSettingsMessage(userSettings) : null,
+                text: categoryId != -1 ? MessageGenerator.GenerateSearchSettingsMessage(userSettings) : null,
                 replyMarkup: categories,
                 parseMode: ParseMode.Markdown
             );
@@ -504,7 +504,7 @@ namespace Masya.TelegramBot.Modules
             }
 
             await EditMessageAsync(
-                text: regionId != -1 ? MessageGenerators.GenerateSearchSettingsMessage(userSettings) : null,
+                text: regionId != -1 ? MessageGenerator.GenerateSearchSettingsMessage(userSettings) : null,
                 replyMarkup: regions,
                 parseMode: ParseMode.Markdown
             );

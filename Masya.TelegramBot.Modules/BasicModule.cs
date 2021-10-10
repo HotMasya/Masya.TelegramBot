@@ -39,7 +39,7 @@ namespace Masya.TelegramBot.Modules
             }
 
             await ReplyAsync(
-                content: MessageGenerators.GenerateMenuMessage(user),
+                content: MessageGenerator.GenerateMenuMessage(user),
                 replyMarkup: _keyboards.Menu(user.Permission),
                 parseMode: ParseMode.Markdown
                 );

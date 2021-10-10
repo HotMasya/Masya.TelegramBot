@@ -166,7 +166,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 ctx.SaveChanges();
                 BotService.Client.SendTextMessageAsync(
                     chatId: message.Chat.Id,
-                    text: MessageGenerators.GenerateMenuMessage(dbUser),
+                    text: MessageGenerator.GenerateMenuMessage(dbUser),
                     parseMode: ParseMode.Markdown,
                     replyMarkup: keyboards.Menu(dbUser.Permission)
                     ).Wait();

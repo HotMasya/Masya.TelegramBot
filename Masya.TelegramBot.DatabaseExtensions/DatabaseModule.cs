@@ -29,49 +29,77 @@ namespace Masya.TelegramBot.DatabaseExtensions
             if (obj.District != null)
             {
                 builder.AppendLine(
-                    string.Format("\n🏢 District: *{0}*", obj.District.Value)
+                    string.Format("🏢 District: *{0}*", obj.District.Value)
                 );
             }
 
             if (obj.Street != null)
             {
                 builder.AppendLine(
-                    string.Format("\n🏢 Address: *{0}*", obj.Street.Value)
+                    string.Format("🏢 Address: *{0}*", obj.Street.Value)
                 );
             }
 
             if (obj.State != null)
             {
                 builder.AppendLine(
-                    string.Format("\n🔨 State: *{0}*", obj.State.Value)
+                    string.Format("🔨 State: *{0}*", obj.State.Value)
                 );
             }
 
             if (obj.WallMaterial != null)
             {
                 builder.AppendLine(
-                    string.Format("\n🧱 Walls material: *{0}*", obj.WallMaterial.Value)
+                    string.Format("🧱 Walls material: *{0}*", obj.WallMaterial.Value)
                 );
             }
 
             if (obj.Rooms.HasValue)
             {
                 builder.AppendLine(
-                    string.Format("\n🚪 Rooms: *{0}*", obj.Rooms.Value)
+                    string.Format("🚪 Rooms: *{0}*", obj.Rooms.Value)
                 );
             }
 
             if (obj.Floor.HasValue)
             {
                 builder.AppendLine(
-                    string.Format("\n🏦 Floor: *{0}*", obj.Floor.Value)
+                    string.Format("🏦 Floor: *{0}*", obj.Floor.Value)
                 );
             }
 
             if (obj.TotalFloors.HasValue)
             {
                 builder.AppendLine(
-                    string.Format("\n🏦 Total floors: *{0}*", obj.TotalFloors.Value)
+                    string.Format("🏦 Total floors: *{0}*", obj.TotalFloors.Value)
+                );
+            }
+
+            if (obj.TotalArea.HasValue)
+            {
+                builder.AppendLine(
+                    string.Format("🌏 Total Area: *{0}*", obj.TotalArea.Value)
+                );
+            }
+
+            if (obj.LivingSpace.HasValue)
+            {
+                builder.AppendLine(
+                    string.Format("🏚 Living Area: *{0}*", obj.LivingSpace.Value)
+                );
+            }
+
+            if (obj.KitchenSpace.HasValue)
+            {
+                builder.AppendLine(
+                    string.Format("🍽 Kitchen Area: *{0}*", obj.KitchenSpace.Value)
+                );
+            }
+
+            if (obj.LotArea.HasValue)
+            {
+                builder.AppendLine(
+                    string.Format("🏚 Lot Area: *{0}*", obj.LotArea.Value)
                 );
             }
 

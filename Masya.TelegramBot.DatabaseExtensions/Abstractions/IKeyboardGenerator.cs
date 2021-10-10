@@ -1,7 +1,7 @@
-using System;
 using System.Threading.Tasks;
 using Masya.TelegramBot.Commands.Options;
 using Masya.TelegramBot.DataAccess.Models;
+using Masya.TelegramBot.DatabaseExtensions.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Masya.TelegramBot.DatabaseExtensions.Abstractions
@@ -12,5 +12,6 @@ namespace Masya.TelegramBot.DatabaseExtensions.Abstractions
         IReplyMarkup Menu(Permission userPermission);
         Task<InlineKeyboardMarkup> InlineSearchAsync(string callbackDataType = null, UserSettings userSettings = null);
         Task<InlineKeyboardMarkup> SelectCategoriesAsync();
+        InlineKeyboardMarkup ShowCreationMenu(CreateProcess process);
     }
 }
