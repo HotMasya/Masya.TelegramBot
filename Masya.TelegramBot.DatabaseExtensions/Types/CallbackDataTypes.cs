@@ -29,5 +29,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Types
         public const string SetObjectKitchenArea = "__OBJECT_SET_KITCHEN_AREA__";
         public const string SetObjectTotalArea = "__OBJECT_SET_TOTAL_AREA__";
         public const string SetObjectLivingArea = "__OBJECT_SET_LIVING_AREA__";
+
+        public const string CancelObjectCreation = "__OBJECT_CANCEL_CREATION__";
     }
 }

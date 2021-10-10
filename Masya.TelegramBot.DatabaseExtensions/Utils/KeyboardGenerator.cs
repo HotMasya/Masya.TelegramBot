@@ -434,7 +434,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
             }
 
             buttons.Add(new List<InlineKeyboardButton>{
-                new InlineKeyboardButton("❌ Cancel")
+                InlineKeyboardButton.WithCallbackData("❌ Cancel", CallbackDataTypes.CancelObjectCreation),
             });
 
             return new InlineKeyboardMarkup(buttons);
