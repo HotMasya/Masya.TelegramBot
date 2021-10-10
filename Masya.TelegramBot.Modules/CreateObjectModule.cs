@@ -112,6 +112,8 @@ namespace Masya.TelegramBot.Modules
                 await ReplyAsync("⌛ The time is out. Please, try again.");
                 await SendCreationMenuMessageAsync(proc);
             };
+
+            collector.Start();
         }
 
         private async Task SaveCreationProcessAsync(CreateProcess proc)
