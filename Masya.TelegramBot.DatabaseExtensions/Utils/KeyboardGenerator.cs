@@ -382,7 +382,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                 }
             };
 
-            switch (process.CategoryId.Value)
+            switch ((SuperType)process.CategoryId.Value)
             {
                 case SuperType.Sector:
                     buttons.Add(new List<InlineKeyboardButton>
@@ -405,7 +405,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                     break;
             }
 
-            switch (process.CategoryId.Value)
+            switch ((SuperType)process.CategoryId.Value)
             {
                 case SuperType.House:
                 case SuperType.Flat:

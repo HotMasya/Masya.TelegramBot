@@ -74,12 +74,12 @@ namespace Masya.TelegramBot.Modules
         }
 
         [Callback(CallbackDataTypes.SetObjectType)]
-        public async Task HandleSetObjectTypeAsync(SuperType type)
+        public async Task HandleSetObjectTypeAsync(int categoryId)
         {
             var proc = await _cache.GetRecordAsync<CreateProcess>(CreateObjectProcessPrefix + Context.User.Id);
-            var category = await _dbContext.Categories.FirstOrDefaultAsync(c => c.SuperType == type);
+            var category = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
 
-            if (category != null)
+            if (category == null)
             {
                 return;
             }
@@ -89,7 +89,7 @@ namespace Masya.TelegramBot.Modules
                 proc = new CreateProcess();
             }
 
-            proc.CategoryId = type;
+            proc.CategoryId = categoryId;
             proc.Category = category.Name;
 
             await _cache.SetRecordAsync(
