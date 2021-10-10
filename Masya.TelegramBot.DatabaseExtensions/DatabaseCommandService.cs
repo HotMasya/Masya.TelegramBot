@@ -257,8 +257,10 @@ namespace Masya.TelegramBot.DatabaseExtensions
                     await BotService.Client.EditMessageTextAsync(
                         chatId: message.Chat.Id,
                         messageId: message.MessageId,
-                        text: "❌ Nothing was found for your query."
+                        text: "❌ Nothing was found for your query.",
+                        replyMarkup: streetsKeyboard
                     );
+                    collector.Finish();
                     return;
                 }
 
