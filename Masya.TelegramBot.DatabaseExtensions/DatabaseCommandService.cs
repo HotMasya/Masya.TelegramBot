@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -249,7 +250,9 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
                 var streetsKeyboard = await keyboards.SearchStreetsResults(e.Message.Text);
 
-                if (streetsKeyboard.InlineKeyboard.LongCount() - 2 == 0)
+                var resultsFound = CalculateTotalLength(streetsKeyboard.InlineKeyboard) - 2;
+
+                if (resultsFound == 0)
                 {
                     await BotService.Client.EditMessageTextAsync(
                         chatId: message.Chat.Id,
@@ -262,7 +265,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 await BotService.Client.EditMessageTextAsync(
                     chatId: message.Chat.Id,
                     messageId: message.MessageId,
-                    text: string.Format("✅ Found *{0}* results.", streetsKeyboard.InlineKeyboard.LongCount() - 2),
+                    text: string.Format("✅ Found *{0}* results.", resultsFound),
                     parseMode: ParseMode.Markdown,
                     replyMarkup: streetsKeyboard
                 );
@@ -278,6 +281,16 @@ namespace Masya.TelegramBot.DatabaseExtensions
             };
 
             collector.Start();
+        }
+
+        private static int CalculateTotalLength<T>(IEnumerable<IEnumerable<T>> items)
+        {
+            int totalItems = 0;
+            foreach (var item in items)
+            {
+                totalItems += item.Count();
+            }
+            return totalItems;
         }
 
         protected override DatabaseCommandInfo GetCommand(string name, Message message)
