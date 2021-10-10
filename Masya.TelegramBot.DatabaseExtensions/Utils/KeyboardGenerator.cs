@@ -357,11 +357,6 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                 if (categoriesIndex == categories.Count) break;
             }
 
-            buttons.Add(new List<InlineKeyboardButton>{
-                InlineKeyboardButton.WithCallbackData("🔍 Search again", CallbackDataTypes.SetObjectStreet),
-                InlineKeyboardButton.WithCallbackData("❌ Cancel", CallbackDataTypes.CancelSetObjectStreet)
-            });
-
             return new InlineKeyboardMarkup(buttons);
         }
 
@@ -396,6 +391,11 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                 }
                 if (streetsIndex == streets.Count) break;
             }
+
+            buttons.Add(new List<InlineKeyboardButton>{
+                InlineKeyboardButton.WithCallbackData("🔍 Search again", CallbackDataTypes.SetObjectStreet),
+                InlineKeyboardButton.WithCallbackData("❌ Cancel", CallbackDataTypes.CancelSetObjectStreet)
+            });
 
             return new InlineKeyboardMarkup(buttons);
         }
