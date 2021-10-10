@@ -249,7 +249,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
                 var streetsKeyboard = await keyboards.SearchStreetsResults(e.Message.Text);
 
-                if (!streetsKeyboard.InlineKeyboard.Any())
+                if (streetsKeyboard.InlineKeyboard.LongCount() - 2 == 0)
                 {
                     await BotService.Client.EditMessageTextAsync(
                         chatId: message.Chat.Id,
@@ -262,7 +262,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 await BotService.Client.EditMessageTextAsync(
                     chatId: message.Chat.Id,
                     messageId: message.MessageId,
-                    text: string.Format("✅ Found *{0}* results.", streetsKeyboard.InlineKeyboard),
+                    text: string.Format("✅ Found *{0}* results.", streetsKeyboard.InlineKeyboard.LongCount() - 2),
                     parseMode: ParseMode.Markdown,
                     replyMarkup: streetsKeyboard
                 );
