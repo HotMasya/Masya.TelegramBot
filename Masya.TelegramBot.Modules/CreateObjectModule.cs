@@ -77,8 +77,10 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.SetObjectDescription)]
         public async Task HandleSetObjectDescrAsync()
         {
+            Context.BotService.TryRemoveCollector(Context.Chat);
             await EditMessageAsync();
             var collector = Context.BotService.CreateMessageCollector(Context.Chat, TimeSpan.FromMinutes(2));
+            collector.Collect(m => m.Text);
 
             collector.OnStart += async (sender, e) =>
             {

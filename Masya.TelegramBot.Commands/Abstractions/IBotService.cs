@@ -19,5 +19,6 @@ namespace Masya.TelegramBot.Commands.Abstractions
         Task HandleUpdateAsync(Update update);
         Task<BotStatus> GetSettingsAsync();
         Task<bool> TestSettingsAsync(string token, string webhookHost);
+        void TryRemoveCollector(Chat chat);
     }
 }

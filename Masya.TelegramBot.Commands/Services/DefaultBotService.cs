@@ -14,8 +14,8 @@ using Masya.TelegramBot.Commands.Metadata;
 namespace Masya.TelegramBot.Commands.Services
 {
     public class DefaultBotService<TCommandInfo, TAliasInfo> : IBotService<TCommandInfo, TAliasInfo>
-     where TAliasInfo : AliasInfo
-     where TCommandInfo : CommandInfo<TAliasInfo>
+        where TAliasInfo : AliasInfo
+        where TCommandInfo : CommandInfo<TAliasInfo>
     {
         public ITelegramBotClient Client { get; set; }
         public BotServiceOptions Options { get; set; }
@@ -114,11 +114,23 @@ namespace Masya.TelegramBot.Commands.Services
             return mcol;
         }
 
-        private void RemoveCollector(ICollector<TCommandInfo, TAliasInfo> col)
+        public void RemoveCollector(ICollector<TCommandInfo, TAliasInfo> col)
         {
             if (_collectors.Contains(col))
             {
                 _collectors.Remove(col);
+            }
+        }
+
+        public void TryRemoveCollector(Chat chat)
+        {
+            if (chat != null)
+            {
+                var col = _collectors.FirstOrDefault(c => c.Chat.Id == chat.Id);
+                if (col != null)
+                {
+                    _collectors.Remove(col);
+                }
             }
         }
 
