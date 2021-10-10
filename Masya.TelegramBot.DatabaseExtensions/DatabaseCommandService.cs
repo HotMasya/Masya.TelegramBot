@@ -230,6 +230,15 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
             collector.OnMessageReceived += async (sender, e) =>
             {
+                if (e.Message.Text.Length < 3)
+                {
+                    await BotService.Client.SendTextMessageAsync(
+                        chatId: e.Message.Chat.Id,
+                        text: "❌ Search query should be at least *3* characters long.",
+                        parseMode: ParseMode.Markdown
+                    );
+                }
+
                 var message = await BotService.Client.SendTextMessageAsync(
                     chatId: e.Message.Chat,
                     text: "🔍 Searching for addresses..."
@@ -253,7 +262,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 await BotService.Client.EditMessageTextAsync(
                     chatId: message.Chat.Id,
                     messageId: message.MessageId,
-                    text: string.Format("✅ Found *{0}* results.", streetsKeyboard.InlineKeyboard.LongCount()),
+                    text: string.Format("✅ Found *{0}* results.", streetsKeyboard.InlineKeyboard),
                     parseMode: ParseMode.Markdown,
                     replyMarkup: streetsKeyboard
                 );
