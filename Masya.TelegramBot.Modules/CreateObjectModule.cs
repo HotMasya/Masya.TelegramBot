@@ -131,8 +131,12 @@ namespace Masya.TelegramBot.Modules
             );
         }
 
-        [Callback(CallbackDataTypes.SetObjectPrice)]
-        public async Task HandleSetObjectPriceAsync()
+        private async Task HandleNumericValueInput(
+            CreateProcess proc,
+            string propName,
+            string displayName,
+            Func<int, bool> validate
+        )
         {
             Context.BotService.TryRemoveCollector(Context.Chat);
             await EditMessageAsync();
@@ -141,24 +145,30 @@ namespace Masya.TelegramBot.Modules
 
             collector.OnStart += async (sender, e) =>
             {
-                await ReplyAsync("Please, send a valid price for your object.");
+                await ReplyAsync($"Please, send a valid {displayName} for your object.");
             };
 
             collector.OnMessageReceived += async (sender, e) =>
             {
-                var parsed = int.TryParse(e.Message.Text, out int price);
-                if (!parsed || price <= 0)
+                var parsed = int.TryParse(e.Message.Text, out int value);
+                if (!parsed || !validate(value))
                 {
-                    await ReplyAsync("❌ You have provided an invalid price.");
+                    await ReplyAsync($"❌ You have provided an invalid {displayName}.");
                     collector.Finish();
                     return;
                 }
 
-                var proc = await GetCurrentProcAsync();
-                proc.Price = price;
+                var prop = proc.GetType().GetProperties().FirstOrDefault(p => p.Name == propName);
+
+                if (prop == null)
+                {
+                    throw new InvalidOperationException("Invalid propertyt name.");
+                }
+
+                prop.SetValue(proc, value);
 
                 await SaveCreationProcessAsync(proc);
-                await ReplyAsync("✅ Price has been set successfully!");
+                await ReplyAsync($"✅ {displayName} has been set successfully!");
                 await SendCreationMenuMessageAsync(proc);
 
                 collector.Finish();
@@ -173,6 +183,17 @@ namespace Masya.TelegramBot.Modules
             };
 
             collector.Start();
+        }
+
+        [Callback(CallbackDataTypes.SetObjectPrice)]
+        public async Task HandleSetObjectPriceAsync()
+        {
+            await HandleNumericValueInput(
+                await GetCurrentProcAsync(),
+                "Price",
+                "price",
+                (price) => price <= 0
+            );
         }
 
         [Callback(CallbackDataTypes.CancelSetObjectStreet)]
