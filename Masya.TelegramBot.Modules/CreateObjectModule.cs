@@ -192,7 +192,7 @@ namespace Masya.TelegramBot.Modules
                 await GetCurrentProcAsync(),
                 "Price",
                 "price",
-                (price) => price <= 0
+                (price) => price > 0
             );
         }
 
