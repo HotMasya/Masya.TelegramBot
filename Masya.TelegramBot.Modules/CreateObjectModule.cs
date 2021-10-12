@@ -131,6 +131,14 @@ namespace Masya.TelegramBot.Modules
             );
         }
 
+        private static string Capitalize(string input) =>
+            input switch
+            {
+                null => throw new ArgumentNullException(nameof(input)),
+                "" => throw new ArgumentNullException(nameof(input)),
+                _ => string.Concat(input[0].ToString().ToUpper(), input.AsSpan(1))
+            };
+
         private async Task HandleNumericValueInput(
             CreateProcess proc,
             string propName,
@@ -166,9 +174,8 @@ namespace Masya.TelegramBot.Modules
                 }
 
                 prop.SetValue(proc, value);
-
                 await SaveCreationProcessAsync(proc);
-                await ReplyAsync($"✅ {displayName} has been set successfully!");
+                await ReplyAsync($"✅ {Capitalize(displayName)} has been set successfully!");
                 await SendCreationMenuMessageAsync(proc);
 
                 collector.Finish();
@@ -193,6 +200,50 @@ namespace Masya.TelegramBot.Modules
                 "Price",
                 "price",
                 (price) => price > 0
+            );
+        }
+
+        [Callback(CallbackDataTypes.SetObjectLotArea)]
+        public async Task HandleSetObjectLotAreaAsync()
+        {
+            await HandleNumericValueInput(
+                await GetCurrentProcAsync(),
+                "LotArea",
+                "lot area",
+                (area) => area > 0
+            );
+        }
+
+        [Callback(CallbackDataTypes.SetObjectTotalArea)]
+        public async Task HandleSetObjectTotalAreaAsync()
+        {
+            await HandleNumericValueInput(
+                await GetCurrentProcAsync(),
+                "TotalArea",
+                "total area",
+                (area) => area > 0
+            );
+        }
+
+        [Callback(CallbackDataTypes.SetObjectKitchenArea)]
+        public async Task HandleSetObjectKitchenAreaAsync()
+        {
+            await HandleNumericValueInput(
+                await GetCurrentProcAsync(),
+                "KitchenSpace",
+                "kitchen area",
+                (area) => area > 0
+            );
+        }
+
+        [Callback(CallbackDataTypes.SetObjectLivingArea)]
+        public async Task HandleSetObjectLivingAreaAsync()
+        {
+            await HandleNumericValueInput(
+                await GetCurrentProcAsync(),
+                "LivingSpance",
+                "living area",
+                (area) => area > 0
             );
         }
 
