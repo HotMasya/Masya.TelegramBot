@@ -78,22 +78,22 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
 
             if (process.LivingSpace.HasValue)
             {
-                builder.Append(string.Format("🏚 Living Area: *{0}*", process.LivingSpace.Value));
+                builder.AppendLine(string.Format("🏚 Living Area: *{0}*", process.LivingSpace.Value));
             }
 
             if (process.KitchenSpace.HasValue)
             {
-                builder.Append(string.Format("🍽 Kitchen Area: *{0}*", process.KitchenSpace.Value));
+                builder.AppendLine(string.Format("🍽 Kitchen Area: *{0}*", process.KitchenSpace.Value));
             }
 
             if (process.LotArea.HasValue)
             {
-                builder.Append(string.Format("🏚 Lot Area: *{0}*", process.LotArea.Value));
+                builder.AppendLine(string.Format("🏚 Lot Area: *{0}*", process.LotArea.Value));
             }
 
             if (process.Price.HasValue)
             {
-                builder.Append(string.Format("💵 Price: *{0}*", process.Price.Value));
+                builder.AppendLine(string.Format("💵 Price: *{0}*", process.Price.Value));
             }
 
             return builder.ToString();
