@@ -323,7 +323,7 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.CancelObjectCreation)]
         public async Task HandleCancelObjectCreation()
         {
-            await _cache.RefreshAsync(CreateObjectProcessPrefix + Context.User.Id);
+            await _cache.RemoveAsync(CreateObjectProcessPrefix + Context.User.Id);
             await ReplyAsync(
                 "✅ Removed object from creation process.\n\n*Use /create command to start creating again.*",
                 ParseMode.Markdown
