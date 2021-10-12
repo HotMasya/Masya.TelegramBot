@@ -242,7 +242,7 @@ namespace Masya.TelegramBot.Modules
         {
             await HandleNumericValueInput(
                 await GetCurrentProcAsync(),
-                "LivingSpance",
+                "LivingSpace",
                 "living area",
                 (area) => area > 0
             );
