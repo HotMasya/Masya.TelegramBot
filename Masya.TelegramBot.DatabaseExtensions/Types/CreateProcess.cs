@@ -14,10 +14,10 @@ namespace Masya.TelegramBot.DatabaseExtensions.Types
         public int? StateId { get; set; }
         public string State { get; set; }
         public int? Rooms { get; set; }
-        public float? TotalArea { get; set; }
-        public float? LivingSpace { get; set; }
-        public float? KitchenSpace { get; set; }
-        public float? LotArea { get; set; }
+        public int? TotalArea { get; set; }
+        public int? LivingSpace { get; set; }
+        public int? KitchenSpace { get; set; }
+        public int? LotArea { get; set; }
         public int? Floor { get; set; }
         public int? TotalFloors { get; set; }
         public int? Price { get; set; }

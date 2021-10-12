@@ -166,14 +166,15 @@ namespace Masya.TelegramBot.Modules
                     return;
                 }
 
+                int? nullableValue = value;
                 var prop = proc.GetType().GetProperties().FirstOrDefault(p => p.Name == propName);
 
-                if (prop == null)
+                if (prop == null || !nullableValue.HasValue)
                 {
-                    throw new InvalidOperationException("Invalid propertyt name.");
+                    throw new InvalidOperationException("Invalid property name.");
                 }
 
-                prop.SetValue(proc, value);
+                prop.SetValue(proc, nullableValue.Value);
                 await SaveCreationProcessAsync(proc);
                 await ReplyAsync($"✅ {Capitalize(displayName)} has been set successfully!");
                 await SendCreationMenuMessageAsync(proc);
