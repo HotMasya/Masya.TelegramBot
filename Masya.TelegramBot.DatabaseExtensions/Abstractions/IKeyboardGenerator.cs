@@ -17,5 +17,6 @@ namespace Masya.TelegramBot.DatabaseExtensions.Abstractions
         Task<InlineKeyboardMarkup> SearchStreetsResults(string query);
         Task<InlineKeyboardMarkup> ShowRegionsAsync();
         Task<InlineKeyboardMarkup> SelectDirectoryItems(DirectoryType type);
+        InlineKeyboardMarkup SelectNumericValues(string valuesButtonData, int maxValue);
     }
 }

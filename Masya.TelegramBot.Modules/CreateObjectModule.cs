@@ -23,6 +23,9 @@ namespace Masya.TelegramBot.Modules
 
         private const string CreateObjectProcessPrefix = "CreateObjectProcess_";
 
+        private const int MaxFloors = 24;
+        private const int MaxRooms = 8;
+
         public CreateObjectModule(
             ApplicationDbContext dbContext,
             IKeyboardGenerator keyboards,
@@ -247,6 +250,66 @@ namespace Masya.TelegramBot.Modules
                 "Price",
                 "price",
                 (price) => price > 0
+            );
+        }
+
+        [Callback(CallbackDataTypes.SetObjectFloor)]
+        public async Task HandleSetObjectFloorAsync(int floor = -1)
+        {
+            if (floor < 1 || floor > 24)
+            {
+                await EditMessageAsync(
+                    replyMarkup: _keyboards.SelectNumericValues(CallbackDataTypes.SetObjectFloor, 24)
+                );
+            }
+
+            var proc = await GetCurrentProcAsync();
+            proc.Floor = floor;
+            await SaveCreationProcessAsync(proc);
+            await EditMessageAsync(
+                text: MessageGenerator.GenerateCreateProcessMessage(proc),
+                replyMarkup: _keyboards.ShowCreationMenu(proc),
+                parseMode: ParseMode.Markdown
+            );
+        }
+
+        [Callback(CallbackDataTypes.SetObjectTotalFloors)]
+        public async Task HandleSetObjectTotalFloorsAsync(int totalFloors = -1)
+        {
+            if (totalFloors < 1 || totalFloors > MaxFloors)
+            {
+                await EditMessageAsync(
+                    replyMarkup: _keyboards.SelectNumericValues(CallbackDataTypes.SetObjectTotalFloors, MaxFloors)
+                );
+            }
+
+            var proc = await GetCurrentProcAsync();
+            proc.TotalFloors = totalFloors;
+            await SaveCreationProcessAsync(proc);
+            await EditMessageAsync(
+                text: MessageGenerator.GenerateCreateProcessMessage(proc),
+                replyMarkup: _keyboards.ShowCreationMenu(proc),
+                parseMode: ParseMode.Markdown
+            );
+        }
+
+        [Callback(CallbackDataTypes.SetObjectRoomsCount)]
+        public async Task HandleSetObjectRoomsCountAsync(int roomsCount = -1)
+        {
+            if (roomsCount < 1 || roomsCount > MaxRooms)
+            {
+                await EditMessageAsync(
+                    replyMarkup: _keyboards.SelectNumericValues(CallbackDataTypes.SetObjectRoomsCount, MaxRooms)
+                );
+            }
+
+            var proc = await GetCurrentProcAsync();
+            proc.Rooms = roomsCount;
+            await SaveCreationProcessAsync(proc);
+            await EditMessageAsync(
+                text: MessageGenerator.GenerateCreateProcessMessage(proc),
+                replyMarkup: _keyboards.ShowCreationMenu(proc),
+                parseMode: ParseMode.Markdown
             );
         }
 

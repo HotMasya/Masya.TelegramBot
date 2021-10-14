@@ -473,6 +473,33 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
             return new InlineKeyboardMarkup(buttons);
         }
 
+        public InlineKeyboardMarkup SelectNumericValues(string valuesButtonData, int maxValue)
+        {
+            var rows = (int)Math.Ceiling(maxValue / (double)Options.MaxSearchColumns) + 1;
+            var buttons = new List<List<InlineKeyboardButton>>();
+            var currentFloor = 1;
+            for (int i = 0; i < rows - 1; i++)
+            {
+                buttons.Add(new List<InlineKeyboardButton>());
+                for (int j = 0; j < Options.MaxSearchColumns && currentFloor <= maxValue; j++, currentFloor++)
+                {
+                    buttons[^1].Add(
+                        InlineKeyboardButton.WithCallbackData(
+                            currentFloor.ToString(),
+                            string.Join(
+                                Options.CallbackDataSeparator,
+                                valuesButtonData,
+                                currentFloor
+                            )
+                        )
+                    );
+                }
+                if (currentFloor == maxValue) break;
+            }
+
+            return new InlineKeyboardMarkup(buttons);
+        }
+
         public InlineKeyboardMarkup ShowCreationMenu(CreateProcess process)
         {
             if (!process.CategoryId.HasValue)
