@@ -261,6 +261,7 @@ namespace Masya.TelegramBot.Modules
                 await EditMessageAsync(
                     replyMarkup: _keyboards.SelectNumericValues(CallbackDataTypes.SetObjectFloor, 24)
                 );
+                return;
             }
 
             var proc = await GetCurrentProcAsync();
@@ -281,6 +282,7 @@ namespace Masya.TelegramBot.Modules
                 await EditMessageAsync(
                     replyMarkup: _keyboards.SelectNumericValues(CallbackDataTypes.SetObjectTotalFloors, MaxFloors)
                 );
+                return;
             }
 
             var proc = await GetCurrentProcAsync();
@@ -301,6 +303,7 @@ namespace Masya.TelegramBot.Modules
                 await EditMessageAsync(
                     replyMarkup: _keyboards.SelectNumericValues(CallbackDataTypes.SetObjectRoomsCount, MaxRooms)
                 );
+                return;
             }
 
             var proc = await GetCurrentProcAsync();
