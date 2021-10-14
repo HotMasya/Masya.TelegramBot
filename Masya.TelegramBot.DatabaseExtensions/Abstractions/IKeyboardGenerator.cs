@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Masya.TelegramBot.Commands.Options;
 using Masya.TelegramBot.DataAccess.Models;
+using Masya.TelegramBot.DataAccess.Types;
 using Masya.TelegramBot.DatabaseExtensions.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -15,5 +16,6 @@ namespace Masya.TelegramBot.DatabaseExtensions.Abstractions
         InlineKeyboardMarkup ShowCreationMenu(CreateProcess process);
         Task<InlineKeyboardMarkup> SearchStreetsResults(string query);
         Task<InlineKeyboardMarkup> ShowRegionsAsync();
+        Task<InlineKeyboardMarkup> SelectDirectoryItems(DirectoryType type);
     }
 }

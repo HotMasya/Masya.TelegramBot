@@ -12,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -103,6 +102,8 @@ namespace Masya.TelegramBot.Modules
             await SendCreationMenuMessageAsync(proc);
         }
 
+
+
         [Callback(CallbackDataTypes.SetObjectRegion)]
         public async Task HandleSetObjectRegion(int regionId = -1)
         {
@@ -111,6 +112,7 @@ namespace Masya.TelegramBot.Modules
                 await EditMessageAsync(
                     replyMarkup: await _keyboards.ShowRegionsAsync()
                 );
+                return;
             }
 
             var region = await _dbContext.DirectoryItems.FirstOrDefaultAsync(di => di.Id == regionId);
@@ -138,6 +140,40 @@ namespace Masya.TelegramBot.Modules
                 "" => throw new ArgumentNullException(nameof(input)),
                 _ => string.Concat(input[0].ToString().ToUpper(), input.AsSpan(1))
             };
+
+        private async Task HandleDirectoryItems(DirectoryType itemType, string fieldName, int itemId = -1)
+        {
+            if (itemId == -1)
+            {
+                await EditMessageAsync(
+                    replyMarkup: await _keyboards.SelectDirectoryItems(itemType)
+                );
+                return;
+            }
+
+            var item = await _dbContext.DirectoryItems.FirstOrDefaultAsync(
+                di => di.Id == itemId && di.DirectoryId == (int)itemType
+            );
+
+            var proc = await GetCurrentProcAsync();
+
+            if (item == null || proc == null)
+            {
+                return;
+            }
+
+            var prop = proc.GetType().GetProperties().First(p => p.Name == fieldName);
+            prop.SetValue(proc, item.Value);
+            prop = proc.GetType().GetProperties().First(p => p.Name == fieldName + "Id");
+            prop.SetValue(proc, item.Id);
+
+            await SaveCreationProcessAsync(proc);
+            await EditMessageAsync(
+                text: MessageGenerator.GenerateCreateProcessMessage(proc),
+                replyMarkup: _keyboards.ShowCreationMenu(proc),
+                parseMode: ParseMode.Markdown
+            );
+        }
 
         private async Task HandleNumericValueInput(
             CreateProcess proc,

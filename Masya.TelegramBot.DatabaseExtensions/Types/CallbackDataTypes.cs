@@ -1,3 +1,6 @@
+using System;
+using Masya.TelegramBot.DataAccess.Types;
+
 namespace Masya.TelegramBot.DatabaseExtensions.Types
 {
     public static class CallbackDataTypes
@@ -32,5 +35,20 @@ namespace Masya.TelegramBot.DatabaseExtensions.Types
         public const string SetObjectLivingArea = "__OBJECT_SET_LIVING_AREA__";
 
         public const string CancelObjectCreation = "__OBJECT_CANCEL_CREATION__";
+
+        public static string SetObjectFromDirectoryType(DirectoryType type)
+        {
+            switch (type)
+            {
+                case DirectoryType.Material:
+                    return SetObjectWallsMaterial;
+
+                case DirectoryType.State:
+                    return SetObjectState;
+
+                default:
+                    throw new Exception("Invalid directory type.");
+            }
+        }
     }
 }

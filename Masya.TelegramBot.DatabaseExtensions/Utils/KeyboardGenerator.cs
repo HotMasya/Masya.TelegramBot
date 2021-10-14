@@ -373,6 +373,38 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
             return new ReplyKeyboardMarkup(buttons) { ResizeKeyboard = true };
         }
 
+        public async Task<InlineKeyboardMarkup> SelectDirectoryItems(DirectoryType type)
+        {
+            var items = await _dbContext.DirectoryItems
+                .AsQueryable()
+                .Where(di => di.DirectoryId == (int)type)
+                .ToListAsync();
+
+            var rows = (int)Math.Ceiling(items.Count / (double)Options.MaxSearchColumns) + 1;
+            var buttons = new List<List<InlineKeyboardButton>>();
+            var itemsIndex = 0;
+            for (int i = 0; i < rows - 1; i++)
+            {
+                buttons.Add(new List<InlineKeyboardButton>());
+                for (int j = 0; j < Options.MaxSearchColumns && itemsIndex < items.Count; j++, itemsIndex++)
+                {
+                    buttons[^1].Add(
+                        InlineKeyboardButton.WithCallbackData(
+                            items[itemsIndex].Value,
+                            string.Join(
+                                Options.CallbackDataSeparator,
+                                CallbackDataTypes.SetObjectFromDirectoryType(type),
+                                items[itemsIndex].Id.ToString()
+                            )
+                        )
+                    );
+                }
+                if (itemsIndex == items.Count) break;
+            }
+
+            return new InlineKeyboardMarkup(buttons);
+        }
+
         public async Task<InlineKeyboardMarkup> SelectCategoriesAsync()
         {
             var categories = await _dbContext.Categories.Select(c => new { c.Id, c.Name }).ToListAsync();
