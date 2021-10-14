@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -45,6 +46,20 @@ namespace Masya.TelegramBot.Api.Controllers
             }
 
             return null;
+        }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllAgenciesAsync()
+        {
+            if (!User.HasPermission(Permission.SuperAdmin))
+            {
+                return Forbid();
+            }
+
+            var agencies = await _dbContext.Agencies.ToListAsync();
+            var agenciesDtos = _mapper.Map<List<AgencyDto>>(agencies);
+
+            return Ok(agenciesDtos);
         }
 
         [HttpGet("import/logs")]
