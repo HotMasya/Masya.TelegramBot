@@ -170,8 +170,8 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                 buttons.Add(new List<InlineKeyboardButton>{
                     InlineKeyboardButton.WithCallbackData(
                         string.Format(
-                            "{0} {1}",
-                            selectedMinPrice.HasValue && price.MinVal.Equals(selectedMinPrice.Value) ? "✅" : "",
+                            "{0}from {1}",
+                            selectedMinPrice.HasValue && price.MinVal.Equals(selectedMinPrice.Value) ? "✅ " : "",
                             price.MinVal.ToString("#,0", nfi)
                         ),
                         string.Join(
@@ -183,8 +183,8 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                     ),
                     InlineKeyboardButton.WithCallbackData(
                         string.Format(
-                            "{0} {1}",
-                            selectedMaxPrice.HasValue && price.MaxVal.Equals(selectedMaxPrice.Value) ? "✅" : "",
+                            "{0}to {1}",
+                            selectedMaxPrice.HasValue && price.MaxVal.Equals(selectedMaxPrice.Value) ? "✅ " : "",
                             price.MaxVal.ToString("#,0", nfi)
                         ),
                         string.Join(
@@ -217,8 +217,8 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                 buttons.Add(new List<InlineKeyboardButton>{
                     InlineKeyboardButton.WithCallbackData(
                         string.Format(
-                            "{0} {1}",
-                            selectedMinFloor.HasValue && floor.MinVal.Equals(selectedMinFloor.Value) ? "✅" : "",
+                            "{0}from {1}",
+                            selectedMinFloor.HasValue && floor.MinVal.Equals(selectedMinFloor.Value) ? "✅ " : "",
                             floor.MinVal.ToString("#,0", nfi)
                         ),
                         string.Join(
@@ -230,8 +230,8 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                     ),
                     InlineKeyboardButton.WithCallbackData(
                         string.Format(
-                            "{0} {1}",
-                            selectedMaxFloor.HasValue && floor.MaxVal.Equals(selectedMaxFloor.Value) ? "✅" : "",
+                            "{0}to {1}",
+                            selectedMaxFloor.HasValue && floor.MaxVal.Equals(selectedMaxFloor.Value) ? "✅ " : "",
                             floor.MaxVal.ToString("#,0", nfi)
                         ),
                         string.Join(
