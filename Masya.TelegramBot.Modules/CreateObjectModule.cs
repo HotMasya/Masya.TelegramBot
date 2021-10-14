@@ -102,10 +102,20 @@ namespace Masya.TelegramBot.Modules
             await SendCreationMenuMessageAsync(proc);
         }
 
+        [Callback(CallbackDataTypes.SetObjectState)]
+        public async Task HandleSetObjectStateAsync(int stateId = -1)
+        {
+            await HandleDirectoryItemsAsync(DirectoryType.State, "State", stateId);
+        }
 
+        [Callback(CallbackDataTypes.SetObjectWallsMaterial)]
+        public async Task HandleSetObjectWallMaterialAsync(int materialid = -1)
+        {
+            await HandleDirectoryItemsAsync(DirectoryType.Material, "WallMaterial", materialid);
+        }
 
         [Callback(CallbackDataTypes.SetObjectRegion)]
-        public async Task HandleSetObjectRegion(int regionId = -1)
+        public async Task HandleSetObjectRegionAsync(int regionId = -1)
         {
             if (regionId == -1)
             {
@@ -141,7 +151,7 @@ namespace Masya.TelegramBot.Modules
                 _ => string.Concat(input[0].ToString().ToUpper(), input.AsSpan(1))
             };
 
-        private async Task HandleDirectoryItems(DirectoryType itemType, string fieldName, int itemId = -1)
+        private async Task HandleDirectoryItemsAsync(DirectoryType itemType, string fieldName, int itemId = -1)
         {
             if (itemId == -1)
             {
