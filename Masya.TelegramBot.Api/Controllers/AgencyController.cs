@@ -10,6 +10,7 @@ using Masya.TelegramBot.DataAccess.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Masya.TelegramBot.Api.Controllers
 {
@@ -21,16 +22,19 @@ namespace Masya.TelegramBot.Api.Controllers
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _dbContext;
         private readonly IDatabaseLogsService _logs;
+        private readonly ILogger<AgencyController> _logger;
 
         public AgencyController(
             ApplicationDbContext dbContext,
             IMapper mapper,
-            IDatabaseLogsService logs
+            IDatabaseLogsService logs,
+            ILogger<AgencyController> logger
         )
         {
             _mapper = mapper;
             _dbContext = dbContext;
             _logs = logs;
+            _logger = logger,
         }
 
         private async Task<Agency> GetUserAgencyAsync()
@@ -57,8 +61,9 @@ namespace Masya.TelegramBot.Api.Controllers
             }
 
             var agencies = await _dbContext.Agencies.ToArrayAsync();
+            _logger.LogInformation($"Agencies count: {agencies.Length}");
             var agenciesDtos = _mapper.Map<AgencyDto[]>(agencies);
-
+            _logger.LogInformation($"Agencies dtos: {agenciesDtos?.Length}");
             return Ok(agenciesDtos);
         }
 
