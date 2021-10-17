@@ -16,7 +16,7 @@ namespace Masya.TelegramBot.Api.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("/api/[controller]")]
+    [Route("api/[controller]")]
     public sealed class AgencyController : ControllerBase
     {
         private readonly IMapper _mapper;
