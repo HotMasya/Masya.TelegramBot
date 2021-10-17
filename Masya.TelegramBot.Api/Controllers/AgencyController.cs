@@ -56,8 +56,8 @@ namespace Masya.TelegramBot.Api.Controllers
                 return Forbid();
             }
 
-            var agencies = await _dbContext.Agencies.ToListAsync();
-            var agenciesDtos = _mapper.Map<List<AgencyDto>>(agencies);
+            var agencies = await _dbContext.Agencies.ToArrayAsync();
+            var agenciesDtos = _mapper.Map<AgencyDto[]>(agencies);
 
             return Ok(agenciesDtos);
         }
