@@ -61,9 +61,7 @@ namespace Masya.TelegramBot.Api.Controllers
             }
 
             var agencies = await _dbContext.Agencies.ToArrayAsync();
-            _logger.LogInformation($"Agencies count: {agencies.Length}");
             var agenciesDtos = _mapper.Map<AgencyDto[]>(agencies);
-            _logger.LogInformation($"Agencies dtos: {agenciesDtos?.Length}");
             return Ok(agenciesDtos);
         }
 
