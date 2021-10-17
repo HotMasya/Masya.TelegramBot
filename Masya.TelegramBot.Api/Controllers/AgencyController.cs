@@ -65,6 +65,49 @@ namespace Masya.TelegramBot.Api.Controllers
             return Ok(agenciesDtos);
         }
 
+        [HttpPost("all/save")]
+        public async Task<IActionResult> SaveAllAgenciesAsync(AgencyDto[] dto)
+        {
+            if (!User.HasPermission(Permission.SuperAdmin))
+            {
+                return Forbid();
+            }
+
+            var agencies = await _dbContext.Agencies.ToListAsync();
+
+            var agenciesIdsToDelete = agencies
+                    .Select(r => r.Id)
+                    .Except(
+                        dto
+                        .Where(a => a.Id.HasValue)
+                        .Select(a => a.Id.Value)
+                    );
+
+            var agenciesToDelete = agencies.Where(
+                a => agenciesIdsToDelete.FirstOrDefault(id => a.Id == id) != default
+            );
+
+            _dbContext.Agencies.RemoveRange(agenciesToDelete);
+
+            foreach (var agencyDto in dto)
+            {
+                if (!agencyDto.Id.HasValue)
+                {
+                    _dbContext.Agencies.Add(_mapper.Map<Agency>(agencyDto));
+                    continue;
+                }
+
+                var agency = agencies.FirstOrDefault(a => a.Id == agencyDto.Id.Value);
+
+                if (agency is null) continue;
+
+                _mapper.Map(agency, agencyDto);
+            }
+
+            await _dbContext.SaveChangesAsync();
+            return Ok();
+        }
+
         [HttpGet("import/logs")]
         public async Task<IActionResult> GetImportLogsAsync([FromQuery] int agencyId)
         {
