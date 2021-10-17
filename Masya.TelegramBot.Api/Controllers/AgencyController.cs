@@ -34,7 +34,7 @@ namespace Masya.TelegramBot.Api.Controllers
             _mapper = mapper;
             _dbContext = dbContext;
             _logs = logs;
-            _logger = logger,
+            _logger = logger;
         }
 
         private async Task<Agency> GetUserAgencyAsync()
