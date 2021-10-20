@@ -7,7 +7,7 @@ namespace Masya.TelegramBot.Api.Dtos
     {
         public long Id { get; set; }
 
-        public string AgencyName { get; set; }
+        public int? AgencyId { get; set; }
 
         [Required]
         public Permission Permission { get; set; }
