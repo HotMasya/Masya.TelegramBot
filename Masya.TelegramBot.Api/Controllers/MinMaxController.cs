@@ -148,7 +148,7 @@ namespace Masya.TelegramBot.Api.Controllers
 
                     if (floor is null) continue;
 
-                    _mapper.Map(floorsDto, floors);
+                    _mapper.Map(floorsDto, floor);
                 }
             }
 
