@@ -101,7 +101,7 @@ namespace Masya.TelegramBot.Api.Controllers
 
                 if (agency is null) continue;
 
-                _mapper.Map(agency, agencyDto);
+                _mapper.Map(agencyDto, agency);
             }
 
             await _dbContext.SaveChangesAsync();

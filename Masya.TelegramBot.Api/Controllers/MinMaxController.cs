@@ -84,7 +84,7 @@ namespace Masya.TelegramBot.Api.Controllers
 
                     if (room is null) continue;
 
-                    _mapper.Map(room, roomDto);
+                    _mapper.Map(roomDto, room);
                 }
             }
 
@@ -116,7 +116,7 @@ namespace Masya.TelegramBot.Api.Controllers
 
                     if (price is null) continue;
 
-                    _mapper.Map(price, priceDto);
+                    _mapper.Map(priceDto, price);
                 }
             }
 
@@ -148,7 +148,7 @@ namespace Masya.TelegramBot.Api.Controllers
 
                     if (floor is null) continue;
 
-                    _mapper.Map(floor, floorsDto);
+                    _mapper.Map(floorsDto, floors);
                 }
             }
 
