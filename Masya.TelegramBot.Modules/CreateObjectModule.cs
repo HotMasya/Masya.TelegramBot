@@ -129,6 +129,7 @@ namespace Masya.TelegramBot.Modules
             {
                 var target = new RealtyObject();
                 MapCreateProcToObj(proc, target, true);
+                _dbContext.RealtyObjects.Add(target);
             }
 
             await _dbContext.SaveChangesAsync();
