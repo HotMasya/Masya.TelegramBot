@@ -81,7 +81,7 @@ namespace Masya.TelegramBot.Modules
 
         private static void MapCreateProcToObj(CreateProcess proc, RealtyObject obj, bool isCreating)
         {
-            obj.AgentId = proc.AgentId;
+            obj.AgentId = proc.AgentId.Value;
             obj.CategoryId = proc.CategoryId.Value;
             obj.StreetId = proc.StreetId.Value;
             if (proc.WallMaterialId.HasValue) obj.WallMaterialId = proc.WallMaterialId.Value;
