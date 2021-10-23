@@ -4,6 +4,7 @@ using AutoMapper;
 using Masya.TelegramBot.Api.Dtos;
 using Masya.TelegramBot.DataAccess;
 using Masya.TelegramBot.DataAccess.Models;
+using Masya.TelegramBot.DataAccess.Types;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +36,15 @@ namespace Masya.TelegramBot.Api.Controllers
             var objects = await _dbContext.RealtyObjects.ToArrayAsync();
 
             return Ok(
-                _mapper.Map<RealtyObjectDto[]>(objects)
+                new
+                {
+                    Objects = _mapper.Map<RealtyObjectDto[]>(objects),
+                    States = await _dbContext.DirectoryItems.Where(di => di.DirectoryId == (int)DirectoryType.State).ToListAsync(),
+                    WallMaterials = await _dbContext.DirectoryItems.Where(di => di.DirectoryId == (int)DirectoryType.Material).ToListAsync(),
+                    Streets = await _dbContext.DirectoryItems.Where(di => di.DirectoryId == (int)DirectoryType.Street).ToListAsync(),
+                    Districts = await _dbContext.DirectoryItems.Where(di => di.DirectoryId == (int)DirectoryType.District).ToListAsync(),
+                    Categories = await _dbContext.Categories.ToListAsync(),
+                }
             );
         }
 
