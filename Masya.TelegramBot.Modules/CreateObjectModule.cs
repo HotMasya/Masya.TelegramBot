@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Masya.TelegramBot.Commands.Attributes;
 using Masya.TelegramBot.DataAccess;
+using Masya.TelegramBot.DataAccess.Models;
 using Masya.TelegramBot.DataAccess.Types;
 using Masya.TelegramBot.DatabaseExtensions;
 using Masya.TelegramBot.DatabaseExtensions.Abstractions;
@@ -12,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -75,6 +77,63 @@ namespace Masya.TelegramBot.Modules
                 parseMode: ParseMode.Markdown,
                 replyMarkup: _keyboards.ShowCreationMenu(proc)
             );
+        }
+
+        private static void MapCreateProcToObj(CreateProcess proc, RealtyObject obj, bool isCreating)
+        {
+            obj.AgentId = proc.AgentId;
+            obj.CategoryId = proc.CategoryId.Value;
+            obj.StreetId = proc.StreetId.Value;
+            obj.WallMaterialId = proc?.WallMaterialId.Value;
+            obj.StateId = proc?.StateId.Value;
+            obj.DistrictId = proc.DistrictId.Value;
+            obj.Price = proc.Price.Value;
+            obj.TotalArea = proc?.TotalArea.Value;
+            obj.LotArea = proc?.LotArea.Value;
+            obj.LivingSpace = proc?.LivingSpace.Value;
+            obj.KitchenSpace = proc?.KitchenSpace.Value;
+            obj.Description = proc.Description;
+            obj.Rooms = proc?.Rooms.Value;
+            obj.Phone = proc?.Phone;
+
+            if (isCreating)
+            {
+                obj.CreatedAt = DateTime.Now;
+            }
+        }
+
+        [Callback(CallbackDataTypes.SaveObject)]
+        public async Task HandleSaveObjectAsync()
+        {
+            var proc = await GetCurrentProcAsync();
+            if (proc == null)
+            {
+                return;
+            }
+
+            await EditMessageAsync("⏳ Saving object...");
+
+            await _cache.RemoveAsync(CreateObjectProcessPrefix + Context.User.Id);
+
+            if (proc.Id.HasValue)
+            {
+                var target = await _dbContext.RealtyObjects.FirstOrDefaultAsync(ro => ro.Id == proc.Id.Value);
+                if (target == null)
+                {
+                    return;
+                }
+
+                MapCreateProcToObj(proc, target, false);
+            }
+            else
+            {
+                var target = new RealtyObject();
+                MapCreateProcToObj(proc, target, true);
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            await EditMessageAsync("✅ Object has been successfully saved!");
         }
 
         [Callback(CallbackDataTypes.SetObjectStreet)]
@@ -455,8 +514,11 @@ namespace Masya.TelegramBot.Modules
 
             var proc = await GetCurrentProcAsync();
             var category = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
+            var owner = await _dbContext.Users
+                .Select(u => new { u.Id, u.TelegramAccountId, u.TelegramPhoneNumber })
+                .FirstOrDefaultAsync(u => u.TelegramAccountId == Context.User.Id);
 
-            if (category == null)
+            if (category == null || owner == null)
             {
                 return;
             }
@@ -468,6 +530,8 @@ namespace Masya.TelegramBot.Modules
 
             proc.CategoryId = categoryId;
             proc.Category = category.Name;
+            proc.AgentId = owner.Id;
+            proc.Phone = owner.TelegramPhoneNumber;
 
             await SaveCreationProcessAsync(proc);
             await EditMessageAsync(

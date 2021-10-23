@@ -2,7 +2,8 @@ namespace Masya.TelegramBot.DatabaseExtensions.Types
 {
     public sealed class CreateProcess
     {
-        public int? AgentId { get; set; }
+        public int? Id { get; set; }
+        public long? AgentId { get; set; }
         public int? CategoryId { get; set; }
         public string Category { get; set; }
         public int? StreetId { get; set; }

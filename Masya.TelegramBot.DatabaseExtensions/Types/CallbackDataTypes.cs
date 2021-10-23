@@ -36,6 +36,8 @@ namespace Masya.TelegramBot.DatabaseExtensions.Types
 
         public const string CancelObjectCreation = "__OBJECT_CANCEL_CREATION__";
 
+        public const string SaveObject = "__OBJECT__SAVE__";
+
         public static string SetObjectFromDirectoryType(DirectoryType type)
         {
             switch (type)

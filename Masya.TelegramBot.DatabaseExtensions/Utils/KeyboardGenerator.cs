@@ -507,24 +507,81 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                 return null;
             }
 
-            var buttons = new List<List<InlineKeyboardButton>>()
+            var descriptionCheckMark = string.IsNullOrEmpty(process.Description) ? "" : "✅";
+            var priceCheckMark = process.Price.HasValue ? "✅" : "";
+            var floorCheckMark = process.Floor.HasValue ? "✅" : "";
+            var totalFloorsCheckMark = process.TotalFloors.HasValue ? "✅" : "";
+            var roomsCheckMark = process.Rooms.HasValue ? "✅" : "";
+            var lotAreaCheckMark = process.LotArea.HasValue ? "✅" : "";
+            var kitchenAreaCheckMark = process.KitchenSpace.HasValue ? "✅" : "";
+            var livingAreaCheckMark = process.LivingSpace.HasValue ? "✅" : "";
+            var totalAreaCheckMark = process.TotalArea.HasValue ? "✅" : "";
+            var addressCheckMark = process.StreetId.HasValue ? "✅" : "";
+            var districtCheckMark = process.DistrictId.HasValue ? "✅" : "";
+            var stateCheckMark = process.StateId.HasValue ? "✅" : "";
+            var wallMaterialCheckMark = process.WallMaterialId.HasValue ? "✅" : "";
+
+            bool isRequiredDataCompleted = (
+                !string.IsNullOrEmpty(process.Description)
+                && process.Price.HasValue
+                && process.StreetId.HasValue
+                && process.DistrictId.HasValue
+                && process.LotArea.HasValue
+            );
+
+            bool isBuildingReqDataCompleted = (
+                process.LivingSpace.HasValue
+                && process.KitchenSpace.HasValue
+                && process.TotalArea.HasValue
+                && process.Rooms.HasValue
+                && process.TotalFloors.HasValue
+                && process.WallMaterialId.HasValue
+                && process.StateId.HasValue
+            );
+
+            bool isSectorCompleted = process.CategoryId == (int)SuperType.Sector && isRequiredDataCompleted;
+
+            bool isHouseCompleted = (
+                process.CategoryId == (int)SuperType.House
+                && isRequiredDataCompleted
+                && isBuildingReqDataCompleted
+            );
+
+            bool isFlatCompleted = (
+                process.Floor.HasValue
+                && isBuildingReqDataCompleted
+                && isRequiredDataCompleted
+            );
+
+            var buttons = new List<List<InlineKeyboardButton>>();
+
+            if (isSectorCompleted || isHouseCompleted || isFlatCompleted)
             {
+                buttons.Add(new List<InlineKeyboardButton>{
+                    InlineKeyboardButton.WithCallbackData("⤵ Save object", CallbackDataTypes.SaveObject)
+                });
+            }
+
+            buttons.Add(
                 new List<InlineKeyboardButton>{
-                    InlineKeyboardButton.WithCallbackData("Description", CallbackDataTypes.SetObjectDescription),
-                    InlineKeyboardButton.WithCallbackData("Price", CallbackDataTypes.SetObjectPrice),
-                },
-                new List<InlineKeyboardButton>{
-                    InlineKeyboardButton.WithCallbackData("Address", CallbackDataTypes.SetObjectStreet),
-                    InlineKeyboardButton.WithCallbackData("District", CallbackDataTypes.SetObjectRegion),
+                    InlineKeyboardButton.WithCallbackData($"{descriptionCheckMark}Description", CallbackDataTypes.SetObjectDescription),
+                    InlineKeyboardButton.WithCallbackData($"{priceCheckMark}Price", CallbackDataTypes.SetObjectPrice),
                 }
-            };
+            );
+
+            buttons.Add(
+                new List<InlineKeyboardButton>{
+                    InlineKeyboardButton.WithCallbackData($"{addressCheckMark}Address", CallbackDataTypes.SetObjectStreet),
+                    InlineKeyboardButton.WithCallbackData($"{districtCheckMark}District", CallbackDataTypes.SetObjectRegion),
+                }
+            );
 
             switch ((SuperType)process.CategoryId.Value)
             {
                 case SuperType.Sector:
                     buttons.Add(new List<InlineKeyboardButton>
                     {
-                        InlineKeyboardButton.WithCallbackData("Lot area", CallbackDataTypes.SetObjectLotArea),
+                        InlineKeyboardButton.WithCallbackData($"{lotAreaCheckMark}Lot area", CallbackDataTypes.SetObjectLotArea),
                     });
                     break;
 
@@ -534,7 +591,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                 case SuperType.Rental:
                     buttons.Add(new List<InlineKeyboardButton>
                     {
-                        InlineKeyboardButton.WithCallbackData("Floor", CallbackDataTypes.SetObjectFloor),
+                        InlineKeyboardButton.WithCallbackData($"{floorCheckMark}Floor", CallbackDataTypes.SetObjectFloor),
                     });
                     break;
 
@@ -550,20 +607,20 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                 case SuperType.NewBuilding:
                 case SuperType.Rental:
                     buttons.Add(new List<InlineKeyboardButton>{
-                        InlineKeyboardButton.WithCallbackData("Total Floors", CallbackDataTypes.SetObjectTotalFloors),
+                        InlineKeyboardButton.WithCallbackData($"{totalFloorsCheckMark}Total Floors", CallbackDataTypes.SetObjectTotalFloors),
                     });
                     buttons.Add(new List<InlineKeyboardButton>
                     {
-                        InlineKeyboardButton.WithCallbackData("Rooms", CallbackDataTypes.SetObjectRoomsCount),
-                        InlineKeyboardButton.WithCallbackData("Kitchen Area", CallbackDataTypes.SetObjectKitchenArea),
+                        InlineKeyboardButton.WithCallbackData($"{roomsCheckMark}Rooms", CallbackDataTypes.SetObjectRoomsCount),
+                        InlineKeyboardButton.WithCallbackData($"{kitchenAreaCheckMark}Kitchen Area", CallbackDataTypes.SetObjectKitchenArea),
                     });
                     buttons.Add(new List<InlineKeyboardButton>{
-                        InlineKeyboardButton.WithCallbackData("Total Area", CallbackDataTypes.SetObjectTotalArea),
-                        InlineKeyboardButton.WithCallbackData("Living Area", CallbackDataTypes.SetObjectLivingArea),
+                        InlineKeyboardButton.WithCallbackData($"{totalAreaCheckMark}Total Area", CallbackDataTypes.SetObjectTotalArea),
+                        InlineKeyboardButton.WithCallbackData($"{livingAreaCheckMark}Living Area", CallbackDataTypes.SetObjectLivingArea),
                     });
                     buttons.Add(new List<InlineKeyboardButton>{
-                        InlineKeyboardButton.WithCallbackData("Wall Material", CallbackDataTypes.SetObjectWallsMaterial),
-                        InlineKeyboardButton.WithCallbackData("State", CallbackDataTypes.SetObjectState),
+                        InlineKeyboardButton.WithCallbackData($"{wallMaterialCheckMark}Wall Material", CallbackDataTypes.SetObjectWallsMaterial),
+                        InlineKeyboardButton.WithCallbackData($"{stateCheckMark}State", CallbackDataTypes.SetObjectState),
                     });
                     break;
 
