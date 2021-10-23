@@ -43,7 +43,6 @@ namespace Masya.TelegramBot.Modules
         public async Task MyObjectsCommandAsync()
         {
             var objects = await _dbContext.RealtyObjects
-                .Include(ro => ro.Agent)
                 .Where(ro => ro.Agent.TelegramAccountId == Context.User.Id)
                 .ToListAsync();
 
