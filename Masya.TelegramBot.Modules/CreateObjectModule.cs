@@ -84,17 +84,17 @@ namespace Masya.TelegramBot.Modules
             obj.AgentId = proc.AgentId;
             obj.CategoryId = proc.CategoryId.Value;
             obj.StreetId = proc.StreetId.Value;
-            obj.WallMaterialId = proc?.WallMaterialId.Value;
-            obj.StateId = proc?.StateId.Value;
-            obj.DistrictId = proc.DistrictId.Value;
+            if (proc.WallMaterialId.HasValue) obj.WallMaterialId = proc.WallMaterialId.Value;
+            if (proc.StateId.HasValue) obj.StateId = proc.StateId.Value;
+            if (proc.DistrictId.HasValue) obj.DistrictId = proc.DistrictId.Value;
             obj.Price = proc.Price.Value;
-            obj.TotalArea = proc?.TotalArea.Value;
-            obj.LotArea = proc?.LotArea.Value;
-            obj.LivingSpace = proc?.LivingSpace.Value;
-            obj.KitchenSpace = proc?.KitchenSpace.Value;
+            if (proc.TotalArea.HasValue) obj.TotalArea = proc.TotalArea.Value;
+            if (proc.LotArea.HasValue) obj.LotArea = proc.LotArea.Value;
+            if (proc.LivingSpace.HasValue) obj.LivingSpace = proc.LivingSpace.Value;
+            if (proc.KitchenSpace.HasValue) obj.KitchenSpace = proc.KitchenSpace.Value;
             obj.Description = proc.Description;
-            obj.Rooms = proc?.Rooms.Value;
-            obj.Phone = proc?.Phone;
+            if (proc.Rooms.HasValue) obj.Rooms = proc.Rooms.Value;
+            obj.Phone = proc.Phone;
 
             if (isCreating)
             {
