@@ -105,6 +105,7 @@ namespace Masya.TelegramBot.Modules
 
         private static void MapObjToCreateProc(RealtyObject obj, CreateProcess proc)
         {
+            proc.Id = obj.Id;
             proc.AgentId = obj.AgentId.Value;
             proc.CategoryId = obj.CategoryId;
             proc.Category = obj.Category.Name;
