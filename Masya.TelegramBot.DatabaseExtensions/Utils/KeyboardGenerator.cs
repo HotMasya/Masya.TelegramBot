@@ -537,7 +537,6 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                 && process.Price.HasValue
                 && process.StreetId.HasValue
                 && process.DistrictId.HasValue
-                && process.LotArea.HasValue
             );
 
             bool isBuildingReqDataCompleted = (
@@ -550,7 +549,9 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                 && process.StateId.HasValue
             );
 
-            bool isSectorCompleted = process.CategoryId == (int)SuperType.Sector && isRequiredDataCompleted;
+            bool isSectorCompleted = process.CategoryId == (int)SuperType.Sector
+                && isRequiredDataCompleted
+                && process.LotArea.HasValue;
 
             bool isHouseCompleted = (
                 process.CategoryId == (int)SuperType.House
