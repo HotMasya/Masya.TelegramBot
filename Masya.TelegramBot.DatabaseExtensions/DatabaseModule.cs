@@ -113,6 +113,28 @@ namespace Masya.TelegramBot.DatabaseExtensions
             return builder.ToString();
         }
 
+        private InlineKeyboardMarkup GenerateEditRemoveButtons(RealtyObject obj) => new(
+            new List<InlineKeyboardButton>()
+            {
+                InlineKeyboardButton.WithCallbackData(
+                    "✏ Edit",
+                    string.Join(
+                        Context.CommandService.Options.CallbackDataSeparator,
+                        CallbackDataTypes.EditObject,
+                        obj.Id.ToString()
+                    )
+                ),
+                InlineKeyboardButton.WithCallbackData(
+                    "❌ Remove",
+                    string.Join(
+                        Context.CommandService.Options.CallbackDataSeparator,
+                        CallbackDataTypes.RemoveObject,
+                        obj.Id.ToString()
+                    )
+                )
+            }
+        );
+
         private InlineKeyboardMarkup GenerateFavoriteButton(RealtyObject obj, List<RealtyObject> favorites)
         {
             if (favorites == null)
@@ -146,7 +168,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
             );
         }
 
-        protected async Task SendObjectsAsync(List<RealtyObject> results, List<RealtyObject> favorites = null, int delay = 5)
+        protected async Task SendObjectsAsync(List<RealtyObject> results, List<RealtyObject> favorites = null, int delay = 5, bool isEditMode = false)
         {
             using var httpClient = new HttpClient();
 
@@ -179,7 +201,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
                 await ReplyAsync(
                     content: BuildRealtyObjectDescr(r),
                     parseMode: ParseMode.Markdown,
-                    replyMarkup: GenerateFavoriteButton(r, favorites),
+                    replyMarkup: isEditMode ? GenerateEditRemoveButtons(r) : GenerateFavoriteButton(r, favorites),
                     disableNotification: true
                 );
                 await Task.Delay(TimeSpan.FromSeconds(delay));

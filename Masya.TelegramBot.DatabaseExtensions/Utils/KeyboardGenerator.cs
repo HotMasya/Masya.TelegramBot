@@ -500,7 +500,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
             return new InlineKeyboardMarkup(buttons);
         }
 
-        public InlineKeyboardMarkup ShowCreationMenu(CreateProcess process)
+        public InlineKeyboardMarkup ShowCreationMenu(CreateProcess process, bool isEditMode = false)
         {
             if (!process.CategoryId.HasValue)
             {
@@ -628,7 +628,10 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
             }
 
             buttons.Add(new List<InlineKeyboardButton>{
-                InlineKeyboardButton.WithCallbackData("❌ Cancel", CallbackDataTypes.CancelObjectCreation),
+                InlineKeyboardButton.WithCallbackData(
+                    "❌ Cancel",
+                    isEditMode ? CallbackDataTypes.CancelObjectEditing : CallbackDataTypes.CancelObjectCreation
+                ),
             });
 
             return new InlineKeyboardMarkup(buttons);

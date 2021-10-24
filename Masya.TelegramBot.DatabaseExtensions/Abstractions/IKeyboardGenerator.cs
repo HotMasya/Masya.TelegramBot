@@ -13,7 +13,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Abstractions
         IReplyMarkup Menu(Permission userPermission);
         Task<InlineKeyboardMarkup> InlineSearchAsync(string callbackDataType = null, UserSettings userSettings = null);
         Task<InlineKeyboardMarkup> SelectCategoriesAsync();
-        InlineKeyboardMarkup ShowCreationMenu(CreateProcess process);
+        InlineKeyboardMarkup ShowCreationMenu(CreateProcess process, bool isEditMode = false);
         Task<InlineKeyboardMarkup> SearchStreetsResults(string query);
         Task<InlineKeyboardMarkup> ShowRegionsAsync();
         Task<InlineKeyboardMarkup> SelectDirectoryItems(DirectoryType type);
