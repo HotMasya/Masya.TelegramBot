@@ -580,7 +580,7 @@ namespace Masya.TelegramBot.Modules
         }
 
         [Callback(CallbackDataTypes.SetObjectType)]
-        public async Task HandleSetObjectTypeAsync(string prefix = CreateProcess.CreateObjectProcessPrefix, int categoryId = -1)
+        public async Task HandleSetObjectTypeAsync(int categoryId = -1)
         {
             if (categoryId == -1)
             {
@@ -590,7 +590,7 @@ namespace Masya.TelegramBot.Modules
                 return;
             }
 
-            var proc = await GetCurrentProcAsync(prefix);
+            var proc = await GetCurrentProcAsync(CreateProcess.CreateObjectProcessPrefix);
             var category = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
             var owner = await _dbContext.Users
                 .Select(u => new { u.Id, u.TelegramAccountId, u.TelegramPhoneNumber })
