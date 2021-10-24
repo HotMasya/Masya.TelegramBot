@@ -201,7 +201,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
         public override Task HandleCallbackAsync(CallbackQuery callback)
         {
-            if (callback.Data.Contains(CallbackDataTypes.SetObjectStreet) && !callback.Data.Contains(Options.CallbackDataSeparator))
+            if (callback.Data.Contains(CallbackDataTypes.SetObjectStreet))
             {
                 return HandleSearchStreetAsync(callback);
             }
