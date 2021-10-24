@@ -96,6 +96,8 @@ namespace Masya.TelegramBot.Modules
             if (proc.Rooms.HasValue) obj.Rooms = proc.Rooms.Value;
             obj.Phone = proc.Phone;
             obj.EditedAt = DateTime.Now;
+            if (proc.Floor.HasValue) obj.Floor = proc.Floor.Value;
+            if (proc.TotalFloors.HasValue) obj.TotalFloors = proc.TotalFloors.Value;
 
             if (isCreating)
             {
@@ -129,6 +131,8 @@ namespace Masya.TelegramBot.Modules
             if (obj.LivingSpace.HasValue) proc.LivingSpace = (int)obj.LivingSpace.Value;
             if (obj.KitchenSpace.HasValue) proc.KitchenSpace = (int)obj.KitchenSpace.Value;
             if (obj.Rooms.HasValue) proc.Rooms = obj.Rooms.Value;
+            if (obj.Floor.HasValue) proc.Floor = obj.Floor.Value;
+            if (obj.TotalFloors.HasValue) proc.TotalFloors = obj.TotalFloors.Value;
             proc.Description = obj.Description;
             proc.Phone = obj.Phone;
         }
