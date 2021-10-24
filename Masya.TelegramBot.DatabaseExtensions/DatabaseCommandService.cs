@@ -219,6 +219,13 @@ namespace Masya.TelegramBot.DatabaseExtensions
             BotService.TryRemoveCollector(callback.Message.Chat);
             var collector = BotService.CreateMessageCollector(callback.Message.Chat, TimeSpan.FromMinutes(5));
             collector.Collect(m => m.Text);
+            var callbackArgs = callback.Data.Split(Options.CallbackDataSeparator);
+            if (callbackArgs.Length < 2)
+            {
+                return;
+            }
+
+            var prefix = callbackArgs[1];
 
             collector.OnStart += async (sender, _) =>
             {
@@ -247,8 +254,7 @@ namespace Masya.TelegramBot.DatabaseExtensions
 
                 using var scope = services.CreateScope();
                 var keyboards = scope.ServiceProvider.GetRequiredService<IKeyboardGenerator>();
-
-                var streetsKeyboard = await keyboards.SearchStreetsResults(e.Message.Text);
+                var streetsKeyboard = await keyboards.SearchStreetsResults(e.Message.Text, prefix);
 
                 var resultsFound = CalculateTotalLength(streetsKeyboard.InlineKeyboard) - 2;
 

@@ -247,7 +247,7 @@ namespace Masya.TelegramBot.Modules
             if (regionId == -1)
             {
                 await EditMessageAsync(
-                    replyMarkup: await _keyboards.ShowRegionsAsync()
+                    replyMarkup: await _keyboards.ShowRegionsAsync(prefix)
                 );
                 return;
             }
@@ -351,7 +351,7 @@ namespace Masya.TelegramBot.Modules
                 prop.SetValue(proc, nullableValue.Value);
                 await SaveCreationProcessAsync(proc, GetCachePrefix(proc));
                 await ReplyAsync($"✅ {Capitalize(displayName)} has been set successfully!");
-                await SendCreationMenuMessageAsync(proc);
+                await SendCreationMenuMessageAsync(proc, proc.Id.HasValue);
 
                 collector.Finish();
                 return;
@@ -361,7 +361,7 @@ namespace Masya.TelegramBot.Modules
             {
                 var proc = await GetCurrentProcAsync(prefix);
                 await ReplyAsync("⌛ The time is out. Please, try again.");
-                await SendCreationMenuMessageAsync(proc);
+                await SendCreationMenuMessageAsync(proc, proc.Id.HasValue);
             };
 
             collector.Start();
@@ -495,7 +495,7 @@ namespace Masya.TelegramBot.Modules
         {
             Context.BotService.TryRemoveCollector(Context.Chat);
             var proc = await GetCurrentProcAsync(prefix);
-            await SendCreationMenuMessageAsync(proc);
+            await SendCreationMenuMessageAsync(proc, proc.Id.HasValue);
         }
 
         [Callback(CallbackDataTypes.SetObjectDescription)]
@@ -524,7 +524,7 @@ namespace Masya.TelegramBot.Modules
                 proc.Description = e.Message.Text;
                 await SaveCreationProcessAsync(proc, GetCachePrefix(proc));
                 await ReplyAsync("✅ Description has been set successfully!");
-                await SendCreationMenuMessageAsync(proc);
+                await SendCreationMenuMessageAsync(proc, proc.Id.HasValue);
 
                 collector.Finish();
                 return;
@@ -534,7 +534,7 @@ namespace Masya.TelegramBot.Modules
             {
                 var proc = await GetCurrentProcAsync(prefix);
                 await ReplyAsync("⌛ The time is out. Please, try again.");
-                await SendCreationMenuMessageAsync(proc);
+                await SendCreationMenuMessageAsync(proc, proc.Id.HasValue);
             };
 
             collector.Start();

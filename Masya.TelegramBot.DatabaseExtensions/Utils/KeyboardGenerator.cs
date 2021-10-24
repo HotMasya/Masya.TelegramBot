@@ -284,7 +284,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
             };
         }
 
-        public async Task<InlineKeyboardMarkup> ShowRegionsAsync()
+        public async Task<InlineKeyboardMarkup> ShowRegionsAsync(string prefix)
         {
             var regions = await _dbContext.DirectoryItems
                 .AsQueryable()
@@ -310,6 +310,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                             string.Join(
                                 Options.CallbackDataSeparator,
                                 CallbackDataTypes.SetObjectRegion,
+                                prefix,
                                 regions[regionsIndex].Id.ToString()
                             )
                         )
@@ -434,7 +435,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
             return new InlineKeyboardMarkup(buttons);
         }
 
-        public async Task<InlineKeyboardMarkup> SearchStreetsResults(string query)
+        public async Task<InlineKeyboardMarkup> SearchStreetsResults(string query, string prefix)
         {
             var streets = await _dbContext.DirectoryItems
                 .AsQueryable()
@@ -458,6 +459,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                             string.Join(
                                 Options.CallbackDataSeparator,
                                 CallbackDataTypes.SetObjectStreet,
+                                prefix,
                                 streets[streetsIndex].Id.ToString()
                             )
                         )
