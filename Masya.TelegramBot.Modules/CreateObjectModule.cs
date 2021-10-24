@@ -225,8 +225,8 @@ namespace Masya.TelegramBot.Modules
             );
             proc.Street = street.Value;
             proc.StreetId = street.Id;
-            await SaveCreationProcessAsync(proc, GetCachePrefix(proc));
-            await SendCreationMenuMessageAsync(proc);
+            await SaveCreationProcessAsync(proc, prefix);
+            await SendCreationMenuMessageAsync(proc, proc.Id.HasValue);
         }
 
         [Callback(CallbackDataTypes.SetObjectState)]
@@ -283,7 +283,7 @@ namespace Masya.TelegramBot.Modules
             if (itemId == -1)
             {
                 await EditMessageAsync(
-                    replyMarkup: await _keyboards.SelectDirectoryItems(itemType)
+                    replyMarkup: await _keyboards.SelectDirectoryItems(itemType, prefix)
                 );
                 return;
             }
@@ -385,7 +385,7 @@ namespace Masya.TelegramBot.Modules
             if (floor < 1 || floor > 24)
             {
                 await EditMessageAsync(
-                    replyMarkup: _keyboards.SelectNumericValues(CallbackDataTypes.SetObjectFloor, 24)
+                    replyMarkup: _keyboards.SelectNumericValues(CallbackDataTypes.SetObjectFloor, MaxFloors, prefix)
                 );
                 return;
             }
@@ -406,7 +406,7 @@ namespace Masya.TelegramBot.Modules
             if (totalFloors < 1 || totalFloors > MaxFloors)
             {
                 await EditMessageAsync(
-                    replyMarkup: _keyboards.SelectNumericValues(CallbackDataTypes.SetObjectTotalFloors, MaxFloors)
+                    replyMarkup: _keyboards.SelectNumericValues(CallbackDataTypes.SetObjectTotalFloors, MaxFloors, prefix)
                 );
                 return;
             }
@@ -427,7 +427,7 @@ namespace Masya.TelegramBot.Modules
             if (roomsCount < 1 || roomsCount > MaxRooms)
             {
                 await EditMessageAsync(
-                    replyMarkup: _keyboards.SelectNumericValues(CallbackDataTypes.SetObjectRoomsCount, MaxRooms)
+                    replyMarkup: _keyboards.SelectNumericValues(CallbackDataTypes.SetObjectRoomsCount, MaxRooms, prefix)
                 );
                 return;
             }
