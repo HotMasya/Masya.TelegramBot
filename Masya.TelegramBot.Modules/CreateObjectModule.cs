@@ -140,6 +140,19 @@ namespace Masya.TelegramBot.Modules
             await SendCreationMenuMessageAsync(proc, true);
         }
 
+        [Callback(CallbackDataTypes.RemoveObject)]
+        public async Task HandleRemoveObjectAsync(int objId)
+        {
+            var target = await _dbContext.RealtyObjects.FirstOrDefaultAsync(ro => ro.Id == objId);
+
+            if (target != null)
+            {
+                _dbContext.RealtyObjects.Remove(target);
+                await _dbContext.SaveChangesAsync();
+                await EditMessageAsync("✅ Object has been successfully removed.");
+            }
+        }
+
         [Callback(CallbackDataTypes.SaveObject)]
         public async Task HandleSaveObjectAsync()
         {
