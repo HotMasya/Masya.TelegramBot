@@ -24,5 +24,8 @@ namespace Masya.TelegramBot.DatabaseExtensions.Types
         public int? Price { get; set; }
         public string Phone { get; set; }
         public string Description { get; set; }
+
+        public const string CreateObjectProcessPrefix = "CreateObjectProcess_";
+        public const string EditObjectProcessPrefix = "EditObjectProcess_";
     }
 }

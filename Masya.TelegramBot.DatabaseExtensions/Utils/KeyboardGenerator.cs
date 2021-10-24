@@ -500,6 +500,13 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
             return new InlineKeyboardMarkup(buttons);
         }
 
+        private string GenerateCallbackData(string opType, bool isEditMode)
+            => string.Join(
+                Options.CallbackDataSeparator,
+                opType,
+                isEditMode ? CreateProcess.EditObjectProcessPrefix : CreateProcess.CreateObjectProcessPrefix
+            );
+
         public InlineKeyboardMarkup ShowCreationMenu(CreateProcess process, bool isEditMode = false)
         {
             if (!process.CategoryId.HasValue)
@@ -558,21 +565,27 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
             if (isSectorCompleted || isHouseCompleted || isFlatCompleted)
             {
                 buttons.Add(new List<InlineKeyboardButton>{
-                    InlineKeyboardButton.WithCallbackData("⤵ Save object", CallbackDataTypes.SaveObject)
+                    InlineKeyboardButton.WithCallbackData("⤵ Save object", GenerateCallbackData(CallbackDataTypes.SaveObject, isEditMode))
                 });
             }
 
             buttons.Add(
                 new List<InlineKeyboardButton>{
-                    InlineKeyboardButton.WithCallbackData($"{descriptionCheckMark}Description", CallbackDataTypes.SetObjectDescription),
-                    InlineKeyboardButton.WithCallbackData($"{priceCheckMark}Price", CallbackDataTypes.SetObjectPrice),
+                    InlineKeyboardButton.WithCallbackData(
+                        $"{descriptionCheckMark}Description",
+                        GenerateCallbackData(CallbackDataTypes.SetObjectDescription, isEditMode)
+                    ),
+                    InlineKeyboardButton.WithCallbackData(
+                        $"{priceCheckMark}Price",
+                        GenerateCallbackData(CallbackDataTypes.SetObjectPrice, isEditMode)
+                    ),
                 }
             );
 
             buttons.Add(
                 new List<InlineKeyboardButton>{
-                    InlineKeyboardButton.WithCallbackData($"{addressCheckMark}Address", CallbackDataTypes.SetObjectStreet),
-                    InlineKeyboardButton.WithCallbackData($"{districtCheckMark}District", CallbackDataTypes.SetObjectRegion),
+                    InlineKeyboardButton.WithCallbackData($"{addressCheckMark}Address", GenerateCallbackData(CallbackDataTypes.SetObjectStreet, isEditMode)),
+                    InlineKeyboardButton.WithCallbackData($"{districtCheckMark}District", GenerateCallbackData(CallbackDataTypes.SetObjectRegion, isEditMode)),
                 }
             );
 
@@ -581,7 +594,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                 case SuperType.Sector:
                     buttons.Add(new List<InlineKeyboardButton>
                     {
-                        InlineKeyboardButton.WithCallbackData($"{lotAreaCheckMark}Lot area", CallbackDataTypes.SetObjectLotArea),
+                        InlineKeyboardButton.WithCallbackData($"{lotAreaCheckMark}Lot area", GenerateCallbackData(CallbackDataTypes.SetObjectLotArea, isEditMode)),
                     });
                     break;
 
@@ -591,7 +604,7 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                 case SuperType.Rental:
                     buttons.Add(new List<InlineKeyboardButton>
                     {
-                        InlineKeyboardButton.WithCallbackData($"{floorCheckMark}Floor", CallbackDataTypes.SetObjectFloor),
+                        InlineKeyboardButton.WithCallbackData($"{floorCheckMark}Floor", GenerateCallbackData(CallbackDataTypes.SetObjectFloor, isEditMode)),
                     });
                     break;
 
@@ -607,20 +620,20 @@ namespace Masya.TelegramBot.DatabaseExtensions.Utils
                 case SuperType.NewBuilding:
                 case SuperType.Rental:
                     buttons.Add(new List<InlineKeyboardButton>{
-                        InlineKeyboardButton.WithCallbackData($"{totalFloorsCheckMark}Total Floors", CallbackDataTypes.SetObjectTotalFloors),
+                        InlineKeyboardButton.WithCallbackData($"{totalFloorsCheckMark}Total Floors", GenerateCallbackData(CallbackDataTypes.SetObjectTotalFloors, isEditMode)),
                     });
                     buttons.Add(new List<InlineKeyboardButton>
                     {
-                        InlineKeyboardButton.WithCallbackData($"{roomsCheckMark}Rooms", CallbackDataTypes.SetObjectRoomsCount),
-                        InlineKeyboardButton.WithCallbackData($"{kitchenAreaCheckMark}Kitchen Area", CallbackDataTypes.SetObjectKitchenArea),
+                        InlineKeyboardButton.WithCallbackData($"{roomsCheckMark}Rooms", GenerateCallbackData(CallbackDataTypes.SetObjectRoomsCount, isEditMode)),
+                        InlineKeyboardButton.WithCallbackData($"{kitchenAreaCheckMark}Kitchen Area", GenerateCallbackData(CallbackDataTypes.SetObjectKitchenArea, isEditMode)),
                     });
                     buttons.Add(new List<InlineKeyboardButton>{
-                        InlineKeyboardButton.WithCallbackData($"{totalAreaCheckMark}Total Area", CallbackDataTypes.SetObjectTotalArea),
-                        InlineKeyboardButton.WithCallbackData($"{livingAreaCheckMark}Living Area", CallbackDataTypes.SetObjectLivingArea),
+                        InlineKeyboardButton.WithCallbackData($"{totalAreaCheckMark}Total Area", GenerateCallbackData(CallbackDataTypes.SetObjectTotalArea, isEditMode)),
+                        InlineKeyboardButton.WithCallbackData($"{livingAreaCheckMark}Living Area", GenerateCallbackData(CallbackDataTypes.SetObjectLivingArea, isEditMode)),
                     });
                     buttons.Add(new List<InlineKeyboardButton>{
-                        InlineKeyboardButton.WithCallbackData($"{wallMaterialCheckMark}Wall Material", CallbackDataTypes.SetObjectWallsMaterial),
-                        InlineKeyboardButton.WithCallbackData($"{stateCheckMark}State", CallbackDataTypes.SetObjectState),
+                        InlineKeyboardButton.WithCallbackData($"{wallMaterialCheckMark}Wall Material", GenerateCallbackData(CallbackDataTypes.SetObjectWallsMaterial, isEditMode)),
+                        InlineKeyboardButton.WithCallbackData($"{stateCheckMark}State", GenerateCallbackData(CallbackDataTypes.SetObjectState, isEditMode)),
                     });
                     break;
 

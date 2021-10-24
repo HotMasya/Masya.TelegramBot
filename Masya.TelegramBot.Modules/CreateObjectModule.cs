@@ -13,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Masya.TelegramBot.Modules
 {
@@ -22,9 +21,6 @@ namespace Masya.TelegramBot.Modules
         private readonly ApplicationDbContext _dbContext;
         private readonly IKeyboardGenerator _keyboards;
         private readonly IDistributedCache _cache;
-
-        private const string CreateObjectProcessPrefix = "CreateObjectProcess_";
-        private const string EditObjectProcessPrefix = "EditObjectProcess_";
 
         private const int MaxFloors = 24;
         private const int MaxRooms = 8;
@@ -64,7 +60,7 @@ namespace Masya.TelegramBot.Modules
         [Command("/create")]
         public async Task CreateObjectCommandAsync()
         {
-            var proc = await GetCurrentProcAsync();
+            var proc = await GetCurrentProcAsync(CreateProcess.CreateObjectProcessPrefix);
 
             if (proc == null)
             {
@@ -111,17 +107,28 @@ namespace Masya.TelegramBot.Modules
         {
             proc.AgentId = obj.AgentId.Value;
             proc.CategoryId = obj.CategoryId;
+            proc.Category = obj.Category.Name;
             proc.StreetId = obj.StreetId.Value;
-            if (obj.WallMaterialId.HasValue) proc.WallMaterialId = obj.WallMaterialId.Value;
-            if (obj.StateId.HasValue) proc.StateId = obj.StateId.Value;
-            if (obj.DistrictId.HasValue) proc.DistrictId = obj.DistrictId.Value;
+            proc.Street = obj.Street.Value;
+            proc.DistrictId = obj.DistrictId.Value;
+            proc.District = obj.District.Value;
             proc.Price = obj.Price.Value;
+            if (obj.WallMaterialId.HasValue)
+            {
+                proc.WallMaterialId = obj.WallMaterialId.Value;
+                proc.WallMaterial = obj.WallMaterial.Value;
+            }
+            if (obj.StateId.HasValue)
+            {
+                proc.StateId = obj.StateId.Value;
+                proc.State = obj.State.Value;
+            }
             if (obj.TotalArea.HasValue) proc.TotalArea = (int)obj.TotalArea.Value;
             if (obj.LotArea.HasValue) proc.LotArea = (int)obj.LotArea.Value;
             if (obj.LivingSpace.HasValue) proc.LivingSpace = (int)obj.LivingSpace.Value;
             if (obj.KitchenSpace.HasValue) proc.KitchenSpace = (int)obj.KitchenSpace.Value;
-            proc.Description = obj.Description;
             if (obj.Rooms.HasValue) proc.Rooms = obj.Rooms.Value;
+            proc.Description = obj.Description;
             proc.Phone = obj.Phone;
         }
 
@@ -136,7 +143,7 @@ namespace Masya.TelegramBot.Modules
 
             var proc = new CreateProcess();
             MapObjToCreateProc(target, proc);
-            await SaveCreationProcessAsync(proc, EditObjectProcessPrefix);
+            await SaveCreationProcessAsync(proc, CreateProcess.EditObjectProcessPrefix);
             await SendCreationMenuMessageAsync(proc, true);
         }
 
@@ -154,9 +161,9 @@ namespace Masya.TelegramBot.Modules
         }
 
         [Callback(CallbackDataTypes.SaveObject)]
-        public async Task HandleSaveObjectAsync()
+        public async Task HandleSaveObjectAsync(string prefix = CreateProcess.CreateObjectProcessPrefix)
         {
-            var proc = await GetCurrentProcAsync();
+            var proc = await GetCurrentProcAsync(prefix);
             if (proc == null)
             {
                 return;
@@ -164,7 +171,7 @@ namespace Masya.TelegramBot.Modules
 
             await EditMessageAsync("⏳ Saving object...");
 
-            await _cache.RemoveAsync(CreateObjectProcessPrefix + Context.User.Id);
+            await _cache.RemoveAsync(CreateProcess.CreateObjectProcessPrefix + Context.User.Id);
 
             if (proc.Id.HasValue)
             {
@@ -190,11 +197,11 @@ namespace Masya.TelegramBot.Modules
 
         public static string GetCachePrefix(CreateProcess proc) =>
             proc.Id.HasValue
-            ? EditObjectProcessPrefix
-            : CreateObjectProcessPrefix;
+            ? CreateProcess.EditObjectProcessPrefix
+            : CreateProcess.CreateObjectProcessPrefix;
 
         [Callback(CallbackDataTypes.SetObjectStreet)]
-        public async Task HandleSetObjectStreetAsync(int streetId)
+        public async Task HandleSetObjectStreetAsync(string prefix = CreateProcess.CreateObjectProcessPrefix, int streetId = -1)
         {
             var street = await _dbContext.DirectoryItems.FirstOrDefaultAsync(di => di.Id == streetId);
 
@@ -203,7 +210,7 @@ namespace Masya.TelegramBot.Modules
                 return;
             }
 
-            var proc = await GetCurrentProcAsync();
+            var proc = await GetCurrentProcAsync(prefix);
 
             if (proc == null)
             {
@@ -222,19 +229,19 @@ namespace Masya.TelegramBot.Modules
         }
 
         [Callback(CallbackDataTypes.SetObjectState)]
-        public async Task HandleSetObjectStateAsync(int stateId = -1)
+        public async Task HandleSetObjectStateAsync(string prefix = CreateProcess.CreateObjectProcessPrefix, int stateId = -1)
         {
-            await HandleDirectoryItemsAsync(DirectoryType.State, "State", stateId);
+            await HandleDirectoryItemsAsync(DirectoryType.State, "State", stateId, prefix);
         }
 
         [Callback(CallbackDataTypes.SetObjectWallsMaterial)]
-        public async Task HandleSetObjectWallMaterialAsync(int materialid = -1)
+        public async Task HandleSetObjectWallMaterialAsync(string prefix = CreateProcess.CreateObjectProcessPrefix, int materialId = -1)
         {
-            await HandleDirectoryItemsAsync(DirectoryType.Material, "WallMaterial", materialid);
+            await HandleDirectoryItemsAsync(DirectoryType.Material, "WallMaterial", materialId, prefix);
         }
 
         [Callback(CallbackDataTypes.SetObjectRegion)]
-        public async Task HandleSetObjectRegionAsync(int regionId = -1)
+        public async Task HandleSetObjectRegionAsync(string prefix = CreateProcess.CreateObjectProcessPrefix, int regionId = -1)
         {
             if (regionId == -1)
             {
@@ -245,7 +252,7 @@ namespace Masya.TelegramBot.Modules
             }
 
             var region = await _dbContext.DirectoryItems.FirstOrDefaultAsync(di => di.Id == regionId);
-            var proc = await GetCurrentProcAsync();
+            var proc = await GetCurrentProcAsync(prefix);
 
             if (region == null || proc == null)
             {
@@ -270,7 +277,7 @@ namespace Masya.TelegramBot.Modules
                 _ => string.Concat(input[0].ToString().ToUpper(), input.AsSpan(1))
             };
 
-        private async Task HandleDirectoryItemsAsync(DirectoryType itemType, string fieldName, int itemId = -1)
+        private async Task HandleDirectoryItemsAsync(DirectoryType itemType, string fieldName, int itemId = -1, string prefix = CreateProcess.CreateObjectProcessPrefix)
         {
             if (itemId == -1)
             {
@@ -284,7 +291,7 @@ namespace Masya.TelegramBot.Modules
                 di => di.Id == itemId && di.DirectoryId == (int)itemType
             );
 
-            var proc = await GetCurrentProcAsync();
+            var proc = await GetCurrentProcAsync(prefix);
 
             if (item == null || proc == null)
             {
@@ -308,7 +315,8 @@ namespace Masya.TelegramBot.Modules
             CreateProcess proc,
             string propName,
             string displayName,
-            Func<int, bool> validate
+            Func<int, bool> validate,
+            string prefix
         )
         {
             Context.BotService.TryRemoveCollector(Context.Chat);
@@ -350,7 +358,7 @@ namespace Masya.TelegramBot.Modules
 
             collector.OnMessageTimeout += async (sender, e) =>
             {
-                var proc = await GetCurrentProcAsync();
+                var proc = await GetCurrentProcAsync(prefix);
                 await ReplyAsync("⌛ The time is out. Please, try again.");
                 await SendCreationMenuMessageAsync(proc);
             };
@@ -359,18 +367,19 @@ namespace Masya.TelegramBot.Modules
         }
 
         [Callback(CallbackDataTypes.SetObjectPrice)]
-        public async Task HandleSetObjectPriceAsync()
+        public async Task HandleSetObjectPriceAsync(string prefix = CreateProcess.CreateObjectProcessPrefix)
         {
             await HandleNumericValueInput(
-                await GetCurrentProcAsync(),
+                await GetCurrentProcAsync(prefix),
                 "Price",
                 "price",
-                (price) => price > 0
+                (price) => price > 0,
+                prefix
             );
         }
 
         [Callback(CallbackDataTypes.SetObjectFloor)]
-        public async Task HandleSetObjectFloorAsync(int floor = -1)
+        public async Task HandleSetObjectFloorAsync(string prefix = CreateProcess.CreateObjectProcessPrefix, int floor = -1)
         {
             if (floor < 1 || floor > 24)
             {
@@ -380,7 +389,7 @@ namespace Masya.TelegramBot.Modules
                 return;
             }
 
-            var proc = await GetCurrentProcAsync();
+            var proc = await GetCurrentProcAsync(prefix);
             proc.Floor = floor;
             await SaveCreationProcessAsync(proc, GetCachePrefix(proc));
             await EditMessageAsync(
@@ -391,7 +400,7 @@ namespace Masya.TelegramBot.Modules
         }
 
         [Callback(CallbackDataTypes.SetObjectTotalFloors)]
-        public async Task HandleSetObjectTotalFloorsAsync(int totalFloors = -1)
+        public async Task HandleSetObjectTotalFloorsAsync(string prefix = CreateProcess.CreateObjectProcessPrefix, int totalFloors = -1)
         {
             if (totalFloors < 1 || totalFloors > MaxFloors)
             {
@@ -401,7 +410,7 @@ namespace Masya.TelegramBot.Modules
                 return;
             }
 
-            var proc = await GetCurrentProcAsync();
+            var proc = await GetCurrentProcAsync(prefix);
             proc.TotalFloors = totalFloors;
             await SaveCreationProcessAsync(proc, GetCachePrefix(proc));
             await EditMessageAsync(
@@ -412,7 +421,7 @@ namespace Masya.TelegramBot.Modules
         }
 
         [Callback(CallbackDataTypes.SetObjectRoomsCount)]
-        public async Task HandleSetObjectRoomsCountAsync(int roomsCount = -1)
+        public async Task HandleSetObjectRoomsCountAsync(string prefix = CreateProcess.CreateObjectProcessPrefix, int roomsCount = -1)
         {
             if (roomsCount < 1 || roomsCount > MaxRooms)
             {
@@ -422,7 +431,7 @@ namespace Masya.TelegramBot.Modules
                 return;
             }
 
-            var proc = await GetCurrentProcAsync();
+            var proc = await GetCurrentProcAsync(prefix);
             proc.Rooms = roomsCount;
             await SaveCreationProcessAsync(proc, GetCachePrefix(proc));
             await EditMessageAsync(
@@ -433,59 +442,63 @@ namespace Masya.TelegramBot.Modules
         }
 
         [Callback(CallbackDataTypes.SetObjectLotArea)]
-        public async Task HandleSetObjectLotAreaAsync()
+        public async Task HandleSetObjectLotAreaAsync(string prefix = CreateProcess.CreateObjectProcessPrefix)
         {
             await HandleNumericValueInput(
-                await GetCurrentProcAsync(),
+                await GetCurrentProcAsync(prefix),
                 "LotArea",
                 "lot area",
-                (area) => area > 0
+                (area) => area > 0,
+                prefix
             );
         }
 
         [Callback(CallbackDataTypes.SetObjectTotalArea)]
-        public async Task HandleSetObjectTotalAreaAsync()
+        public async Task HandleSetObjectTotalAreaAsync(string prefix = CreateProcess.CreateObjectProcessPrefix)
         {
             await HandleNumericValueInput(
-                await GetCurrentProcAsync(),
+                await GetCurrentProcAsync(prefix),
                 "TotalArea",
                 "total area",
-                (area) => area > 0
+                (area) => area > 0,
+                prefix
             );
         }
 
         [Callback(CallbackDataTypes.SetObjectKitchenArea)]
-        public async Task HandleSetObjectKitchenAreaAsync()
+        public async Task HandleSetObjectKitchenAreaAsync(string prefix = CreateProcess.CreateObjectProcessPrefix)
         {
             await HandleNumericValueInput(
-                await GetCurrentProcAsync(),
+                await GetCurrentProcAsync(prefix),
                 "KitchenSpace",
                 "kitchen area",
-                (area) => area > 0
+                (area) => area > 0,
+                prefix
             );
         }
 
         [Callback(CallbackDataTypes.SetObjectLivingArea)]
-        public async Task HandleSetObjectLivingAreaAsync()
+        public async Task HandleSetObjectLivingAreaAsync(string prefix = CreateProcess.CreateObjectProcessPrefix)
         {
             await HandleNumericValueInput(
-                await GetCurrentProcAsync(),
+                await GetCurrentProcAsync(prefix),
                 "LivingSpace",
                 "living area",
-                (area) => area > 0
+                (area) => area > 0,
+                prefix
             );
         }
 
         [Callback(CallbackDataTypes.CancelSetObjectStreet)]
-        public async Task HandleCancelSetStreetAsync()
+        public async Task HandleCancelSetStreetAsync(string prefix = CreateProcess.CreateObjectProcessPrefix)
         {
             Context.BotService.TryRemoveCollector(Context.Chat);
-            var proc = await GetCurrentProcAsync();
+            var proc = await GetCurrentProcAsync(prefix);
             await SendCreationMenuMessageAsync(proc);
         }
 
         [Callback(CallbackDataTypes.SetObjectDescription)]
-        public async Task HandleSetObjectDescrAsync()
+        public async Task HandleSetObjectDescrAsync(string prefix = CreateProcess.CreateObjectProcessPrefix)
         {
             Context.BotService.TryRemoveCollector(Context.Chat);
             await EditMessageAsync();
@@ -499,7 +512,7 @@ namespace Masya.TelegramBot.Modules
 
             collector.OnMessageReceived += async (sender, e) =>
             {
-                var proc = await GetCurrentProcAsync();
+                var proc = await GetCurrentProcAsync(prefix);
 
                 if (proc == null)
                 {
@@ -518,7 +531,7 @@ namespace Masya.TelegramBot.Modules
 
             collector.OnMessageTimeout += async (sender, e) =>
             {
-                var proc = await GetCurrentProcAsync();
+                var proc = await GetCurrentProcAsync(prefix);
                 await ReplyAsync("⌛ The time is out. Please, try again.");
                 await SendCreationMenuMessageAsync(proc);
             };
@@ -526,10 +539,10 @@ namespace Masya.TelegramBot.Modules
             collector.Start();
         }
 
-        private async Task<CreateProcess> GetCurrentProcAsync()
-            => await _cache.GetRecordAsync<CreateProcess>(CreateObjectProcessPrefix + Context.User.Id);
+        private async Task<CreateProcess> GetCurrentProcAsync(string prefix)
+            => await _cache.GetRecordAsync<CreateProcess>(prefix + Context.User.Id);
 
-        private async Task SaveCreationProcessAsync(CreateProcess proc, string prefix = CreateObjectProcessPrefix)
+        private async Task SaveCreationProcessAsync(CreateProcess proc, string prefix = CreateProcess.CreateObjectProcessPrefix)
         {
             await _cache.SetRecordAsync(
                 prefix + Context.User.Id,
@@ -551,14 +564,14 @@ namespace Masya.TelegramBot.Modules
         [Callback(CallbackDataTypes.CancelObjectEditing)]
         public async Task HandleCancelObjectEditingAsync()
         {
-            await _cache.RemoveAsync(EditObjectProcessPrefix + Context.User.Id);
+            await _cache.RemoveAsync(CreateProcess.EditObjectProcessPrefix + Context.User.Id);
             await ReplyAsync("✅ Object editing process has been canceled.");
         }
 
         [Callback(CallbackDataTypes.CancelObjectCreation)]
         public async Task HandleCancelObjectCreationAsync()
         {
-            await _cache.RemoveAsync(CreateObjectProcessPrefix + Context.User.Id);
+            await _cache.RemoveAsync(CreateProcess.CreateObjectProcessPrefix + Context.User.Id);
             await ReplyAsync(
                 "✅ Removed object from creation process.\n\n*Use /create command to start creating again.*",
                 ParseMode.Markdown
@@ -566,7 +579,7 @@ namespace Masya.TelegramBot.Modules
         }
 
         [Callback(CallbackDataTypes.SetObjectType)]
-        public async Task HandleSetObjectTypeAsync(int categoryId = -1)
+        public async Task HandleSetObjectTypeAsync(string prefix = CreateProcess.CreateObjectProcessPrefix, int categoryId = -1)
         {
             if (categoryId == -1)
             {
@@ -576,7 +589,7 @@ namespace Masya.TelegramBot.Modules
                 return;
             }
 
-            var proc = await GetCurrentProcAsync();
+            var proc = await GetCurrentProcAsync(prefix);
             var category = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
             var owner = await _dbContext.Users
                 .Select(u => new { u.Id, u.TelegramAccountId, u.TelegramPhoneNumber })
