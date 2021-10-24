@@ -75,7 +75,7 @@ namespace Masya.TelegramBot.Modules
             await ReplyAsync(
                 content: MessageGenerator.GenerateCreateProcessMessage(proc),
                 parseMode: ParseMode.Markdown,
-                replyMarkup: _keyboards.ShowCreationMenu(proc)
+                replyMarkup: _keyboards.ShowCreationMenu(proc, proc.Id.HasValue)
             );
         }
 
@@ -269,7 +269,7 @@ namespace Masya.TelegramBot.Modules
             await SaveCreationProcessAsync(proc, GetCachePrefix(proc));
             await EditMessageAsync(
                 text: MessageGenerator.GenerateCreateProcessMessage(proc),
-                replyMarkup: _keyboards.ShowCreationMenu(proc),
+                replyMarkup: _keyboards.ShowCreationMenu(proc, proc.Id.HasValue),
                 parseMode: ParseMode.Markdown
             );
         }
@@ -311,7 +311,7 @@ namespace Masya.TelegramBot.Modules
             await SaveCreationProcessAsync(proc, GetCachePrefix(proc));
             await EditMessageAsync(
                 text: MessageGenerator.GenerateCreateProcessMessage(proc),
-                replyMarkup: _keyboards.ShowCreationMenu(proc),
+                replyMarkup: _keyboards.ShowCreationMenu(proc, proc.Id.HasValue),
                 parseMode: ParseMode.Markdown
             );
         }
@@ -399,7 +399,7 @@ namespace Masya.TelegramBot.Modules
             await SaveCreationProcessAsync(proc, GetCachePrefix(proc));
             await EditMessageAsync(
                 text: MessageGenerator.GenerateCreateProcessMessage(proc),
-                replyMarkup: _keyboards.ShowCreationMenu(proc),
+                replyMarkup: _keyboards.ShowCreationMenu(proc, proc.Id.HasValue),
                 parseMode: ParseMode.Markdown
             );
         }
@@ -420,7 +420,7 @@ namespace Masya.TelegramBot.Modules
             await SaveCreationProcessAsync(proc, GetCachePrefix(proc));
             await EditMessageAsync(
                 text: MessageGenerator.GenerateCreateProcessMessage(proc),
-                replyMarkup: _keyboards.ShowCreationMenu(proc),
+                replyMarkup: _keyboards.ShowCreationMenu(proc, proc.Id.HasValue),
                 parseMode: ParseMode.Markdown
             );
         }
@@ -441,7 +441,7 @@ namespace Masya.TelegramBot.Modules
             await SaveCreationProcessAsync(proc, GetCachePrefix(proc));
             await EditMessageAsync(
                 text: MessageGenerator.GenerateCreateProcessMessage(proc),
-                replyMarkup: _keyboards.ShowCreationMenu(proc),
+                replyMarkup: _keyboards.ShowCreationMenu(proc, proc.Id.HasValue),
                 parseMode: ParseMode.Markdown
             );
         }
@@ -619,7 +619,7 @@ namespace Masya.TelegramBot.Modules
             await EditMessageAsync(
                 text: MessageGenerator.GenerateCreateProcessMessage(proc),
                 parseMode: ParseMode.Markdown,
-                replyMarkup: _keyboards.ShowCreationMenu(proc)
+                replyMarkup: _keyboards.ShowCreationMenu(proc, proc.Id.HasValue)
             );
         }
     }
