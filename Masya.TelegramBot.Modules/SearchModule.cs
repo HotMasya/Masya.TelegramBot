@@ -110,7 +110,8 @@ namespace Masya.TelegramBot.Modules
                         .Where(ro => !userSettings.MaxPrice.HasValue || ro.Price <= userSettings.MaxPrice.Value)
                         .Where(ro => !userSettings.MinFloor.HasValue || ro.Floor >= userSettings.MinFloor.Value)
                         .Where(ro => !userSettings.MaxFloor.HasValue || ro.Floor <= userSettings.MaxFloor.Value)
-                        .Where(ro => userSettings.Rooms.Any(r => r.RoomsCount == ro.Floor))
+                        .Where(ro => userSettings.Rooms.Any(r => ro.Rooms.HasValue && r.RoomsCount == ro.Rooms.Value))
+                        .OrderBy(ro => ro.Id)
                         .ToList();
 
                     if (results.Count == 0)
@@ -151,6 +152,7 @@ namespace Masya.TelegramBot.Modules
                             results.Take(searchProcess.ItemsSentCount).ToList(),
                             favorites
                         );
+
                         await ReplyAsync(
                             content: string.Format(
                                 "Sent *{0} of {1}* results.\nThe button below will be unavailable in 10 minutes.",
